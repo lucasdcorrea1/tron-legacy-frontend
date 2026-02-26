@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
@@ -74,6 +74,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-card">
+        <Link to="/" className="login-back">← Voltar</Link>
         <h1>Tron Legacy</h1>
         <p className="login-subtitle">
           {mode === 'login' ? 'Acesse o painel administrativo' : 'Crie sua conta'}
