@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL || 'https://tron-legacy-api.onrender.com';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token');
@@ -62,16 +62,26 @@ export const blog = {
     const formData = new FormData();
     formData.append('image', file);
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_URL}/api/v1/blog/upload`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({ message: 'Erro no upload' }));
-      throw new Error(err.message || 'Erro no upload');
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/blog/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Erro no upload (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError') {
+        throw new Error('Erro de conexão com o servidor');
+      }
+      throw error;
     }
-    return response.json();
   },
 };
 
