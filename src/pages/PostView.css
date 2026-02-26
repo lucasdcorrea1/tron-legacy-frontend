@@ -195,6 +195,33 @@
   font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
 }
 
+.article-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  display: block;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.article-content thead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.article-content th,
+.article-content td {
+  padding: 0.625rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+  white-space: nowrap;
+  font-size: 0.9375rem;
+}
+
+.article-content th {
+  font-weight: 600;
+  color: #fafafa;
+}
+
 .article-content pre {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -202,6 +229,7 @@
   padding: 1rem;
   margin: 1.5rem 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .article-content pre code {

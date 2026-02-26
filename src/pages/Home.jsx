@@ -14,6 +14,7 @@ export default function Home() {
   const { isAuthenticated, logout } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchPosts();
@@ -48,17 +49,21 @@ export default function Home() {
             <span className="logo-mark">W</span>
             <span className="logo-text">whodo</span>
           </Link>
-          <nav className="nav">
-            <Link to="/blog" className="nav-link">Blog</Link>
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}></span>
+          </button>
+          <nav className={`nav ${mobileMenuOpen ? 'nav-open' : ''}`}>
+            <Link to="/blog" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
             {isAuthenticated ? (
               <>
-                <Link to="/admin" className="nav-link">Painel</Link>
-                <button onClick={logout} className="nav-link">Sair</button>
+                <Link to="/admin" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Painel</Link>
+                <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="nav-link">Sair</button>
               </>
             ) : (
-              <Link to="/login" className="btn-outline">Entrar</Link>
+              <Link to="/login" className="btn-outline" onClick={() => setMobileMenuOpen(false)}>Entrar</Link>
             )}
           </nav>
+          {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />}
         </div>
       </header>
 

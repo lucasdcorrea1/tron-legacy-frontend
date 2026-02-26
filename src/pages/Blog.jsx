@@ -20,6 +20,7 @@ export default function Blog() {
   const [total, setTotal] = useState(0);
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const limit = 9;
 
   useEffect(() => {
@@ -70,20 +71,24 @@ export default function Blog() {
             <span className="logo-icon">W</span>
             <span className="logo-text">whodo</span>
           </Link>
-          <nav className="header-nav">
-            <Link to="/" className="nav-link">Home</Link>
-            <Link to="/blog" className="nav-link active">Blog</Link>
+          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}></span>
+          </button>
+          <nav className={`header-nav ${mobileMenuOpen ? 'nav-open' : ''}`}>
+            <Link to="/" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
+            <Link to="/blog" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
+            <div className="header-actions">
+              {isAuthenticated ? (
+                <>
+                  <Link to="/admin" className="btn-ghost" onClick={() => setMobileMenuOpen(false)}>Painel</Link>
+                  <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="btn-ghost">Sair</button>
+                </>
+              ) : (
+                <Link to="/login" className="btn-primary-sm" onClick={() => setMobileMenuOpen(false)}>Entrar</Link>
+              )}
+            </div>
           </nav>
-          <div className="header-actions">
-            {isAuthenticated ? (
-              <>
-                <Link to="/admin" className="btn-ghost">Painel</Link>
-                <button onClick={handleLogout} className="btn-ghost">Sair</button>
-              </>
-            ) : (
-              <Link to="/login" className="btn-primary-sm">Entrar</Link>
-            )}
-          </div>
+          {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />}
         </div>
       </header>
 
