@@ -35,6 +35,13 @@ jobs:
         env:
           VITE_API_URL: ${{ vars.VITE_API_URL }}
 
+      - name: List dist contents
+        run: |
+          echo "=== Dist folder contents ==="
+          ls -la dist/
+          echo "=== index.html content ==="
+          cat dist/index.html
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
