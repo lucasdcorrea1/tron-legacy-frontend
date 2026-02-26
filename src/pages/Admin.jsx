@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './Admin.css';
 
 export default function Admin() {
@@ -16,7 +16,10 @@ export default function Admin() {
   return (
     <div className="admin">
       <header className="admin-header">
-        <h1>Painel Admin</h1>
+        <div className="admin-header-left">
+          <h1>Painel Admin</h1>
+          <Link to="/" className="view-blog-link">Ver Blog</Link>
+        </div>
         <div className="admin-user">
           <span>{profile?.name || profile?.email}</span>
           <button onClick={handleLogout}>Sair</button>

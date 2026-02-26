@@ -3,6 +3,21 @@
   background: var(--bg);
 }
 
+.view-blog-link {
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.view-blog-link:hover {
+  background: var(--primary-dark);
+  text-decoration: none;
+}
+
 .postlist-main {
   padding: 2rem;
   max-width: 1200px;

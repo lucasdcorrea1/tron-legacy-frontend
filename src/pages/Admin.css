@@ -11,9 +11,30 @@
   border-bottom: 1px solid var(--border);
 }
 
+.admin-header-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
 .admin-header h1 {
   font-size: 1.25rem;
   font-weight: 600;
+}
+
+.view-blog-link {
+  padding: 0.5rem 1rem;
+  background: var(--primary);
+  color: white;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.view-blog-link:hover {
+  background: var(--primary-dark);
+  text-decoration: none;
 }
 
 .admin-user {

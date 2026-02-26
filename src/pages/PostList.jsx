@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { blog } from '../services/api';
 import './PostList.css';
@@ -64,6 +64,7 @@ export default function PostList() {
             ← Voltar
           </button>
           <h1>Meus Posts</h1>
+          <Link to="/" className="view-blog-link">Ver Blog</Link>
         </div>
         <div className="admin-user">
           <span>{profile?.name}</span>
