@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { blog } from '../services/api';
+import AdminLayout from '../components/AdminLayout';
 import './PostList.css';
 
 export default function PostList() {
-  const { profile, logout } = useAuth();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -49,149 +48,148 @@ export default function PostList() {
     return new Date(dateStr).toLocaleDateString('pt-BR');
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="postlist-page">
-      <header className="admin-header">
-        <div className="header-left">
-          <button className="back-button" onClick={() => navigate('/admin')}>
-            ← Voltar
-          </button>
-          <h1>Meus Posts</h1>
-          <Link to="/" className="view-blog-link">Ver Blog</Link>
-        </div>
-        <div className="admin-user">
-          <span>{profile?.name}</span>
-          <button onClick={handleLogout}>Sair</button>
-        </div>
-      </header>
-
-      <main className="postlist-main">
-        <div className="postlist-header">
-          <p className="postlist-count">{total} post{total !== 1 ? 's' : ''}</p>
-          <button className="new-post-button" onClick={() => navigate('/admin/posts/new')}>
+    <AdminLayout>
+      <div className="posts-page">
+        <div className="page-header">
+          <div>
+            <h1>Meus Posts</h1>
+            <p>{total} post{total !== 1 ? 's' : ''} no total</p>
+          </div>
+          <button
+            className="btn-primary"
+            onClick={() => navigate('/admin/posts/new')}
+          >
             + Novo Post
           </button>
         </div>
 
-        {error && <div className="postlist-error">{error}</div>}
+        {error && <div className="error-message">{error}</div>}
 
         {loading ? (
-          <div className="postlist-loading">Carregando...</div>
+          <div className="loading-state">Carregando...</div>
         ) : posts.length === 0 ? (
-          <div className="postlist-empty">
-            <p>Nenhum post ainda</p>
-            <button className="new-post-button" onClick={() => navigate('/admin/posts/new')}>
+          <div className="empty-state">
+            <div className="empty-icon">◧</div>
+            <h3>Nenhum post ainda</h3>
+            <p>Comece criando seu primeiro post</p>
+            <button
+              className="btn-primary"
+              onClick={() => navigate('/admin/posts/new')}
+            >
               Criar primeiro post
             </button>
           </div>
         ) : (
           <>
-            <div className="postlist-table-wrapper">
-              <table className="postlist-table">
-                <thead>
-                  <tr>
-                    <th>Título</th>
-                    <th>Categoria</th>
-                    <th>Status</th>
-                    <th>Leitura</th>
-                    <th>Data</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {posts.map(post => (
-                    <tr key={post.id}>
-                      <td
-                        className="post-title-cell"
-                        onClick={() => navigate(`/admin/posts/edit/${post.id}`)}
+            <div className="posts-table">
+              <div className="table-header">
+                <span className="col-title">Título</span>
+                <span className="col-category">Categoria</span>
+                <span className="col-status">Status</span>
+                <span className="col-date">Data</span>
+                <span className="col-actions">Ações</span>
+              </div>
+              {posts.map(post => {
+                const postId = post._id || post.id;
+                return (
+                  <div key={postId} className="table-row">
+                    <span
+                      className="col-title clickable"
+                      onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
+                    >
+                      {post.title}
+                    </span>
+                    <span className="col-category">
+                      {post.category || '-'}
+                    </span>
+                    <span className="col-status">
+                      <span className={`status-badge ${post.status}`}>
+                        {post.status === 'published' ? 'Publicado' : 'Rascunho'}
+                      </span>
+                    </span>
+                    <span className="col-date">
+                      {formatDate(post.published_at || post.created_at)}
+                    </span>
+                    <span className="col-actions">
+                      <button
+                        className="btn-icon edit"
+                        onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
+                        title="Editar"
                       >
-                        {post.title}
-                      </td>
-                      <td>{post.category || '-'}</td>
-                      <td>
-                        <span className={`status-badge status-${post.status}`}>
-                          {post.status === 'published' ? 'Publicado' : 'Rascunho'}
-                        </span>
-                      </td>
-                      <td>{post.reading_time ? `${post.reading_time} min` : '-'}</td>
-                      <td>{formatDate(post.published_at || post.created_at)}</td>
-                      <td>
-                        <div className="post-actions">
-                          <button
-                            className="edit-button"
-                            onClick={() => navigate(`/admin/posts/edit/${post.id}`)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="delete-button"
-                            onClick={() => handleDelete(post.id, post.title)}
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="postlist-cards">
-              {posts.map(post => (
-                <div key={post.id} className="post-card" onClick={() => navigate(`/admin/posts/edit/${post.id}`)}>
-                  <div className="post-card-header">
-                    <h3>{post.title}</h3>
-                    <span className={`status-badge status-${post.status}`}>
-                      {post.status === 'published' ? 'Publicado' : 'Rascunho'}
+                        ✎
+                      </button>
+                      <button
+                        className="btn-icon delete"
+                        onClick={() => handleDelete(postId, post.title)}
+                        title="Excluir"
+                      >
+                        ✕
+                      </button>
                     </span>
                   </div>
-                  <div className="post-card-meta">
-                    <span>{post.category || 'Sem categoria'}</span>
-                    <span>{post.reading_time ? `${post.reading_time} min` : ''}</span>
-                    <span>{formatDate(post.published_at || post.created_at)}</span>
-                  </div>
-                  <button
-                    className="delete-button"
-                    onClick={(e) => { e.stopPropagation(); handleDelete(post.id, post.title); }}
+                );
+              })}
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="posts-cards">
+              {posts.map(post => {
+                const postId = post._id || post.id;
+                return (
+                  <div
+                    key={postId}
+                    className="post-card"
+                    onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
                   >
-                    Excluir
-                  </button>
-                </div>
-              ))}
+                    <div className="post-card-header">
+                      <h3>{post.title}</h3>
+                      <span className={`status-badge ${post.status}`}>
+                        {post.status === 'published' ? 'Publicado' : 'Rascunho'}
+                      </span>
+                    </div>
+                    <div className="post-card-meta">
+                      <span>{post.category || 'Sem categoria'}</span>
+                      <span>•</span>
+                      <span>{formatDate(post.created_at)}</span>
+                    </div>
+                    <button
+                      className="btn-delete-card"
+                      onClick={(e) => { e.stopPropagation(); handleDelete(postId, post.title); }}
+                    >
+                      Excluir
+                    </button>
+                  </div>
+                );
+              })}
             </div>
 
             {totalPages > 1 && (
-              <div className="postlist-pagination">
+              <div className="pagination">
                 <button
                   onClick={() => setPage(p => p - 1)}
                   disabled={page === 1}
-                  className="pagination-button"
+                  className="pagination-btn"
                 >
-                  Anterior
+                  ← Anterior
                 </button>
                 <span className="pagination-info">
-                  Página {page} de {totalPages}
+                  {page} de {totalPages}
                 </span>
                 <button
                   onClick={() => setPage(p => p + 1)}
                   disabled={page >= totalPages}
-                  className="pagination-button"
+                  className="pagination-btn"
                 >
-                  Próxima
+                  Próxima →
                 </button>
               </div>
             )}
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

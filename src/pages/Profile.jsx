@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { profile as profileApi, API_URL } from '../services/api';
+import AdminLayout from '../components/AdminLayout';
 import './Profile.css';
 
 const getImageUrl = (url) => {
@@ -11,8 +11,7 @@ const getImageUrl = (url) => {
 };
 
 export default function Profile() {
-  const navigate = useNavigate();
-  const { profile: authProfile, logout } = useAuth();
+  const { profile: authProfile } = useAuth();
   const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState(null);
@@ -33,8 +32,8 @@ export default function Profile() {
   const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
   const [currency, setCurrency] = useState('BRL');
   const [themeMode, setThemeMode] = useState('light');
-  const [primaryColor, setPrimaryColor] = useState('#2563eb');
-  const [accentColor, setAccentColor] = useState('#0ea5e9');
+  const [primaryColor, setPrimaryColor] = useState('#0ea5e9');
+  const [accentColor, setAccentColor] = useState('#6366f1');
 
   useEffect(() => {
     fetchProfile();
@@ -55,8 +54,8 @@ export default function Profile() {
         setCurrency(data.settings.currency || 'BRL');
         if (data.settings.theme) {
           setThemeMode(data.settings.theme.mode || 'light');
-          setPrimaryColor(data.settings.theme.primary_color || '#2563eb');
-          setAccentColor(data.settings.theme.accent_color || '#0ea5e9');
+          setPrimaryColor(data.settings.theme.primary_color || '#0ea5e9');
+          setAccentColor(data.settings.theme.accent_color || '#6366f1');
         }
       }
     } catch (err) {
@@ -141,39 +140,25 @@ export default function Profile() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   if (loading) {
     return (
-      <div className="profile-page">
+      <AdminLayout>
         <div className="profile-loading">Carregando...</div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="profile-page">
-      <header className="admin-header">
-        <div className="header-left">
-          <button className="back-button" onClick={() => navigate('/admin')}>
-            ← Voltar
-          </button>
+    <AdminLayout>
+      <div className="profile-page">
+        <div className="page-header">
           <h1>Meu Perfil</h1>
-          <Link to="/" className="view-blog-link">Ver Blog</Link>
+          <p>Gerencie suas informações e preferências</p>
         </div>
-        <div className="admin-user">
-          <span>{authProfile?.name}</span>
-          <button onClick={handleLogout}>Sair</button>
-        </div>
-      </header>
 
-      <main className="profile-main">
-        <div className="profile-container">
-          {/* Avatar Section */}
-          <div className="profile-avatar-section">
+        <div className="profile-layout">
+          {/* Avatar Card */}
+          <div className="profile-card avatar-card">
             <div className="avatar-wrapper">
               {avatar ? (
                 <img src={getImageUrl(avatar)} alt="Avatar" className="avatar-image" />
@@ -184,8 +169,10 @@ export default function Profile() {
               )}
               {uploadingAvatar && <div className="avatar-uploading">...</div>}
             </div>
+            <h3>{name || 'Usuário'}</h3>
+            <span className="user-role">{profileData?.role || authProfile?.role}</span>
             <div className="avatar-actions">
-              <label className="avatar-upload-btn">
+              <label className="btn-secondary">
                 {uploadingAvatar ? 'Enviando...' : 'Alterar foto'}
                 <input
                   ref={fileInputRef}
@@ -199,187 +186,182 @@ export default function Profile() {
               {avatar && (
                 <button
                   type="button"
-                  className="avatar-remove-btn"
+                  className="btn-danger"
                   onClick={handleRemoveAvatar}
                 >
                   Remover
                 </button>
               )}
             </div>
-            <p className="avatar-hint">JPG, PNG ou WebP. Máx 2MB.</p>
           </div>
 
-          {/* Tabs */}
-          <div className="profile-tabs">
-            <button
-              className={`profile-tab ${activeTab === 'profile' ? 'active' : ''}`}
-              onClick={() => setActiveTab('profile')}
-            >
-              Perfil
-            </button>
-            <button
-              className={`profile-tab ${activeTab === 'settings' ? 'active' : ''}`}
-              onClick={() => setActiveTab('settings')}
-            >
-              Configurações
-            </button>
-          </div>
-
-          {error && <div className="profile-error">{error}</div>}
-          {success && <div className="profile-success">{success}</div>}
-
-          {/* Profile Tab */}
-          {activeTab === 'profile' && (
-            <form onSubmit={handleSaveProfile} className="profile-form">
-              <div className="form-group">
-                <label htmlFor="name">Nome</label>
-                <input
-                  type="text"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Seu nome"
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="bio">Bio</label>
-                <textarea
-                  id="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Conte um pouco sobre você..."
-                  rows={4}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  value={profileData?.email || authProfile?.email || ''}
-                  disabled
-                  className="input-disabled"
-                />
-                <span className="input-hint">O email não pode ser alterado</span>
-              </div>
-
-              <div className="form-group">
-                <label>Função</label>
-                <input
-                  type="text"
-                  value={profileData?.role || authProfile?.role || 'user'}
-                  disabled
-                  className="input-disabled"
-                />
-              </div>
-
-              <button type="submit" className="save-button" disabled={saving}>
-                {saving ? 'Salvando...' : 'Salvar Perfil'}
+          {/* Main Content */}
+          <div className="profile-content">
+            {/* Tabs */}
+            <div className="profile-tabs">
+              <button
+                className={`profile-tab ${activeTab === 'profile' ? 'active' : ''}`}
+                onClick={() => setActiveTab('profile')}
+              >
+                Informações
               </button>
-            </form>
-          )}
+              <button
+                className={`profile-tab ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+              >
+                Preferências
+              </button>
+            </div>
 
-          {/* Settings Tab */}
-          {activeTab === 'settings' && (
-            <form onSubmit={handleSaveSettings} className="profile-form">
-              <div className="settings-section">
-                <h3>Localização</h3>
+            {error && <div className="message error">{error}</div>}
+            {success && <div className="message success">{success}</div>}
 
+            {/* Profile Tab */}
+            {activeTab === 'profile' && (
+              <form onSubmit={handleSaveProfile} className="profile-form">
                 <div className="form-group">
-                  <label htmlFor="language">Idioma</label>
-                  <select
-                    id="language"
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                  >
-                    <option value="pt-BR">Português (Brasil)</option>
-                    <option value="en-US">English (US)</option>
-                    <option value="es">Español</option>
-                  </select>
+                  <label htmlFor="name">Nome</label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Seu nome"
+                  />
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="dateFormat">Formato de Data</label>
-                  <select
-                    id="dateFormat"
-                    value={dateFormat}
-                    onChange={(e) => setDateFormat(e.target.value)}
-                  >
-                    <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                    <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                  </select>
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="currency">Moeda</label>
-                  <select
-                    id="currency"
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                  >
-                    <option value="BRL">Real (R$)</option>
-                    <option value="USD">Dólar ($)</option>
-                    <option value="EUR">Euro (€)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="settings-section">
-                <h3>Aparência</h3>
-
-                <div className="form-group">
-                  <label htmlFor="themeMode">Tema</label>
-                  <select
-                    id="themeMode"
-                    value={themeMode}
-                    onChange={(e) => setThemeMode(e.target.value)}
-                  >
-                    <option value="light">Claro</option>
-                    <option value="dark">Escuro</option>
-                    <option value="system">Sistema</option>
-                  </select>
+                  <label htmlFor="bio">Bio</label>
+                  <textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    placeholder="Conte um pouco sobre você..."
+                    rows={4}
+                  />
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
-                    <label htmlFor="primaryColor">Cor Primária</label>
-                    <div className="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="primaryColor"
-                        value={primaryColor}
-                        onChange={(e) => setPrimaryColor(e.target.value)}
-                        className="color-input"
-                      />
-                      <span className="color-value">{primaryColor}</span>
-                    </div>
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={profileData?.email || authProfile?.email || ''}
+                      disabled
+                    />
                   </div>
-
                   <div className="form-group">
-                    <label htmlFor="accentColor">Cor de Destaque</label>
-                    <div className="color-input-wrapper">
-                      <input
-                        type="color"
-                        id="accentColor"
-                        value={accentColor}
-                        onChange={(e) => setAccentColor(e.target.value)}
-                        className="color-input"
-                      />
-                      <span className="color-value">{accentColor}</span>
+                    <label>Função</label>
+                    <input
+                      type="text"
+                      value={profileData?.role || authProfile?.role || 'user'}
+                      disabled
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={saving}>
+                  {saving ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </form>
+            )}
+
+            {/* Settings Tab */}
+            {activeTab === 'settings' && (
+              <form onSubmit={handleSaveSettings} className="profile-form">
+                <div className="settings-section">
+                  <h4>Localização</h4>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="language">Idioma</label>
+                      <select
+                        id="language"
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                      >
+                        <option value="pt-BR">Português (Brasil)</option>
+                        <option value="en-US">English (US)</option>
+                        <option value="es">Español</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="dateFormat">Formato de Data</label>
+                      <select
+                        id="dateFormat"
+                        value={dateFormat}
+                        onChange={(e) => setDateFormat(e.target.value)}
+                      >
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="currency">Moeda</label>
+                      <select
+                        id="currency"
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                      >
+                        <option value="BRL">Real (R$)</option>
+                        <option value="USD">Dólar ($)</option>
+                        <option value="EUR">Euro (€)</option>
+                      </select>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <button type="submit" className="save-button" disabled={saving}>
-                {saving ? 'Salvando...' : 'Salvar Configurações'}
-              </button>
-            </form>
-          )}
+                <div className="settings-section">
+                  <h4>Aparência</h4>
+                  <div className="form-group">
+                    <label htmlFor="themeMode">Tema</label>
+                    <select
+                      id="themeMode"
+                      value={themeMode}
+                      onChange={(e) => setThemeMode(e.target.value)}
+                    >
+                      <option value="light">Claro</option>
+                      <option value="dark">Escuro</option>
+                      <option value="system">Sistema</option>
+                    </select>
+                  </div>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="primaryColor">Cor Primária</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          id="primaryColor"
+                          value={primaryColor}
+                          onChange={(e) => setPrimaryColor(e.target.value)}
+                        />
+                        <span>{primaryColor}</span>
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="accentColor">Cor de Destaque</label>
+                      <div className="color-picker">
+                        <input
+                          type="color"
+                          id="accentColor"
+                          value={accentColor}
+                          onChange={(e) => setAccentColor(e.target.value)}
+                        />
+                        <span>{accentColor}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button type="submit" className="btn-primary" disabled={saving}>
+                  {saving ? 'Salvando...' : 'Salvar Preferências'}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

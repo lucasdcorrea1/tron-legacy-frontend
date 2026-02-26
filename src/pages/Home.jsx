@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { blog, API_URL } from '../services/api';
 import './Home.css';
@@ -11,37 +11,22 @@ const getImageUrl = (url) => {
 };
 
 export default function Home() {
-  const navigate = useNavigate();
-  const { isAuthenticated, profile, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [category, setCategory] = useState('');
-  const [categories, setCategories] = useState([]);
-  const limit = 9;
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
   useEffect(() => {
     fetchPosts();
-  }, [page, category]);
+  }, []);
 
   const fetchPosts = async () => {
-    setLoading(true);
-    setError('');
     try {
-      const data = await blog.list({ page, limit, category: category || undefined });
+      const data = await blog.list({ page: 1, limit: 3 });
       setPosts(data.posts || []);
-      setTotal(data.total || 0);
-
-      if (categories.length === 0 && data.posts) {
-        const cats = [...new Set(data.posts.map(p => p.category).filter(Boolean))];
-        setCategories(cats);
-      }
     } catch (err) {
-      setError(err.message || 'Erro ao carregar posts');
+      console.error('Erro ao carregar posts:', err);
     } finally {
-      setLoading(false);
+      setLoadingPosts(false);
     }
   };
 
@@ -54,142 +39,144 @@ export default function Home() {
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
-  const totalPages = Math.ceil(total / limit);
-
   return (
-    <div className="home-page">
-      <header className="home-header">
-        <div className="header-container">
-          <Link to="/" className="home-logo">Tron Legacy</Link>
-          <nav className="header-nav">
+    <div className="home">
+      {/* Header */}
+      <header className="header">
+        <div className="header-inner">
+          <Link to="/" className="logo">
+            <span className="logo-mark">W</span>
+            <span className="logo-text">whodo</span>
+          </Link>
+          <nav className="nav">
+            <Link to="/blog" className="nav-link">Blog</Link>
             {isAuthenticated ? (
               <>
-                <Link to="/admin">Admin</Link>
-                <span className="user-name">{profile?.name}</span>
-                <button onClick={handleLogout} className="logout-btn">Sair</button>
+                <Link to="/admin" className="nav-link">Painel</Link>
+                <button onClick={logout} className="nav-link">Sair</button>
               </>
             ) : (
-              <Link to="/login" className="login-link">Entrar</Link>
+              <Link to="/login" className="btn-outline">Entrar</Link>
             )}
           </nav>
         </div>
       </header>
 
-      <main className="home-main">
-        <div className="home-hero">
-          <h1>Tron Legacy Blog</h1>
-          <p>Artigos, tutoriais e novidades sobre tecnologia</p>
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-glow"></div>
+        <div className="hero-inner">
+          <div className="hero-content">
+            <p className="hero-tagline">Do conceito à realidade</p>
+            <h1 className="hero-title">
+              Transforme suas ideias em <span className="text-gradient">soluções digitais</span>
+            </h1>
+            <p className="hero-description">
+              Desenvolvemos tecnologia sob medida para impulsionar seu negócio.
+              Websites, apps e sistemas que fazem a diferença.
+            </p>
+            <div className="hero-actions">
+              <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer" className="btn-primary">
+                Fale Conosco
+              </a>
+              <Link to="/blog" className="btn-ghost">
+                Ver Blog
+              </Link>
+            </div>
+          </div>
+          <div className="hero-visual">
+            <img
+              src="/teste-image-home.png"
+              alt="Digital Innovation"
+              className="hero-image"
+            />
+          </div>
         </div>
+      </section>
 
-        {categories.length > 0 && (
-          <div className="category-filters">
-            <button
-              className={`category-chip ${category === '' ? 'active' : ''}`}
-              onClick={() => { setCategory(''); setPage(1); }}
-            >
-              Todos
-            </button>
-            {categories.map(cat => (
-              <button
-                key={cat}
-                className={`category-chip ${category === cat ? 'active' : ''}`}
-                onClick={() => { setCategory(cat); setPage(1); }}
-              >
-                {cat}
-              </button>
-            ))}
+      {/* Blog Section */}
+      <section className="blog-section" id="blog">
+        <div className="section-inner">
+          <div className="section-header">
+            <p className="section-tagline">Blog</p>
+            <h2 className="section-title">Tron Legacy</h2>
+            <p className="section-description">
+              Artigos, tutoriais e novidades sobre tecnologia
+            </p>
           </div>
-        )}
 
-        {error && <div className="home-error">{error}</div>}
-
-        {loading ? (
-          <div className="home-loading">Carregando...</div>
-        ) : posts.length === 0 ? (
-          <div className="home-empty">
-            <p>Nenhum post publicado ainda.</p>
-          </div>
-        ) : (
-          <>
+          {loadingPosts ? (
+            <div className="loading">Carregando...</div>
+          ) : posts.length === 0 ? (
+            <div className="empty">Nenhum post ainda.</div>
+          ) : (
             <div className="posts-grid">
               {posts.map(post => (
-                <article
-                  key={post.id}
-                  className="post-card"
-                  onClick={() => navigate(`/blog/${post.slug}`)}
-                >
-                  <div className="post-card-image">
+                <Link to={`/blog/${post.slug}`} key={post._id || post.id} className="post-card">
+                  <div className="post-image">
                     {post.cover_image ? (
                       <img src={getImageUrl(post.cover_image)} alt={post.title} />
                     ) : (
-                      <div className="post-card-placeholder">
+                      <div className="post-image-placeholder">
                         {post.title.charAt(0)}
                       </div>
                     )}
                   </div>
-                  <div className="post-card-content">
-                    {post.category && (
-                      <span className="post-card-category">{post.category}</span>
-                    )}
-                    <h2 className="post-card-title">{post.title}</h2>
-                    {post.excerpt && (
-                      <p className="post-card-excerpt">{post.excerpt}</p>
-                    )}
-                    <div className="post-card-meta">
-                      <div className="post-card-author">
-                        {post.author_avatar ? (
-                          <img src={getImageUrl(post.author_avatar)} alt={post.author_name} />
-                        ) : (
-                          <div className="author-placeholder">
-                            {post.author_name?.charAt(0) || 'A'}
-                          </div>
-                        )}
-                        <span>{post.author_name || 'Autor'}</span>
-                      </div>
-                      <span className="post-card-date">
-                        {formatDate(post.published_at || post.created_at)}
-                      </span>
-                      {post.reading_time && (
-                        <span className="post-card-reading">{post.reading_time} min</span>
-                      )}
+                  <div className="post-content">
+                    {post.category && <span className="post-category">{post.category}</span>}
+                    <h3 className="post-title">{post.title}</h3>
+                    {post.excerpt && <p className="post-excerpt">{post.excerpt}</p>}
+                    <div className="post-meta">
+                      <span>{formatDate(post.published_at || post.created_at)}</span>
+                      {post.reading_time && <span>{post.reading_time} min</span>}
+                    </div>
+                    <div className="post-stats">
+                      <span>{post.view_count || 0} views</span>
+                      <span>{post.like_count || 0} likes</span>
                     </div>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
+          )}
 
-            {totalPages > 1 && (
-              <div className="home-pagination">
-                <button
-                  onClick={() => setPage(p => p - 1)}
-                  disabled={page === 1}
-                  className="pagination-button"
-                >
-                  Anterior
-                </button>
-                <span className="pagination-info">
-                  Página {page} de {totalPages}
-                </span>
-                <button
-                  onClick={() => setPage(p => p + 1)}
-                  disabled={page >= totalPages}
-                  className="pagination-button"
-                >
-                  Próxima
-                </button>
-              </div>
-            )}
-          </>
-        )}
-      </main>
+          <div className="section-cta">
+            <Link to="/blog" className="btn-outline">Ver todos os posts</Link>
+          </div>
+        </div>
+      </section>
 
-      <footer className="home-footer">
-        <p>Tron Legacy Blog</p>
+      {/* CTA Section */}
+      <section className="cta-section">
+        <div className="cta-inner">
+          <h2 className="cta-title">Pronto para começar?</h2>
+          <p className="cta-description">
+            Entre em contato e vamos transformar sua ideia em realidade.
+          </p>
+          <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer" className="btn-primary btn-lg">
+            Iniciar Conversa
+          </a>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="footer">
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <Link to="/" className="logo">
+              <span className="logo-mark">W</span>
+              <span className="logo-text">whodo</span>
+            </Link>
+            <p className="footer-tagline">Transformando ideias em soluções digitais.</p>
+          </div>
+          <div className="footer-links">
+            <Link to="/blog">Blog</Link>
+            <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <p>&copy; {new Date().getFullYear()} Whodo Group LTDA - CNPJ 59.704.711/0001-90</p>
+        </div>
       </footer>
     </div>
   );

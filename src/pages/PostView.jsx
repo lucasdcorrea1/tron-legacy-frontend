@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { blog, API_URL } from '../services/api';
 import './PostView.css';
 
@@ -9,28 +10,193 @@ const getImageUrl = (url) => {
   return `${API_URL}${url}`;
 };
 
+const formatRelativeTime = (dateStr) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return 'agora';
+  if (diffMins < 60) return `há ${diffMins} min`;
+  if (diffHours < 24) return `há ${diffHours}h`;
+  if (diffDays < 7) return `há ${diffDays}d`;
+  return date.toLocaleDateString('pt-BR');
+};
+
 export default function PostView() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { isAuthenticated, profile } = useAuth();
+  const viewRecorded = useRef(false);
+
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
+  // Engagement state
+  const [stats, setStats] = useState({
+    view_count: 0,
+    like_count: 0,
+    comment_count: 0,
+    liked: false,
+  });
+  const [likeLoading, setLikeLoading] = useState(false);
+
+  // Comments state
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsTotal, setCommentsTotal] = useState(0);
+  const [newComment, setNewComment] = useState('');
+  const [commentSubmitting, setCommentSubmitting] = useState(false);
+  const [commentError, setCommentError] = useState('');
+
   useEffect(() => {
     fetchPost();
   }, [slug]);
+
+  useEffect(() => {
+    if (post && !viewRecorded.current) {
+      viewRecorded.current = true;
+      blog.recordView(slug);
+      fetchStats();
+      fetchComments();
+    }
+  }, [post, slug]);
 
   const fetchPost = async () => {
     setLoading(true);
     setNotFound(false);
     try {
       const data = await blog.getBySlug(slug);
-      setPost(data);
+      setPost(data.post || data);
     } catch (err) {
       setNotFound(true);
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const data = await blog.getStats(slug);
+      setStats(data);
+    } catch (err) {
+      console.error('Erro ao carregar stats:', err);
+    }
+  };
+
+  const fetchComments = async (page = 1) => {
+    setCommentsLoading(true);
+    try {
+      const data = await blog.getComments(slug, page);
+      if (page === 1) {
+        setComments(data.comments || []);
+      } else {
+        setComments(prev => [...prev, ...(data.comments || [])]);
+      }
+      setCommentsTotal(data.total || 0);
+      setCommentsPage(page);
+    } catch (err) {
+      console.error('Erro ao carregar comentários:', err);
+    } finally {
+      setCommentsLoading(false);
+    }
+  };
+
+  const handleLike = async () => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    // Optimistic update
+    const previousLiked = stats.liked;
+    const previousCount = stats.like_count;
+    setStats(prev => ({
+      ...prev,
+      liked: !prev.liked,
+      like_count: prev.liked ? prev.like_count - 1 : prev.like_count + 1,
+    }));
+
+    setLikeLoading(true);
+    try {
+      const result = await blog.toggleLike(slug);
+      setStats(prev => ({
+        ...prev,
+        liked: result.liked,
+        like_count: result.like_count,
+      }));
+    } catch (err) {
+      // Revert on error
+      setStats(prev => ({
+        ...prev,
+        liked: previousLiked,
+        like_count: previousCount,
+      }));
+      if (err.message.includes('login')) {
+        navigate('/login');
+      }
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim() || commentSubmitting) return;
+
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+
+    setCommentSubmitting(true);
+    setCommentError('');
+
+    try {
+      const comment = await blog.createComment(slug, newComment.trim());
+      setComments(prev => [comment, ...prev]);
+      setCommentsTotal(prev => prev + 1);
+      setStats(prev => ({ ...prev, comment_count: prev.comment_count + 1 }));
+      setNewComment('');
+    } catch (err) {
+      setCommentError(err.message);
+      if (err.message.includes('login')) {
+        navigate('/login');
+      }
+    } finally {
+      setCommentSubmitting(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Excluir este comentário?')) return;
+
+    try {
+      await blog.deleteComment(slug, commentId);
+      setComments(prev => prev.filter(c => c.id !== commentId && c._id !== commentId));
+      setCommentsTotal(prev => prev - 1);
+      setStats(prev => ({ ...prev, comment_count: Math.max(0, prev.comment_count - 1) }));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  const canDeleteComment = (comment) => {
+    if (!isAuthenticated || !profile) return false;
+    const commentUserId = comment.user_id || comment.userId;
+    const postAuthorId = post?.author_id || post?.authorId || post?.user_id;
+    return (
+      profile._id === commentUserId ||
+      profile.id === commentUserId ||
+      profile._id === postAuthorId ||
+      profile.id === postAuthorId ||
+      profile.role === 'admin'
+    );
   };
 
   const formatDate = (dateStr) => {
@@ -81,6 +247,8 @@ export default function PostView() {
     );
   }
 
+  const hasMoreComments = comments.length < commentsTotal;
+
   return (
     <div className="postview-page">
       <header className="postview-header">
@@ -122,6 +290,34 @@ export default function PostView() {
               </>
             )}
           </div>
+
+          {/* Engagement Stats */}
+          <div className="article-stats">
+            <span className="stat-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              {stats.view_count}
+            </span>
+            <button
+              className={`stat-item like-button ${stats.liked ? 'liked' : ''}`}
+              onClick={handleLike}
+              disabled={likeLoading}
+              title={isAuthenticated ? (stats.liked ? 'Remover curtida' : 'Curtir') : 'Faça login para curtir'}
+            >
+              <svg viewBox="0 0 24 24" fill={stats.liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              {stats.like_count}
+            </button>
+            <span className="stat-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              {stats.comment_count}
+            </span>
+          </div>
         </header>
 
         <div className="article-content">
@@ -138,6 +334,91 @@ export default function PostView() {
           </footer>
         )}
       </article>
+
+      {/* Comments Section */}
+      <section className="comments-section">
+        <h2 className="comments-title">
+          Comentários ({stats.comment_count})
+        </h2>
+
+        {/* Comment Form */}
+        <form onSubmit={handleSubmitComment} className="comment-form">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder={isAuthenticated ? "Escreva um comentário..." : "Faça login para comentar"}
+            disabled={!isAuthenticated || commentSubmitting}
+            maxLength={2000}
+            rows={3}
+          />
+          <div className="comment-form-footer">
+            <span className="char-count">{newComment.length}/2000</span>
+            <button
+              type="submit"
+              disabled={!isAuthenticated || !newComment.trim() || newComment.length > 2000 || commentSubmitting}
+              className="comment-submit-btn"
+            >
+              {commentSubmitting ? 'Enviando...' : 'Comentar'}
+            </button>
+          </div>
+          {commentError && <p className="comment-error">{commentError}</p>}
+        </form>
+
+        {/* Comments List */}
+        <div className="comments-list">
+          {comments.map(comment => (
+            <div key={comment._id || comment.id} className="comment-item">
+              <div className="comment-header">
+                <div className="comment-author">
+                  {comment.author_avatar ? (
+                    <img src={getImageUrl(comment.author_avatar)} alt={comment.author_name} className="comment-avatar" />
+                  ) : (
+                    <div className="comment-avatar-placeholder">
+                      {comment.author_name?.charAt(0) || 'U'}
+                    </div>
+                  )}
+                  <div className="comment-author-info">
+                    <span className="comment-author-name">{comment.author_name}</span>
+                    <span className="comment-date">{formatRelativeTime(comment.created_at)}</span>
+                  </div>
+                </div>
+                {canDeleteComment(comment) && (
+                  <button
+                    className="comment-delete-btn"
+                    onClick={() => handleDeleteComment(comment._id || comment.id)}
+                    title="Excluir comentário"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <p className="comment-content">{comment.content}</p>
+            </div>
+          ))}
+
+          {commentsLoading && (
+            <div className="comments-loading">Carregando comentários...</div>
+          )}
+
+          {!commentsLoading && comments.length === 0 && (
+            <div className="comments-empty">
+              Nenhum comentário ainda. Seja o primeiro a comentar!
+            </div>
+          )}
+
+          {hasMoreComments && !commentsLoading && (
+            <button
+              className="load-more-btn"
+              onClick={() => fetchComments(commentsPage + 1)}
+            >
+              Carregar mais comentários
+            </button>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

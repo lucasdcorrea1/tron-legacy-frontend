@@ -48,6 +48,8 @@ export const blog = {
     return api.get(`/api/v1/blog/posts${queryString ? `?${queryString}` : ''}`);
   },
   getBySlug: (slug) => api.get(`/api/v1/blog/posts/${slug}`),
+  getById: (id) => api.get(`/api/v1/blog/posts/${id}`),
+  getMyPost: (id) => api.get(`/api/v1/blog/posts/me/${id}`),
   myPosts: (params = {}) => {
     const query = new URLSearchParams();
     if (params.page) query.append('page', params.page);
@@ -82,6 +84,77 @@ export const blog = {
       }
       throw error;
     }
+  },
+
+  // Engagement endpoints
+  recordView: async (slug) => {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    try {
+      await fetch(`${API_URL}/api/v1/blog/posts/${slug}/view`, {
+        method: 'POST',
+        headers,
+      });
+    } catch {
+      // Fire and forget - don't throw errors
+    }
+  },
+
+  getStats: async (slug) => {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/stats`, { headers });
+    if (!response.ok) throw new Error('Erro ao carregar estatísticas');
+    return response.json();
+  },
+
+  toggleLike: async (slug) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Faça login para curtir');
+    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/like`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 401) throw new Error('Faça login para curtir');
+    if (!response.ok) throw new Error('Erro ao processar like');
+    return response.json();
+  },
+
+  getComments: async (slug, page = 1, limit = 20) => {
+    const response = await fetch(
+      `${API_URL}/api/v1/blog/posts/${slug}/comments?page=${page}&limit=${limit}`
+    );
+    if (!response.ok) throw new Error('Erro ao carregar comentários');
+    return response.json();
+  },
+
+  createComment: async (slug, content) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Faça login para comentar');
+    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/comments`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ content }),
+    });
+    if (response.status === 401) throw new Error('Faça login para comentar');
+    if (response.status === 400) throw new Error('Comentário inválido (1-2000 caracteres)');
+    if (!response.ok) throw new Error('Erro ao enviar comentário');
+    return response.json();
+  },
+
+  deleteComment: async (slug, commentId) => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Não autorizado');
+    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (response.status === 403) throw new Error('Sem permissão para deletar');
+    if (!response.ok) throw new Error('Erro ao deletar comentário');
+    return response.json();
   },
 };
 

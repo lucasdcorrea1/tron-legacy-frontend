@@ -1,121 +1,279 @@
-.admin {
-  min-height: 100vh;
+/* Dashboard */
+.dashboard {
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.admin-header {
+.dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  background: var(--bg-card);
-  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
 }
 
-.admin-header-left {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
+.dashboard-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
 }
 
-.admin-header h1 {
-  font-size: 1.25rem;
-  font-weight: 600;
-}
-
-.view-blog-link {
-  padding: 0.5rem 1rem;
-  background: var(--primary);
-  color: white;
-  border-radius: 6px;
+.dashboard-header p {
+  color: #64748b;
   font-size: 0.875rem;
-  text-decoration: none;
-  transition: background 0.2s;
 }
 
-.view-blog-link:hover {
-  background: var(--primary-dark);
-  text-decoration: none;
+/* Buttons */
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.admin-user {
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-link {
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: #0ea5e9;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-link:hover {
+  color: #38bdf8;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 16px;
+  padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.admin-user span {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-}
-
-.user-profile-link {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.user-profile-link:hover {
-  color: var(--primary);
-  text-decoration: none;
-}
-
-.admin-user button {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 0.875rem;
-  transition: all 0.2s;
-}
-
-.admin-user button:hover {
-  background: var(--error);
-  border-color: var(--error);
-  color: white;
-}
-
-.admin-main {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.admin-main h2 {
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 1.5rem;
-  margin-bottom: 0.5rem;
 }
 
-.admin-main > p {
-  color: var(--text-muted);
+.stat-icon.blue {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0ea5e9;
+}
+
+.stat-icon.green {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.stat-icon.yellow {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.stat-label {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+/* Sections */
+.section {
   margin-bottom: 2rem;
 }
 
-.admin-cards {
+.section h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 1rem;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Quick Actions */
+.quick-actions {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
-.admin-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+.action-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
   border-radius: 12px;
-  padding: 1.5rem;
-  transition: box-shadow 0.2s;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.admin-card:hover {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+.action-card:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(14, 165, 233, 0.3);
+  transform: translateY(-2px);
 }
 
-.admin-card h3 {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
+.action-icon {
+  font-size: 1.5rem;
+  color: #0ea5e9;
 }
 
-.admin-card p {
-  color: var(--text-muted);
-  font-size: 0.875rem;
+.action-label {
+  font-size: 0.8125rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* Posts List */
+.posts-list {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.post-item:last-child {
+  border-bottom: none;
+}
+
+.post-item:hover {
+  background: rgba(148, 163, 184, 0.05);
+}
+
+.post-item-content h3 {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #f1f5f9;
+  margin-bottom: 0.25rem;
+}
+
+.post-item-meta {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.status-badge {
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.status-badge.published {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-badge.draft {
+  background: rgba(234, 179, 8, 0.15);
+  color: #eab308;
+}
+
+/* States */
+.loading-state,
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  color: #64748b;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+}
+
+.empty-state p {
+  margin-bottom: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .quick-actions {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
 }

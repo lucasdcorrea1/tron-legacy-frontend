@@ -7,7 +7,7 @@ import Admin from './pages/Admin';
 import Users from './pages/Users';
 import PostList from './pages/PostList';
 import PostForm from './pages/PostForm';
-import BlogHome from './pages/BlogHome';
+import Blog from './pages/Blog';
 import PostView from './pages/PostView';
 import Profile from './pages/Profile';
 import './styles/global.css';
@@ -20,7 +20,7 @@ export default function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/blog" element={<BlogHome />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<PostView />} />
 
           {/* Protected routes */}

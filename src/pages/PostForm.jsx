@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { blog, API_URL } from '../services/api';
+import AdminLayout from '../components/AdminLayout';
 import './PostForm.css';
 
 export default function PostForm() {
   const { id } = useParams();
   const isEditing = !!id;
   const navigate = useNavigate();
-  const { profile, logout } = useAuth();
   const fileInputRef = useRef(null);
 
   const [title, setTitle] = useState('');
@@ -35,7 +34,9 @@ export default function PostForm() {
 
   const fetchPost = async () => {
     try {
-      const post = await blog.getBySlug(id);
+      const data = await blog.getBySlug(id);
+      // Suporta resposta direta ou wrapper {post: ...}
+      const post = data.post || data;
       setTitle(post.title || '');
       setContent(post.content || '');
       setExcerpt(post.excerpt || '');
@@ -45,7 +46,8 @@ export default function PostForm() {
       setMetaTitle(post.meta_title || '');
       setMetaDescription(post.meta_description || '');
     } catch (err) {
-      setError('Erro ao carregar post');
+      console.error('Erro ao carregar post:', err);
+      setError('Erro ao carregar post: ' + err.message);
     } finally {
       setLoadingPost(false);
     }
@@ -139,35 +141,21 @@ export default function PostForm() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   if (loadingPost) {
     return (
-      <div className="postform-page">
+      <AdminLayout>
         <div className="postform-loading">Carregando...</div>
-      </div>
+      </AdminLayout>
     );
   }
 
   return (
-    <div className="postform-page">
-      <header className="admin-header">
-        <div className="header-left">
-          <button className="back-button" onClick={() => navigate('/admin/posts')}>
-            ← Voltar
-          </button>
+    <AdminLayout>
+      <div className="postform-page">
+        <div className="page-header">
           <h1>{isEditing ? 'Editar Post' : 'Novo Post'}</h1>
+          <p>{isEditing ? 'Edite as informações do post' : 'Crie um novo post para o blog'}</p>
         </div>
-        <div className="admin-user">
-          <span>{profile?.name}</span>
-          <button onClick={handleLogout}>Sair</button>
-        </div>
-      </header>
-
-      <main className="postform-main">
         {error && <div className="postform-error">{error}</div>}
 
         <div className="postform-content">
@@ -330,7 +318,7 @@ export default function PostForm() {
             </div>
           </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }

@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { users } from '../services/api';
+import AdminLayout from '../components/AdminLayout';
 import './Users.css';
 
 const ROLES = ['admin', 'author', 'user'];
 const ROLE_LABELS = { admin: 'Admin', author: 'Autor', user: 'Usuário' };
 
 export default function Users() {
-  const { profile, logout } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -78,27 +79,13 @@ export default function Users() {
 
   const totalPages = Math.ceil(total / limit);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
-    <div className="users-page">
-      <header className="admin-header">
-        <div className="header-left">
-          <button className="back-button" onClick={() => navigate('/admin')}>
-            ← Voltar
-          </button>
+    <AdminLayout>
+      <div className="users-page">
+        <div className="page-header">
           <h1>Gerenciar Usuários</h1>
+          <p>{total} usuário{total !== 1 ? 's' : ''} cadastrado{total !== 1 ? 's' : ''}</p>
         </div>
-        <div className="admin-user">
-          <span>{profile?.name}</span>
-          <button onClick={handleLogout}>Sair</button>
-        </div>
-      </header>
-
-      <main className="users-main">
         <div className="users-filters">
           <form onSubmit={handleSearch} className="search-form">
             <input
@@ -255,7 +242,7 @@ export default function Users() {
             )}
           </>
         )}
-      </main>
-    </div>
+      </div>
+    </AdminLayout>
   );
 }
