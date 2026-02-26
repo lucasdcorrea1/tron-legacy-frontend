@@ -1,3 +1,4 @@
+/* Profile Page - Matching Home Design */
 .profile-page {
   max-width: 1000px;
   margin: 0 auto;
@@ -10,19 +11,19 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
 }
 
 .profile-loading {
   padding: 3rem;
   text-align: center;
-  color: #64748b;
+  color: #71717a;
 }
 
 /* Layout */
@@ -34,8 +35,8 @@
 
 /* Avatar Card */
 .profile-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -60,14 +61,14 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(14, 165, 233, 0.3);
+  border: 3px solid rgba(168, 85, 247, 0.3);
 }
 
 .avatar-placeholder {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -90,13 +91,13 @@
 .avatar-card h3 {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .user-role {
   font-size: 0.75rem;
-  color: #0ea5e9;
+  color: #a855f7;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
@@ -110,8 +111,8 @@
 
 /* Profile Content */
 .profile-content {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -122,14 +123,14 @@
   gap: 0.5rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .profile-tab {
   padding: 0.625rem 1.25rem;
   background: transparent;
   border: none;
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
   font-weight: 500;
   border-radius: 8px;
@@ -138,13 +139,13 @@
 }
 
 .profile-tab:hover:not(.active) {
-  color: #94a3b8;
-  background: rgba(148, 163, 184, 0.1);
+  color: #a1a1aa;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .profile-tab.active {
-  background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
 }
 
 /* Messages */
@@ -183,38 +184,38 @@
 .form-group label {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #a1a1aa;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
   padding: 0.75rem 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-size: 0.9375rem;
-  color: #f1f5f9;
+  color: #fafafa;
   transition: all 0.2s;
 }
 
 .form-group input::placeholder,
 .form-group textarea::placeholder {
-  color: #475569;
+  color: #52525b;
 }
 
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
 }
 
 .form-group input:disabled,
 .form-group textarea:disabled {
-  background: rgba(15, 23, 42, 0.3);
-  color: #64748b;
+  background: rgba(255, 255, 255, 0.01);
+  color: #71717a;
   cursor: not-allowed;
 }
 
@@ -233,7 +234,7 @@
 .settings-section {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .settings-section:last-of-type {
@@ -245,7 +246,7 @@
 .settings-section h4 {
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 1rem;
 }
 
@@ -255,8 +256,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
 }
 
@@ -275,20 +276,20 @@
 }
 
 .color-picker input[type="color"]::-webkit-color-swatch {
-  border: 2px solid rgba(148, 163, 184, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 6px;
 }
 
 .color-picker span {
   font-size: 0.8125rem;
-  color: #64748b;
+  color: #71717a;
   font-family: monospace;
 }
 
 /* Buttons */
 .btn-primary {
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -301,7 +302,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
 }
 
 .btn-primary:disabled {
@@ -312,8 +313,8 @@
 .btn-secondary {
   flex: 1;
   padding: 0.625rem 1rem;
-  background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
   border: none;
   border-radius: 8px;
   font-size: 0.8125rem;
@@ -323,7 +324,7 @@
 }
 
 .btn-secondary:hover {
-  background: rgba(14, 165, 233, 0.25);
+  background: rgba(168, 85, 247, 0.25);
 }
 
 .btn-danger {

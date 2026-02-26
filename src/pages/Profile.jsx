@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import { profile as profileApi, API_URL } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Profile.css';
@@ -11,15 +12,14 @@ const getImageUrl = (url) => {
 };
 
 export default function Profile() {
-  const { profile: authProfile } = useAuth();
+  const { profile: authProfile, updateProfile } = useAuth();
+  const toast = useToast();
   const fileInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const [activeTab, setActiveTab] = useState('profile');
 
   // Form fields
@@ -48,6 +48,15 @@ export default function Profile() {
       setBio(data.bio || '');
       setAvatar(data.avatar || '');
 
+      // Sync with global context
+      updateProfile({
+        name: data.name,
+        bio: data.bio,
+        avatar: data.avatar,
+        email: data.email,
+        role: data.role
+      });
+
       if (data.settings) {
         setLanguage(data.settings.language || 'pt-BR');
         setDateFormat(data.settings.date_format || 'DD/MM/YYYY');
@@ -59,7 +68,7 @@ export default function Profile() {
         }
       }
     } catch (err) {
-      setError(err.message || 'Erro ao carregar perfil');
+      toast.error(err.message || 'Erro ao carregar perfil');
     } finally {
       setLoading(false);
     }
@@ -70,15 +79,15 @@ export default function Profile() {
     if (!file) return;
 
     setUploadingAvatar(true);
-    setError('');
-    setSuccess('');
 
     try {
       const result = await profileApi.uploadAvatar(file);
-      setAvatar(result.avatar || result.url);
-      setSuccess('Avatar atualizado com sucesso!');
+      const newAvatar = result.avatar || result.url;
+      setAvatar(newAvatar);
+      updateProfile({ avatar: newAvatar });
+      toast.success('Avatar atualizado com sucesso!', 'Perfil');
     } catch (err) {
-      setError(err.message || 'Erro ao enviar avatar');
+      toast.error(err.message || 'Erro ao enviar avatar');
     } finally {
       setUploadingAvatar(false);
       if (fileInputRef.current) {
@@ -93,23 +102,23 @@ export default function Profile() {
     try {
       await profileApi.removeAvatar();
       setAvatar('');
-      setSuccess('Avatar removido');
+      updateProfile({ avatar: '' });
+      toast.success('Avatar removido', 'Perfil');
     } catch (err) {
-      setError(err.message || 'Erro ao remover avatar');
+      toast.error(err.message || 'Erro ao remover avatar');
     }
   };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     setSaving(true);
 
     try {
       await profileApi.update({ name, bio });
-      setSuccess('Perfil atualizado com sucesso!');
+      updateProfile({ name, bio });
+      toast.success('Perfil atualizado com sucesso!', 'Salvo');
     } catch (err) {
-      setError(err.message || 'Erro ao salvar perfil');
+      toast.error(err.message || 'Erro ao salvar perfil');
     } finally {
       setSaving(false);
     }
@@ -117,8 +126,6 @@ export default function Profile() {
 
   const handleSaveSettings = async (e) => {
     e.preventDefault();
-    setError('');
-    setSuccess('');
     setSaving(true);
 
     try {
@@ -132,9 +139,9 @@ export default function Profile() {
           accent_color: accentColor,
         },
       });
-      setSuccess('Configurações salvas com sucesso!');
+      toast.success('Configurações salvas com sucesso!', 'Preferências');
     } catch (err) {
-      setError(err.message || 'Erro ao salvar configurações');
+      toast.error(err.message || 'Erro ao salvar configurações');
     } finally {
       setSaving(false);
     }
@@ -212,9 +219,6 @@ export default function Profile() {
                 Preferências
               </button>
             </div>
-
-            {error && <div className="message error">{error}</div>}
-            {success && <div className="message success">{success}</div>}
 
             {/* Profile Tab */}
             {activeTab === 'profile' && (

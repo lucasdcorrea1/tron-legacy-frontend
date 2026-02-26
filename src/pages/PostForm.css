@@ -1,3 +1,4 @@
+/* Post Form - Matching Home Design */
 .postform-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -10,12 +11,12 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
 }
 
@@ -24,7 +25,7 @@
   align-items: center;
   justify-content: center;
   min-height: 300px;
-  color: #64748b;
+  color: #71717a;
 }
 
 .postform-error {
@@ -45,8 +46,8 @@
 
 /* Editor */
 .postform-editor {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 1.5rem;
 }
@@ -63,7 +64,7 @@
   display: block;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #94a3b8;
+  color: #a1a1aa;
   margin-bottom: 0.5rem;
 }
 
@@ -71,25 +72,25 @@
 .postform-editor textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-size: 0.9375rem;
   font-family: inherit;
-  color: #f1f5f9;
+  color: #fafafa;
   transition: all 0.2s;
 }
 
 .postform-editor input::placeholder,
 .postform-editor textarea::placeholder {
-  color: #475569;
+  color: #52525b;
 }
 
 .postform-editor input:focus,
 .postform-editor textarea:focus {
   outline: none;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
 }
 
 .postform-editor textarea {
@@ -112,8 +113,8 @@
 }
 
 .sidebar-section {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -121,7 +122,7 @@
 .sidebar-section h3 {
   font-size: 0.875rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 1rem;
 }
 
@@ -137,7 +138,7 @@
   display: block;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #64748b;
+  color: #71717a;
   margin-bottom: 0.375rem;
 }
 
@@ -145,25 +146,25 @@
 .sidebar-section textarea {
   width: 100%;
   padding: 0.625rem 0.75rem;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   font-size: 0.875rem;
   font-family: inherit;
-  color: #f1f5f9;
+  color: #fafafa;
   transition: all 0.2s;
 }
 
 .sidebar-section input::placeholder,
 .sidebar-section textarea::placeholder {
-  color: #475569;
+  color: #52525b;
 }
 
 .sidebar-section input:focus,
 .sidebar-section textarea:focus {
   outline: none;
-  border-color: #0ea5e9;
-  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
 }
 
 .sidebar-section textarea {
@@ -174,17 +175,17 @@
 .file-input {
   width: 100%;
   padding: 0.75rem;
-  border: 2px dashed rgba(148, 163, 184, 0.2);
+  border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-size: 0.875rem;
   cursor: pointer;
-  background: rgba(15, 23, 42, 0.4);
-  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.02);
+  color: #a1a1aa;
   transition: all 0.2s;
 }
 
 .file-input:hover {
-  border-color: rgba(14, 165, 233, 0.3);
+  border-color: rgba(168, 85, 247, 0.3);
 }
 
 .file-input:disabled {
@@ -196,7 +197,7 @@
   display: block;
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #0ea5e9;
+  color: #a855f7;
 }
 
 .cover-preview {
@@ -210,7 +211,7 @@
   height: auto;
   display: block;
   border-radius: 10px;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .remove-image-button {
@@ -239,12 +240,12 @@
   font-weight: 600;
   text-align: left;
   cursor: pointer;
-  color: #f1f5f9;
+  color: #fafafa;
   transition: color 0.2s;
 }
 
 .seo-toggle:hover {
-  color: #0ea5e9;
+  color: #a855f7;
 }
 
 .seo-fields {
@@ -261,9 +262,9 @@
 .draft-button {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: rgba(30, 41, 59, 0.6);
-  color: #94a3b8;
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(255, 255, 255, 0.02);
+  color: #a1a1aa;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   font-size: 0.875rem;
   font-weight: 500;
@@ -272,8 +273,8 @@
 }
 
 .draft-button:hover:not(:disabled) {
-  border-color: rgba(14, 165, 233, 0.3);
-  color: #0ea5e9;
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #a855f7;
 }
 
 .draft-button:disabled {

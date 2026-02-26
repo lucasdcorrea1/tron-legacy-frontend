@@ -1,13 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { blog, API_URL } from '../services/api';
+import { useToast } from '../components/Toast';
 import AdminLayout from '../components/AdminLayout';
+import RichTextEditor from '../components/RichTextEditor';
 import './PostForm.css';
 
 export default function PostForm() {
   const { id } = useParams();
   const isEditing = !!id;
   const navigate = useNavigate();
+  const toast = useToast();
   const fileInputRef = useRef(null);
 
   const [title, setTitle] = useState('');
@@ -23,7 +26,6 @@ export default function PostForm() {
   const [loading, setLoading] = useState(false);
   const [loadingPost, setLoadingPost] = useState(isEditing);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const [error, setError] = useState('');
   const [savingAs, setSavingAs] = useState('');
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export default function PostForm() {
       setMetaDescription(post.meta_description || '');
     } catch (err) {
       console.error('Erro ao carregar post:', err);
-      setError('Erro ao carregar post: ' + err.message);
+      toast.error('Erro ao carregar post: ' + err.message);
     } finally {
       setLoadingPost(false);
     }
@@ -64,13 +66,13 @@ export default function PostForm() {
     if (!file) return;
 
     setUploadingImage(true);
-    setError('');
 
     try {
       const result = await blog.uploadImage(file);
       setCoverImage(result.url);
+      toast.success('Imagem enviada!', 'Upload');
     } catch (err) {
-      setError(err.message || 'Erro ao enviar imagem');
+      toast.error(err.message || 'Erro ao enviar imagem');
     } finally {
       setUploadingImage(false);
       if (fileInputRef.current) {
@@ -87,14 +89,12 @@ export default function PostForm() {
   };
 
   const handleSubmit = async (status) => {
-    setError('');
-
     if (!title.trim()) {
-      setError('Título é obrigatório');
+      toast.warning('Título é obrigatório');
       return;
     }
     if (!content.trim()) {
-      setError('Conteúdo é obrigatório');
+      toast.warning('Conteúdo é obrigatório');
       return;
     }
 
@@ -116,12 +116,14 @@ export default function PostForm() {
     try {
       if (isEditing) {
         await blog.update(id, postData);
+        toast.success('Post atualizado com sucesso!', 'Salvo');
       } else {
         await blog.create(postData);
+        toast.success('Post criado com sucesso!', status === 'published' ? 'Publicado' : 'Rascunho');
       }
       navigate('/admin/posts');
     } catch (err) {
-      setError(err.message || 'Erro ao salvar post');
+      toast.error(err.message || 'Erro ao salvar post');
     } finally {
       setLoading(false);
       setSavingAs('');
@@ -134,9 +136,10 @@ export default function PostForm() {
     setLoading(true);
     try {
       await blog.delete(id);
+      toast.success('Post excluído com sucesso!', 'Removido');
       navigate('/admin/posts');
     } catch (err) {
-      setError(err.message || 'Erro ao excluir post');
+      toast.error(err.message || 'Erro ao excluir post');
       setLoading(false);
     }
   };
@@ -156,7 +159,6 @@ export default function PostForm() {
           <h1>{isEditing ? 'Editar Post' : 'Novo Post'}</h1>
           <p>{isEditing ? 'Edite as informações do post' : 'Crie um novo post para o blog'}</p>
         </div>
-        {error && <div className="postform-error">{error}</div>}
 
         <div className="postform-content">
           <div className="postform-editor">
@@ -173,14 +175,11 @@ export default function PostForm() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="content">Conteúdo * (suporta Markdown)</label>
-              <textarea
-                id="content"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+              <label htmlFor="content">Conteúdo *</label>
+              <RichTextEditor
+                content={content}
+                onChange={setContent}
                 placeholder="Escreva o conteúdo do post..."
-                rows={15}
-                required
               />
             </div>
 

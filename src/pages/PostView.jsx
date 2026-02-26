@@ -208,8 +208,29 @@ export default function PostView() {
     });
   };
 
+  const isHtmlContent = (text) => {
+    return /<[a-z][\s\S]*>/i.test(text);
+  };
+
+  const resolveImageUrls = (html) => {
+    // Resolve relative image URLs to absolute
+    return html.replace(
+      /(<img\s[^>]*src=["'])\/api\//g,
+      `$1${API_URL}/api/`
+    );
+  };
+
   const renderContent = (content) => {
     if (!content) return null;
+
+    // If content is HTML (from TipTap), render it directly
+    if (isHtmlContent(content)) {
+      return (
+        <div dangerouslySetInnerHTML={{ __html: resolveImageUrls(content) }} />
+      );
+    }
+
+    // Legacy: simple markdown-like rendering for old posts
     const paragraphs = content.split('\n\n');
     return paragraphs.map((p, i) => {
       const trimmed = p.trim();

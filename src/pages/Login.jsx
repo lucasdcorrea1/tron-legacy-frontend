@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import './Login.css';
 
 export default function Login() {
@@ -13,6 +14,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login, register } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -51,12 +53,14 @@ export default function Login() {
     try {
       if (mode === 'login') {
         await login({ email, password });
+        toast.success('Login realizado com sucesso!', 'Bem-vindo');
       } else {
         await register({ name, email, password });
+        toast.success('Conta criada com sucesso!', 'Bem-vindo');
       }
       navigate('/admin');
     } catch (err) {
-      setError(err.message || `Erro ao ${mode === 'login' ? 'entrar' : 'criar conta'}`);
+      toast.error(err.message || `Erro ao ${mode === 'login' ? 'entrar' : 'criar conta'}`);
     } finally {
       setLoading(false);
     }

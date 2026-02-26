@@ -1,3 +1,4 @@
+/* Posts Page - Matching Home Design */
 .posts-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -13,12 +14,12 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
 }
 
@@ -36,25 +37,25 @@
 .empty-state {
   padding: 4rem 2rem;
   text-align: center;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
 }
 
 .empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  color: #64748b;
+  color: #71717a;
 }
 
 .empty-state h3 {
   font-size: 1.25rem;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: #64748b;
+  color: #71717a;
   margin-bottom: 1.5rem;
 }
 
@@ -62,13 +63,13 @@
 .loading-state {
   padding: 3rem;
   text-align: center;
-  color: #64748b;
+  color: #71717a;
 }
 
 /* Table */
 .posts-table {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -78,13 +79,13 @@
   grid-template-columns: 1fr 150px 120px 100px 100px;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  background: rgba(15, 23, 42, 0.5);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: #71717a;
 }
 
 .table-row {
@@ -92,7 +93,7 @@
   grid-template-columns: 1fr 150px 120px 100px 100px;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   align-items: center;
   transition: background 0.2s;
 }
@@ -102,12 +103,12 @@
 }
 
 .table-row:hover {
-  background: rgba(148, 163, 184, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .col-title {
   font-weight: 500;
-  color: #f1f5f9;
+  color: #fafafa;
 }
 
 .col-title.clickable {
@@ -115,12 +116,12 @@
 }
 
 .col-title.clickable:hover {
-  color: #0ea5e9;
+  color: #a855f7;
 }
 
 .col-category,
 .col-date {
-  color: #94a3b8;
+  color: #a1a1aa;
   font-size: 0.875rem;
 }
 
@@ -132,7 +133,7 @@
 /* Buttons */
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -144,7 +145,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
 }
 
 .btn-icon {
@@ -161,12 +162,12 @@
 }
 
 .btn-icon.edit {
-  background: rgba(14, 165, 233, 0.1);
-  color: #0ea5e9;
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
 }
 
 .btn-icon.edit:hover {
-  background: rgba(14, 165, 233, 0.2);
+  background: rgba(168, 85, 247, 0.2);
 }
 
 .btn-icon.delete {
@@ -205,8 +206,8 @@
 }
 
 .post-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -215,7 +216,8 @@
 }
 
 .post-card:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(168, 85, 247, 0.3);
 }
 
 .post-card-header {
@@ -229,14 +231,14 @@
 .post-card-header h3 {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #f1f5f9;
+  color: #fafafa;
 }
 
 .post-card-meta {
   display: flex;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #64748b;
+  color: #71717a;
   margin-bottom: 0.75rem;
 }
 
@@ -264,23 +266,24 @@
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .pagination-btn {
   padding: 0.625rem 1.25rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  color: #94a3b8;
+  color: #a1a1aa;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: rgba(30, 41, 59, 0.9);
-  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #fafafa;
 }
 
 .pagination-btn:disabled {
@@ -289,7 +292,7 @@
 }
 
 .pagination-info {
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
 }
 

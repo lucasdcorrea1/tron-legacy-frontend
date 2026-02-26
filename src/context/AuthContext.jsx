@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { auth } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -52,6 +52,21 @@ export function AuthProvider({ children }) {
     setProfile(profileData);
   };
 
+  // Update profile data (partial update)
+  const updateProfile = useCallback((updates) => {
+    setProfile(prev => {
+      const newProfile = { ...prev, ...updates };
+      localStorage.setItem('profile', JSON.stringify(newProfile));
+      return newProfile;
+    });
+    setUser(prev => {
+      if (!prev) return prev;
+      const newUser = { ...prev, ...updates };
+      localStorage.setItem('user', JSON.stringify(newUser));
+      return newUser;
+    });
+  }, []);
+
   const login = async (credentials) => {
     const data = await auth.login(credentials);
     saveAuthData(data);
@@ -79,6 +94,7 @@ export function AuthProvider({ children }) {
       login,
       register,
       logout,
+      updateProfile,
       loading: false,
       isAuthenticated
     }}>

@@ -1,4 +1,4 @@
-/* Dashboard */
+/* Dashboard - Matching Home Design */
 .dashboard {
   max-width: 1200px;
   margin: 0 auto;
@@ -14,19 +14,19 @@
 .dashboard-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .dashboard-header p {
-  color: #64748b;
+  color: #71717a;
   font-size: 0.875rem;
 }
 
 /* Buttons */
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -38,14 +38,14 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
 }
 
 .btn-link {
   padding: 0;
   background: transparent;
   border: none;
-  color: #0ea5e9;
+  color: #a855f7;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -53,7 +53,7 @@
 }
 
 .btn-link:hover {
-  color: #38bdf8;
+  color: #c084fc;
 }
 
 /* Stats Grid */
@@ -65,13 +65,19 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .stat-icon {
@@ -85,8 +91,8 @@
 }
 
 .stat-icon.blue {
-  background: rgba(14, 165, 233, 0.15);
-  color: #0ea5e9;
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
 }
 
 .stat-icon.green {
@@ -107,12 +113,12 @@
 .stat-value {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: #fafafa;
 }
 
 .stat-label {
   font-size: 0.8125rem;
-  color: #64748b;
+  color: #71717a;
 }
 
 /* Sections */
@@ -123,7 +129,7 @@
 .section h2 {
   font-size: 1rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 1rem;
 }
 
@@ -142,8 +148,8 @@
 }
 
 .action-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 1.25rem;
   display: flex;
@@ -155,26 +161,26 @@
 }
 
 .action-card:hover {
-  background: rgba(30, 41, 59, 0.9);
-  border-color: rgba(14, 165, 233, 0.3);
+  background: rgba(168, 85, 247, 0.1);
+  border-color: rgba(168, 85, 247, 0.3);
   transform: translateY(-2px);
 }
 
 .action-icon {
   font-size: 1.5rem;
-  color: #0ea5e9;
+  color: #a855f7;
 }
 
 .action-label {
   font-size: 0.8125rem;
-  color: #94a3b8;
+  color: #a1a1aa;
   font-weight: 500;
 }
 
 /* Posts List */
 .posts-list {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -184,7 +190,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -194,19 +200,19 @@
 }
 
 .post-item:hover {
-  background: rgba(148, 163, 184, 0.05);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .post-item-content h3 {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #f1f5f9;
+  color: #fafafa;
   margin-bottom: 0.25rem;
 }
 
 .post-item-meta {
   font-size: 0.75rem;
-  color: #64748b;
+  color: #71717a;
 }
 
 .status-badge {
@@ -233,9 +239,9 @@
 .empty-state {
   padding: 3rem;
   text-align: center;
-  color: #64748b;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  color: #71717a;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 12px;
 }
 

@@ -73,6 +73,9 @@ export const blog = {
       });
 
       if (!response.ok) {
+        if (response.status === 403) {
+          throw new Error('Sem permissão para upload. Perfil precisa ter role "admin" ou "author".');
+        }
         const err = await response.json().catch(() => ({}));
         throw new Error(err.message || `Erro no upload (${response.status})`);
       }
