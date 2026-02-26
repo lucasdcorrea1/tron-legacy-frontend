@@ -103,18 +103,18 @@ export default function PostView() {
     }
   }, [post]);
 
-  // Initialize AdSense ads
+  // Initialize AdSense ads (only visible ones)
   useEffect(() => {
     if (post) {
       try {
         const ads = document.querySelectorAll('.adsbygoogle');
         ads.forEach((ad) => {
-          if (!ad.dataset.adsbygoogleStatus) {
+          if (!ad.dataset.adsbygoogleStatus && ad.offsetParent !== null) {
             (window.adsbygoogle = window.adsbygoogle || []).push({});
           }
         });
       } catch (e) {
-        console.error('AdSense error:', e);
+        // AdSense not ready yet
       }
     }
   }, [post]);
@@ -366,11 +366,9 @@ export default function PostView() {
         <aside className="ad-sidebar ad-sidebar-left">
           <div className="ad-slot">
             <ins className="adsbygoogle"
-              style={{ display: 'block' }}
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
               data-ad-client="ca-pub-8952525362331082"
               data-ad-slot="9257625337"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
             />
           </div>
         </aside>
@@ -462,11 +460,9 @@ export default function PostView() {
         <aside className="ad-sidebar ad-sidebar-right">
           <div className="ad-slot">
             <ins className="adsbygoogle"
-              style={{ display: 'block' }}
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
               data-ad-client="ca-pub-8952525362331082"
               data-ad-slot="9257625337"
-              data-ad-format="auto"
-              data-full-width-responsive="true"
             />
           </div>
         </aside>
