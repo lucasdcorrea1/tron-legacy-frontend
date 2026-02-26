@@ -48,6 +48,18 @@
   font-size: 0.875rem;
 }
 
+.user-profile-link {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.user-profile-link:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
 .admin-user button {
   padding: 0.5rem 1rem;
   background: transparent;

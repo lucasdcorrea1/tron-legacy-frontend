@@ -9,6 +9,7 @@ import PostList from './pages/PostList';
 import PostForm from './pages/PostForm';
 import BlogHome from './pages/BlogHome';
 import PostView from './pages/PostView';
+import Profile from './pages/Profile';
 import './styles/global.css';
 
 export default function App() {
@@ -60,6 +61,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <PostForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
               </PrivateRoute>
             }
           />

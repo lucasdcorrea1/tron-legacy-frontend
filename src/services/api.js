@@ -112,3 +112,35 @@ export const auth = {
   getProfile: () => safeJsonParse(localStorage.getItem('profile')),
   isAuthenticated: () => !!localStorage.getItem('token'),
 };
+
+export const profile = {
+  get: () => api.get('/api/v1/profile'),
+  update: (data) => api.put('/api/v1/profile', data),
+  updateSettings: (settings) => api.put('/api/v1/profile/settings', settings),
+  uploadAvatar: async (file) => {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/profile/avatar`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Erro no upload (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError') {
+        throw new Error('Erro de conexão com o servidor');
+      }
+      throw error;
+    }
+  },
+  removeAvatar: () => api.delete('/api/v1/profile/avatar'),
+};
