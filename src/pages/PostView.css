@@ -111,6 +111,14 @@
   justify-self: start;
 }
 
+/* In-article Ad */
+.ad-in-article {
+  margin: 2.5rem 0;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
 .ad-slot-label {
   color: rgba(168, 85, 247, 0.3);
   font-size: 0.75rem;

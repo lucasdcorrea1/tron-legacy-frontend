@@ -441,6 +441,17 @@ export default function PostView() {
           {renderContent(post.content)}
         </div>
 
+        {/* In-article Ad */}
+        <div className="ad-in-article">
+          <ins className="adsbygoogle"
+            style={{ display: 'block', textAlign: 'center' }}
+            data-ad-layout="in-article"
+            data-ad-format="fluid"
+            data-ad-client="ca-pub-8952525362331082"
+            data-ad-slot="4024287013"
+          />
+        </div>
+
         {post.tags && post.tags.length > 0 && (
           <footer className="article-footer">
             <div className="article-tags">
