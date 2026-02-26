@@ -103,6 +103,22 @@ export default function PostView() {
     }
   }, [post]);
 
+  // Initialize AdSense ads
+  useEffect(() => {
+    if (post) {
+      try {
+        const ads = document.querySelectorAll('.adsbygoogle');
+        ads.forEach((ad) => {
+          if (!ad.dataset.adsbygoogleStatus) {
+            (window.adsbygoogle = window.adsbygoogle || []).push({});
+          }
+        });
+      } catch (e) {
+        console.error('AdSense error:', e);
+      }
+    }
+  }, [post]);
+
   const fetchPost = async () => {
     setLoading(true);
     setNotFound(false);
@@ -345,6 +361,25 @@ export default function PostView() {
         </div>
       )}
 
+      <div className="postview-body">
+        {/* Left Ad Sidebar */}
+        <aside className="ad-sidebar ad-sidebar-left">
+          <div className="ad-slot">
+            <ins className="adsbygoogle"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+              data-ad-client="ca-pub-8952525362331082"
+              data-ad-slot="9257625337"
+            />
+          </div>
+          <div className="ad-slot">
+            <ins className="adsbygoogle"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+              data-ad-client="ca-pub-8952525362331082"
+              data-ad-slot="9257625337"
+            />
+          </div>
+        </aside>
+
       <article className="postview-article">
         <header className="article-header">
           {post.category && (
@@ -416,6 +451,25 @@ export default function PostView() {
           </footer>
         )}
       </article>
+
+        {/* Right Ad Sidebar */}
+        <aside className="ad-sidebar ad-sidebar-right">
+          <div className="ad-slot">
+            <ins className="adsbygoogle"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+              data-ad-client="ca-pub-8952525362331082"
+              data-ad-slot="9257625337"
+            />
+          </div>
+          <div className="ad-slot">
+            <ins className="adsbygoogle"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+              data-ad-client="ca-pub-8952525362331082"
+              data-ad-slot="9257625337"
+            />
+          </div>
+        </aside>
+      </div>
 
       {/* Comments Section */}
       <section className="comments-section">

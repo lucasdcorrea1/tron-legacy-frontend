@@ -64,10 +64,61 @@
   object-fit: cover;
 }
 
+/* 3-Column Layout: sidebar-left | article | sidebar-right */
+.postview-body {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 800px) 1fr;
+  gap: 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
 .postview-article {
   max-width: 800px;
+  width: 100%;
   margin: 0 auto;
   padding: 3rem 2rem;
+}
+
+/* Ad Sidebars */
+.ad-sidebar {
+  position: sticky;
+  top: 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-self: start;
+  padding-top: 3rem;
+}
+
+.ad-slot {
+  width: 160px;
+  height: 600px;
+  border: 2px dashed rgba(168, 85, 247, 0.2);
+  border-radius: 12px;
+  background: rgba(168, 85, 247, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ad-sidebar-left {
+  justify-self: end;
+}
+
+.ad-sidebar-right {
+  justify-self: start;
+}
+
+.ad-slot-label {
+  color: rgba(168, 85, 247, 0.3);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
 }
 
 .article-header {
@@ -798,6 +849,18 @@
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(168, 85, 247, 0.3);
   color: #a855f7;
+}
+
+/* Responsive - Hide ad sidebars on smaller screens */
+@media (max-width: 1200px) {
+  .postview-body {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+
+  .ad-sidebar {
+    display: none;
+  }
 }
 
 /* Responsive */
