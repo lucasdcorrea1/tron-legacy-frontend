@@ -1,14 +1,38 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { blog, API_URL } from '../services/api';
+import { blog, API_URL, getImageUrl } from '../services/api';
+import ImageCarousel from '../components/ImageCarousel';
+import hljs from 'highlight.js/lib/core';
+import javascript from 'highlight.js/lib/languages/javascript';
+import typescript from 'highlight.js/lib/languages/typescript';
+import python from 'highlight.js/lib/languages/python';
+import css from 'highlight.js/lib/languages/css';
+import xml from 'highlight.js/lib/languages/xml';
+import json from 'highlight.js/lib/languages/json';
+import bash from 'highlight.js/lib/languages/bash';
+import go from 'highlight.js/lib/languages/go';
+import sql from 'highlight.js/lib/languages/sql';
+import yaml from 'highlight.js/lib/languages/yaml';
+import markdown from 'highlight.js/lib/languages/markdown';
+import 'highlight.js/styles/github-dark.css';
 import './PostView.css';
 
-const getImageUrl = (url) => {
-  if (!url) return '';
-  if (url.startsWith('http') || url.startsWith('data:')) return url;
-  return `${API_URL}${url}`;
-};
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('js', javascript);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('ts', typescript);
+hljs.registerLanguage('python', python);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('html', xml);
+hljs.registerLanguage('xml', xml);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('sh', bash);
+hljs.registerLanguage('go', go);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('yaml', yaml);
+hljs.registerLanguage('markdown', markdown);
 
 const formatRelativeTime = (dateStr) => {
   if (!dateStr) return '';
@@ -35,6 +59,7 @@ export default function PostView() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const contentRef = useRef(null);
 
   // Engagement state
   const [stats, setStats] = useState({
@@ -66,6 +91,17 @@ export default function PostView() {
       fetchComments();
     }
   }, [post, slug]);
+
+  // Apply syntax highlighting to code blocks after content renders
+  useEffect(() => {
+    if (post && contentRef.current) {
+      contentRef.current.querySelectorAll('pre code').forEach((block) => {
+        if (!block.dataset.highlighted) {
+          hljs.highlightElement(block);
+        }
+      });
+    }
+  }, [post]);
 
   const fetchPost = async () => {
     setLoading(true);
@@ -212,6 +248,18 @@ export default function PostView() {
     return /<[a-z][\s\S]*>/i.test(text);
   };
 
+  // Detect escaped HTML entities (e.g. &lt;h2&gt; instead of <h2>)
+  const hasEscapedHtml = (text) => {
+    return /&lt;[a-z/][^&]*&gt;/i.test(text);
+  };
+
+  // Unescape HTML entities back to real tags
+  const unescapeHtml = (text) => {
+    const el = document.createElement('textarea');
+    el.innerHTML = text;
+    return el.value;
+  };
+
   const resolveImageUrls = (html) => {
     // Resolve relative image URLs to absolute
     return html.replace(
@@ -223,15 +271,22 @@ export default function PostView() {
   const renderContent = (content) => {
     if (!content) return null;
 
+    let html = content;
+
+    // If content has escaped HTML entities (&lt;h2&gt;), unescape them first
+    if (hasEscapedHtml(html)) {
+      html = unescapeHtml(html);
+    }
+
     // If content is HTML (from TipTap), render it directly
-    if (isHtmlContent(content)) {
+    if (isHtmlContent(html)) {
       return (
-        <div dangerouslySetInnerHTML={{ __html: resolveImageUrls(content) }} />
+        <div dangerouslySetInnerHTML={{ __html: resolveImageUrls(html) }} />
       );
     }
 
     // Legacy: simple markdown-like rendering for old posts
-    const paragraphs = content.split('\n\n');
+    const paragraphs = html.split('\n\n');
     return paragraphs.map((p, i) => {
       const trimmed = p.trim();
       if (!trimmed) return null;
@@ -278,9 +333,15 @@ export default function PostView() {
         </nav>
       </header>
 
-      {post.cover_image && (
+      {((post.cover_images && post.cover_images.length > 0) || post.cover_image) && (
         <div className="postview-cover">
-          <img src={getImageUrl(post.cover_image)} alt={post.title} />
+          <ImageCarousel
+            images={post.cover_images}
+            legacyImage={post.cover_image}
+            size="banner"
+            autoPlay={post.cover_images && post.cover_images.length > 1}
+            alt={post.title}
+          />
         </div>
       )}
 
@@ -341,7 +402,7 @@ export default function PostView() {
           </div>
         </header>
 
-        <div className="article-content">
+        <div className="article-content" ref={contentRef}>
           {renderContent(post.content)}
         </div>
 

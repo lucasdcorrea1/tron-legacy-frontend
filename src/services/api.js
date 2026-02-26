@@ -1,5 +1,28 @@
 export const API_URL = import.meta.env.VITE_API_URL || 'https://tron-legacy-api.onrender.com';
 
+// Regex for 24-char hex string (MongoDB ObjectID / group_id)
+const GROUP_ID_RE = /^[a-f0-9]{24}$/;
+
+/**
+ * Resolve an image URL with optional size variant.
+ * - If url is a 24-char hex group_id, build /api/v1/blog/images/group/{id}?size=
+ * - If url is a relative /api/... path, prepend API_URL
+ * - If url is already absolute (http/data:), return as-is
+ */
+export function getImageUrl(url, size) {
+  if (!url) return '';
+  if (url.startsWith('http') || url.startsWith('data:')) return url;
+
+  // If it looks like a bare group_id, use the group endpoint
+  if (GROUP_ID_RE.test(url)) {
+    const sizeParam = size || 'card';
+    return `${API_URL}/api/v1/blog/images/group/${url}?size=${sizeParam}`;
+  }
+
+  // Legacy relative path (e.g. /api/v1/blog/images/{objectId})
+  return `${API_URL}${url}`;
+}
+
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token');
 
@@ -73,10 +96,13 @@ export const blog = {
       });
 
       if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error('Sem permissão para upload. Perfil precisa ter role "admin" ou "author".');
-        }
         const err = await response.json().catch(() => ({}));
+        if (response.status === 403) {
+          const detail = err.current_role
+            ? ` Sua role atual: "${err.current_role}". Necessário: "${err.required_roles || 'admin, author'}".`
+            : '';
+          throw new Error((err.message || 'Sem permissão para upload.') + detail);
+        }
         throw new Error(err.message || `Erro no upload (${response.status})`);
       }
 

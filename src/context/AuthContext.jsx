@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { auth } from '../services/api';
 
 const AuthContext = createContext(null);
@@ -37,6 +37,26 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(initialState.profile);
 
   const isAuthenticated = !!localStorage.getItem('token');
+
+  // Revalidate profile from server on mount to keep role in sync
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    auth.me().then((data) => {
+      const freshProfile = data.profile || data;
+      const freshUser = data.user || data;
+      localStorage.setItem('profile', JSON.stringify(freshProfile));
+      localStorage.setItem('user', JSON.stringify(freshUser));
+      setProfile(freshProfile);
+      setUser(freshUser);
+    }).catch(() => {
+      // Token expired or invalid — force logout
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('profile');
+      setUser(null);
+      setProfile(null);
+    });
+  }, []);
 
   const saveAuthData = (data) => {
     if (data.token) {

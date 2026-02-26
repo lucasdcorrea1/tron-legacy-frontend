@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { blog, API_URL } from '../services/api';
+import { blog, getImageUrl } from '../services/api';
 import { useToast } from '../components/Toast';
 import AdminLayout from '../components/AdminLayout';
 import RichTextEditor from '../components/RichTextEditor';
@@ -16,7 +16,8 @@ export default function PostForm() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [excerpt, setExcerpt] = useState('');
-  const [coverImage, setCoverImage] = useState('');
+  const [coverImage, setCoverImage] = useState('');       // legacy single URL
+  const [coverImages, setCoverImages] = useState([]);      // array of group_ids
   const [category, setCategory] = useState('');
   const [tags, setTags] = useState('');
   const [metaTitle, setMetaTitle] = useState('');
@@ -37,12 +38,12 @@ export default function PostForm() {
   const fetchPost = async () => {
     try {
       const data = await blog.getBySlug(id);
-      // Suporta resposta direta ou wrapper {post: ...}
       const post = data.post || data;
       setTitle(post.title || '');
       setContent(post.content || '');
       setExcerpt(post.excerpt || '');
       setCoverImage(post.cover_image || '');
+      setCoverImages(post.cover_images || []);
       setCategory(post.category || '');
       setTags(post.tags?.join(', ') || '');
       setMetaTitle(post.meta_title || '');
@@ -55,22 +56,26 @@ export default function PostForm() {
     }
   };
 
-  const getImageUrl = (url) => {
-    if (!url) return '';
-    if (url.startsWith('http')) return url;
-    return `${API_URL}${url}`;
-  };
-
   const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
     setUploadingImage(true);
 
     try {
-      const result = await blog.uploadImage(file);
-      setCoverImage(result.url);
-      toast.success('Imagem enviada!', 'Upload');
+      for (const file of files) {
+        const result = await blog.uploadImage(file);
+        // New upload returns group_id; add to coverImages array
+        if (result.group_id) {
+          setCoverImages((prev) => [...prev, result.group_id]);
+          // Keep cover_image as the card URL of the first image for backward compatibility
+          setCoverImage((prev) => prev || result.url);
+        } else {
+          // Legacy fallback: server returned only url
+          setCoverImage(result.url);
+        }
+      }
+      toast.success(files.length > 1 ? `${files.length} imagens enviadas!` : 'Imagem enviada!', 'Upload');
     } catch (err) {
       toast.error(err.message || 'Erro ao enviar imagem');
     } finally {
@@ -81,7 +86,18 @@ export default function PostForm() {
     }
   };
 
-  const handleRemoveImage = () => {
+  const handleRemoveImage = (index) => {
+    setCoverImages((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      // If removing the first image, update legacy cover_image
+      if (index === 0) {
+        setCoverImage(next.length > 0 ? '' : '');
+      }
+      return next;
+    });
+  };
+
+  const handleRemoveLegacyImage = () => {
     setCoverImage('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -90,11 +106,11 @@ export default function PostForm() {
 
   const handleSubmit = async (status) => {
     if (!title.trim()) {
-      toast.warning('Título é obrigatório');
+      toast.warning('Titulo e obrigatorio');
       return;
     }
     if (!content.trim()) {
-      toast.warning('Conteúdo é obrigatório');
+      toast.warning('Conteudo e obrigatorio');
       return;
     }
 
@@ -106,6 +122,7 @@ export default function PostForm() {
       content: content.trim(),
       excerpt: excerpt.trim() || undefined,
       cover_image: coverImage || undefined,
+      cover_images: coverImages.length > 0 ? coverImages : undefined,
       category: category.trim() || undefined,
       tags: tags.trim() ? tags.split(',').map(t => t.trim()).filter(Boolean) : undefined,
       meta_title: metaTitle.trim() || undefined,
@@ -136,13 +153,17 @@ export default function PostForm() {
     setLoading(true);
     try {
       await blog.delete(id);
-      toast.success('Post excluído com sucesso!', 'Removido');
+      toast.success('Post excluido com sucesso!', 'Removido');
       navigate('/admin/posts');
     } catch (err) {
       toast.error(err.message || 'Erro ao excluir post');
       setLoading(false);
     }
   };
+
+  // Determine what images to show in preview
+  const hasNewImages = coverImages.length > 0;
+  const hasLegacyOnly = !hasNewImages && !!coverImage;
 
   if (loadingPost) {
     return (
@@ -157,29 +178,29 @@ export default function PostForm() {
       <div className="postform-page">
         <div className="page-header">
           <h1>{isEditing ? 'Editar Post' : 'Novo Post'}</h1>
-          <p>{isEditing ? 'Edite as informações do post' : 'Crie um novo post para o blog'}</p>
+          <p>{isEditing ? 'Edite as informacoes do post' : 'Crie um novo post para o blog'}</p>
         </div>
 
         <div className="postform-content">
           <div className="postform-editor">
             <div className="form-group">
-              <label htmlFor="title">Título *</label>
+              <label htmlFor="title">Titulo *</label>
               <input
                 type="text"
                 id="title"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="Título do post"
+                placeholder="Titulo do post"
                 required
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="content">Conteúdo *</label>
+              <label htmlFor="content">Conteudo *</label>
               <RichTextEditor
                 content={content}
                 onChange={setContent}
-                placeholder="Escreva o conteúdo do post..."
+                placeholder="Escreva o conteudo do post..."
               />
             </div>
 
@@ -197,7 +218,7 @@ export default function PostForm() {
 
           <div className="postform-sidebar">
             <div className="sidebar-section">
-              <h3>Imagem de Capa</h3>
+              <h3>Imagens de Capa</h3>
               <div className="form-group">
                 <input
                   ref={fileInputRef}
@@ -206,12 +227,38 @@ export default function PostForm() {
                   onChange={handleImageUpload}
                   disabled={uploadingImage}
                   className="file-input"
+                  multiple
                 />
                 {uploadingImage && (
                   <span className="upload-status">Enviando imagem...</span>
                 )}
               </div>
-              {coverImage && (
+
+              {/* New multi-image previews */}
+              {hasNewImages && (
+                <div className="cover-previews">
+                  {coverImages.map((groupId, index) => (
+                    <div key={groupId} className="cover-preview">
+                      <img
+                        src={getImageUrl(groupId, 'thumb')}
+                        alt={`Cover ${index + 1}`}
+                        onError={(e) => e.target.style.display = 'none'}
+                      />
+                      <button
+                        type="button"
+                        className="remove-image-button"
+                        onClick={() => handleRemoveImage(index)}
+                        title="Remover imagem"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Legacy single image preview (no cover_images) */}
+              {hasLegacyOnly && (
                 <div className="cover-preview">
                   <img
                     src={getImageUrl(coverImage)}
@@ -221,7 +268,7 @@ export default function PostForm() {
                   <button
                     type="button"
                     className="remove-image-button"
-                    onClick={handleRemoveImage}
+                    onClick={handleRemoveLegacyImage}
                   >
                     Remover imagem
                   </button>
@@ -230,7 +277,7 @@ export default function PostForm() {
             </div>
 
             <div className="sidebar-section">
-              <h3>Organização</h3>
+              <h3>Organizacao</h3>
               <div className="form-group">
                 <label htmlFor="category">Categoria</label>
                 <input
@@ -242,7 +289,7 @@ export default function PostForm() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="tags">Tags (separadas por vírgula)</label>
+                <label htmlFor="tags">Tags (separadas por virgula)</label>
                 <input
                   type="text"
                   id="tags"
@@ -259,27 +306,27 @@ export default function PostForm() {
                 className="seo-toggle"
                 onClick={() => setShowSeo(!showSeo)}
               >
-                {showSeo ? '▼' : '▶'} SEO
+                {showSeo ? '\u25BC' : '\u25B6'} SEO
               </button>
               {showSeo && (
                 <div className="seo-fields">
                   <div className="form-group">
-                    <label htmlFor="metaTitle">Meta Título</label>
+                    <label htmlFor="metaTitle">Meta Titulo</label>
                     <input
                       type="text"
                       id="metaTitle"
                       value={metaTitle}
                       onChange={(e) => setMetaTitle(e.target.value)}
-                      placeholder="Título para SEO"
+                      placeholder="Titulo para SEO"
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="metaDescription">Meta Descrição</label>
+                    <label htmlFor="metaDescription">Meta Descricao</label>
                     <textarea
                       id="metaDescription"
                       value={metaDescription}
                       onChange={(e) => setMetaDescription(e.target.value)}
-                      placeholder="Descrição para SEO..."
+                      placeholder="Descricao para SEO..."
                       rows={3}
                     />
                   </div>

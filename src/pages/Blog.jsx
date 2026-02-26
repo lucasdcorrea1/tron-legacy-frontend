@@ -1,14 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { blog, API_URL } from '../services/api';
+import { blog, getImageUrl } from '../services/api';
+import ImageCarousel from '../components/ImageCarousel';
 import './Blog.css';
-
-const getImageUrl = (url) => {
-  if (!url) return '';
-  if (url.startsWith('http') || url.startsWith('data:')) return url;
-  return `${API_URL}${url}`;
-};
 
 export default function Blog() {
   const navigate = useNavigate();
@@ -143,8 +138,14 @@ export default function Blog() {
                     onClick={() => navigate(`/blog/${post.slug}`)}
                   >
                     <div className="post-card-image">
-                      {post.cover_image ? (
-                        <img src={getImageUrl(post.cover_image)} alt={post.title} />
+                      {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
+                        <ImageCarousel
+                          images={post.cover_images}
+                          legacyImage={post.cover_image}
+                          size="thumb"
+                          alt={post.title}
+                          showControls={post.cover_images && post.cover_images.length > 1}
+                        />
                       ) : (
                         <div className="post-card-placeholder">
                           <span>{post.title.charAt(0)}</span>
