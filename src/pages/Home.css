@@ -431,8 +431,15 @@
 
 .featured-image {
   position: relative;
-  aspect-ratio: 16/10;
   overflow: hidden;
+  min-height: 300px;
+}
+
+.featured-image .carousel,
+.featured-image .carousel-viewport,
+.featured-image .carousel-track,
+.featured-image .carousel-slide {
+  height: 100%;
 }
 
 .featured-image img {
@@ -543,6 +550,13 @@
   aspect-ratio: 16/9;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.02);
+}
+
+.post-image .carousel,
+.post-image .carousel-viewport,
+.post-image .carousel-track,
+.post-image .carousel-slide {
+  height: 100%;
 }
 
 .post-image img {
@@ -810,6 +824,11 @@
 
   .featured-post {
     grid-template-columns: 1fr;
+  }
+
+  .featured-image {
+    aspect-ratio: 16/9;
+    min-height: unset;
   }
 
   .featured-overlay {
