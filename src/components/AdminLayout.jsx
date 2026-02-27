@@ -1,14 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../services/api';
+import UserAvatar from './UserAvatar';
 import './AdminLayout.css';
-
-const getImageUrl = (url) => {
-  if (!url) return '';
-  if (url.startsWith('http') || url.startsWith('data:')) return url;
-  return `${API_URL}${url}`;
-};
 
 // SVG Icons
 const Icons = {
@@ -110,22 +104,6 @@ export default function AdminLayout({ children }) {
     setMobileMenuOpen(false);
   };
 
-  const UserAvatar = ({ size = 'md' }) => {
-    const sizeClass = size === 'sm' ? 'avatar-sm' : size === 'lg' ? 'avatar-lg' : '';
-
-    return profile?.avatar ? (
-      <img
-        src={getImageUrl(profile.avatar)}
-        alt={profile.name}
-        className={`user-avatar ${sizeClass}`}
-      />
-    ) : (
-      <div className={`user-avatar-placeholder ${sizeClass}`}>
-        {profile?.name?.charAt(0)?.toUpperCase() || 'U'}
-      </div>
-    );
-  };
-
   return (
     <div className={`admin-layout ${mobileMenuOpen ? 'mobile-open' : ''}`}>
       {/* Mobile Overlay */}
@@ -191,7 +169,7 @@ export default function AdminLayout({ children }) {
           {/* Mobile user info */}
           <div className="mobile-user-info">
             <div className="mobile-user-header">
-              <UserAvatar size="md" />
+              <UserAvatar profile={profile} size="md" />
               <div className="mobile-user-details">
                 <span className="mobile-user-name">{profile?.name}</span>
                 <span className="mobile-user-role">{profile?.role}</span>
@@ -226,7 +204,7 @@ export default function AdminLayout({ children }) {
                 className="user-dropdown-trigger"
                 onClick={() => setShowUserMenu(!showUserMenu)}
               >
-                <UserAvatar />
+                <UserAvatar profile={profile} />
                 <span className="user-name">{profile?.name}</span>
                 <span className="dropdown-arrow">{Icons.chevronDown}</span>
               </button>
@@ -239,7 +217,7 @@ export default function AdminLayout({ children }) {
                   />
                   <div className="dropdown-menu">
                     <div className="dropdown-header">
-                      <UserAvatar size="lg" />
+                      <UserAvatar profile={profile} size="lg" />
                       <div className="dropdown-user-info">
                         <strong>{profile?.name}</strong>
                         <span>{profile?.email}</span>

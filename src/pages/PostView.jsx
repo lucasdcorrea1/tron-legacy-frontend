@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { blog, API_URL, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
+import Header from '../components/Header';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -352,11 +353,7 @@ export default function PostView() {
 
   return (
     <div className="postview-page">
-      <header className="postview-header">
-        <nav className="postview-nav">
-          <Link to="/blog" className="back-link">← Voltar para o blog</Link>
-        </nav>
-      </header>
+      <Header />
 
       {((post.cover_images && post.cover_images.length > 0) || post.cover_image) && (
         <div className="postview-cover">

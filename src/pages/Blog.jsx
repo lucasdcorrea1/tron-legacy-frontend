@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
+import Header from '../components/Header';
 import './Blog.css';
 
 export default function Blog() {
   const navigate = useNavigate();
-  const { isAuthenticated, logout } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -15,7 +14,6 @@ export default function Blog() {
   const [total, setTotal] = useState(0);
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const limit = 9;
 
   useEffect(() => {
@@ -50,42 +48,11 @@ export default function Blog() {
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
-
   const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="blog-page">
-      {/* Header */}
-      <header className="blog-header">
-        <div className="header-container">
-          <Link to="/" className="logo">
-            <span className="logo-icon">W</span>
-            <span className="logo-text">whodo</span>
-          </Link>
-          <button className="mobile-menu-btn" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            <span className={`hamburger ${mobileMenuOpen ? 'open' : ''}`}></span>
-          </button>
-          <nav className={`header-nav ${mobileMenuOpen ? 'nav-open' : ''}`}>
-            <Link to="/" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Home</Link>
-            <Link to="/blog" className="nav-link active" onClick={() => setMobileMenuOpen(false)}>Blog</Link>
-            <div className="header-actions">
-              {isAuthenticated ? (
-                <>
-                  <Link to="/admin" className="btn-ghost" onClick={() => setMobileMenuOpen(false)}>Painel</Link>
-                  <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="btn-ghost">Sair</button>
-                </>
-              ) : (
-                <Link to="/login" className="btn-primary-sm" onClick={() => setMobileMenuOpen(false)}>Entrar</Link>
-              )}
-            </div>
-          </nav>
-          {mobileMenuOpen && <div className="mobile-overlay" onClick={() => setMobileMenuOpen(false)} />}
-        </div>
-      </header>
+      <Header />
 
       {/* Hero */}
       <section className="blog-hero">
