@@ -371,17 +371,9 @@ export default function PostView() {
       )}
 
       <div className="postview-body">
-        {/* Left Ad Sidebar - only render when viewport is wide enough */}
+        {/* Left Sidebar - empty for layout balance */}
         {showSidebarAds && (
-          <aside className="ad-sidebar ad-sidebar-left">
-            <div className="ad-slot">
-              <ins className="adsbygoogle"
-                style={{ display: 'inline-block', width: '160px', height: '600px' }}
-                data-ad-client="ca-pub-8952525362331082"
-                data-ad-slot="9257625337"
-              />
-            </div>
-          </aside>
+          <aside className="ad-sidebar ad-sidebar-left" />
         )}
 
       <article className="postview-article">
