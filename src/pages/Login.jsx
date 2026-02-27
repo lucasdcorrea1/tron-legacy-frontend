@@ -79,7 +79,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <Link to="/" className="login-back">← Voltar</Link>
-        <h1>Tron Legacy</h1>
+        <h1>Whodo</h1>
         <p className="login-subtitle">
           {mode === 'login' ? 'Acesse o painel administrativo' : 'Crie sua conta'}
         </p>
