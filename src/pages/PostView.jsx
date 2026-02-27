@@ -78,6 +78,13 @@ export default function PostView() {
   const [newComment, setNewComment] = useState('');
   const [commentSubmitting, setCommentSubmitting] = useState(false);
   const [commentError, setCommentError] = useState('');
+  const [showSidebarAds, setShowSidebarAds] = useState(() => window.innerWidth > 1200);
+
+  useEffect(() => {
+    const handleResize = () => setShowSidebarAds(window.innerWidth > 1200);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchPost();
@@ -103,9 +110,10 @@ export default function PostView() {
     }
   }, [post]);
 
-  // Initialize AdSense ads (only visible ones)
+  // Initialize AdSense ads (only visible ones, with delay for layout settle)
   useEffect(() => {
-    if (post) {
+    if (!post) return;
+    const timer = setTimeout(() => {
       try {
         const ads = document.querySelectorAll('.adsbygoogle');
         ads.forEach((ad) => {
@@ -116,8 +124,9 @@ export default function PostView() {
       } catch (e) {
         // AdSense not ready yet
       }
-    }
-  }, [post]);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [post, showSidebarAds]);
 
   const fetchPost = async () => {
     setLoading(true);
@@ -362,16 +371,18 @@ export default function PostView() {
       )}
 
       <div className="postview-body">
-        {/* Left Ad Sidebar */}
-        <aside className="ad-sidebar ad-sidebar-left">
-          <div className="ad-slot">
-            <ins className="adsbygoogle"
-              style={{ display: 'inline-block', width: '160px', height: '600px' }}
-              data-ad-client="ca-pub-8952525362331082"
-              data-ad-slot="9257625337"
-            />
-          </div>
-        </aside>
+        {/* Left Ad Sidebar - only render when viewport is wide enough */}
+        {showSidebarAds && (
+          <aside className="ad-sidebar ad-sidebar-left">
+            <div className="ad-slot">
+              <ins className="adsbygoogle"
+                style={{ display: 'inline-block', width: '160px', height: '600px' }}
+                data-ad-client="ca-pub-8952525362331082"
+                data-ad-slot="9257625337"
+              />
+            </div>
+          </aside>
+        )}
 
       <article className="postview-article">
         <header className="article-header">
@@ -456,16 +467,18 @@ export default function PostView() {
         )}
       </article>
 
-        {/* Right Ad Sidebar */}
-        <aside className="ad-sidebar ad-sidebar-right">
-          <div className="ad-slot">
-            <ins className="adsbygoogle"
-              style={{ display: 'inline-block', width: '160px', height: '600px' }}
-              data-ad-client="ca-pub-8952525362331082"
-              data-ad-slot="9257625337"
-            />
-          </div>
-        </aside>
+        {/* Right Ad Sidebar - only render when viewport is wide enough */}
+        {showSidebarAds && (
+          <aside className="ad-sidebar ad-sidebar-right">
+            <div className="ad-slot">
+              <ins className="adsbygoogle"
+                style={{ display: 'inline-block', width: '160px', height: '600px' }}
+                data-ad-client="ca-pub-8952525362331082"
+                data-ad-slot="9257625337"
+              />
+            </div>
+          </aside>
+        )}
       </div>
 
       {/* Comments Section */}
