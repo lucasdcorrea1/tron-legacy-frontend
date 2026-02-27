@@ -279,23 +279,41 @@ export default function PostView() {
     return /&lt;[a-z/][^&]*&gt;/i.test(text);
   };
 
-  // Unescape HTML entities back to real tags
-  const unescapeHtml = (text) => {
-    const el = document.createElement('textarea');
-    el.innerHTML = text;
-    return el.value;
-  };
-
   const resolveImageUrls = (html) => {
-    // Resolve relative image URLs to absolute
     return html.replace(
       /(<img\s[^>]*src=["'])\/api\//g,
       `$1${API_URL}/api/`
     );
   };
 
-  // Fix malformed links where href contains HTML tags (e.g. href="<a target=...")
-  // and ensure all external links open in a new tab
+  // Fix content that has mixed real HTML (TipTap autolinks) and escaped HTML entities.
+  // TipTap without Link extension created real <a> tags inside escaped &lt;a&gt; tags,
+  // producing corrupted nested links. Strategy:
+  // 1. Parse HTML, strip TipTap's real <a> tags (keep text content)
+  // 2. Decode HTML entities to restore the original tags
+  // 3. Re-parse and fix links
+  const cleanMixedContent = (html) => {
+    // Step 1: Parse and strip real <a> tags, keeping their text
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    temp.querySelectorAll('a').forEach((a) => {
+      a.replaceWith(a.textContent);
+    });
+    // innerHTML re-encodes text content, preserving &lt; entities
+    html = temp.innerHTML;
+
+    // Step 2: Decode HTML entities to restore original tags
+    html = html
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&');
+
+    return html;
+  };
+
+  // Ensure all links open in new tab and have valid hrefs
   const fixLinks = (html) => {
     const div = document.createElement('div');
     div.innerHTML = html;
@@ -303,22 +321,14 @@ export default function PostView() {
     div.querySelectorAll('a').forEach((a) => {
       let href = a.getAttribute('href') || '';
 
-      // Fix: href contains a nested <a> tag or HTML — extract the real URL
-      if (href.includes('<') || href.includes('&lt;')) {
+      // If href is broken (contains HTML), try to extract the real URL
+      if (href.includes('<')) {
         const match = href.match(/href=["']([^"']+)["']/);
-        if (match) {
-          href = match[1];
-        } else {
-          // Fallback: use the link text if it looks like a URL
-          const text = a.textContent.trim();
-          if (text.match(/^https?:\/\//)) {
-            href = text;
-          }
-        }
+        href = match ? match[1] : (a.textContent.match(/https?:\/\/\S+/) || [''])[0];
         a.setAttribute('href', href);
       }
 
-      // Ensure external links open in new tab
+      // External links open in new tab
       if (href.startsWith('http')) {
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener noreferrer');
@@ -333,12 +343,12 @@ export default function PostView() {
 
     let html = content;
 
-    // If content has escaped HTML entities (&lt;h2&gt;), unescape them first
+    // Content with escaped HTML entities mixed with real TipTap tags
     if (hasEscapedHtml(html)) {
-      html = unescapeHtml(html);
+      html = cleanMixedContent(html);
     }
 
-    // If content is HTML (from TipTap), render it directly
+    // If content is HTML, render it
     if (isHtmlContent(html)) {
       html = resolveImageUrls(html);
       html = fixLinks(html);
