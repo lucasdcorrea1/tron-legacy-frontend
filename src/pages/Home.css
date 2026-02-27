@@ -7,6 +7,15 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+.home a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home a:hover {
+  text-decoration: none;
+}
+
 /* Header */
 .header {
   position: fixed;
@@ -400,8 +409,13 @@
   border-radius: 20px;
   overflow: hidden;
   text-decoration: none;
+  color: inherit;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+}
+
+.featured-post:hover {
+  text-decoration: none;
 }
 
 .featured-post::before {
@@ -517,8 +531,13 @@
   border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
+  color: inherit;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+}
+
+.post-card:hover {
+  text-decoration: none;
 }
 
 .post-card::before {
