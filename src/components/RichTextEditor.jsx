@@ -1,6 +1,7 @@
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useCallback, useRef, useEffect } from 'react';
 import { blog, API_URL } from '../services/api';
@@ -65,6 +66,26 @@ function MenuBar({ editor }) {
           title="Código inline"
         >
           {'</>'}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (editor.isActive('link')) {
+              editor.chain().focus().unsetLink().run();
+              return;
+            }
+            const url = window.prompt('URL do link:');
+            if (url) {
+              editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+            }
+          }}
+          className={editor.isActive('link') ? 'is-active' : ''}
+          title="Inserir link"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
         </button>
       </div>
 
@@ -165,6 +186,14 @@ export default function RichTextEditor({ content, onChange, placeholder }) {
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Link.configure({
+        openOnClick: false,
+        autolink: true,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        },
+      }),
       Image.configure({
         HTMLAttributes: {
           class: 'inline-image',

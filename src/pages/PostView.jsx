@@ -294,6 +294,40 @@ export default function PostView() {
     );
   };
 
+  // Fix malformed links where href contains HTML tags (e.g. href="<a target=...")
+  // and ensure all external links open in a new tab
+  const fixLinks = (html) => {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+
+    div.querySelectorAll('a').forEach((a) => {
+      let href = a.getAttribute('href') || '';
+
+      // Fix: href contains a nested <a> tag or HTML — extract the real URL
+      if (href.includes('<') || href.includes('&lt;')) {
+        const match = href.match(/href=["']([^"']+)["']/);
+        if (match) {
+          href = match[1];
+        } else {
+          // Fallback: use the link text if it looks like a URL
+          const text = a.textContent.trim();
+          if (text.match(/^https?:\/\//)) {
+            href = text;
+          }
+        }
+        a.setAttribute('href', href);
+      }
+
+      // Ensure external links open in new tab
+      if (href.startsWith('http')) {
+        a.setAttribute('target', '_blank');
+        a.setAttribute('rel', 'noopener noreferrer');
+      }
+    });
+
+    return div.innerHTML;
+  };
+
   const renderContent = (content) => {
     if (!content) return null;
 
@@ -306,8 +340,10 @@ export default function PostView() {
 
     // If content is HTML (from TipTap), render it directly
     if (isHtmlContent(html)) {
+      html = resolveImageUrls(html);
+      html = fixLinks(html);
       return (
-        <div dangerouslySetInnerHTML={{ __html: resolveImageUrls(html) }} />
+        <div dangerouslySetInnerHTML={{ __html: html }} />
       );
     }
 
