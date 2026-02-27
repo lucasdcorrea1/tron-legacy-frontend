@@ -130,78 +130,88 @@ export default function Blog() {
             </div>
           ) : (
             <>
-              <div className="posts-grid">
-                {posts.map(post => (
-                  <article
-                    key={post.id}
-                    className="post-card"
-                    onClick={() => navigate(`/blog/${post.slug}`)}
-                  >
-                    <div className="post-card-image">
-                      {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
-                        <ImageCarousel
-                          images={post.cover_images}
-                          legacyImage={post.cover_image}
-                          size="thumb"
-                          alt={post.title}
-                          showControls={post.cover_images && post.cover_images.length > 1}
-                        />
-                      ) : (
-                        <div className="post-card-placeholder">
-                          <span>{post.title.charAt(0)}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="post-card-content">
-                      {post.category && (
-                        <span className="post-card-category">{post.category}</span>
-                      )}
-                      <h2 className="post-card-title">{post.title}</h2>
-                      {post.excerpt && (
-                        <p className="post-card-excerpt">{post.excerpt}</p>
-                      )}
-                      <div className="post-card-meta">
-                        <div className="post-card-author">
-                          {post.author_avatar ? (
-                            <img src={getImageUrl(post.author_avatar)} alt={post.author_name} />
-                          ) : (
-                            <div className="author-placeholder">
-                              {post.author_name?.charAt(0) || 'A'}
-                            </div>
-                          )}
-                          <span>{post.author_name || 'Autor'}</span>
-                        </div>
-                        <span className="post-card-date">
-                          {formatDate(post.published_at || post.created_at)}
-                        </span>
-                        {post.reading_time && (
-                          <span className="post-card-reading">{post.reading_time} min</span>
+              <div className="posts-feed">
+                {posts.map((post, index) => {
+                  const isFeatured = index === 0 && page === 1;
+                  return (
+                    <article
+                      key={post.id}
+                      className={isFeatured ? 'post-card-featured' : 'post-card'}
+                      onClick={() => navigate(`/blog/${post.slug}`)}
+                    >
+                      <div className="post-card-image">
+                        {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
+                          <ImageCarousel
+                            images={post.cover_images}
+                            legacyImage={post.cover_image}
+                            size={isFeatured ? 'card' : 'thumb'}
+                            alt={post.title}
+                            showControls={post.cover_images && post.cover_images.length > 1}
+                          />
+                        ) : (
+                          <div className="post-card-placeholder">
+                            <span>{post.title.charAt(0)}</span>
+                          </div>
                         )}
                       </div>
-                      <div className="post-card-stats">
-                        <span className="post-stat">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                            <circle cx="12" cy="12" r="3"/>
-                          </svg>
-                          {post.view_count || 0}
-                        </span>
-                        <span className="post-stat">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                          </svg>
-                          {post.like_count || 0}
-                        </span>
-                        <span className="post-stat">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-                          </svg>
-                          {post.comment_count || 0}
-                        </span>
+                      <div className="post-card-content">
+                        {post.category && (
+                          <span className="post-card-category">{post.category}</span>
+                        )}
+                        <h2 className="post-card-title">{post.title}</h2>
+                        {post.excerpt && (
+                          <p className="post-card-excerpt">{post.excerpt}</p>
+                        )}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="post-card-tags">
+                            {post.tags.map(tag => (
+                              <span key={tag} className="post-tag">{tag}</span>
+                            ))}
+                          </div>
+                        )}
+                        <div className="post-card-meta">
+                          <div className="post-card-author">
+                            {post.author_avatar ? (
+                              <img src={getImageUrl(post.author_avatar)} alt={post.author_name} />
+                            ) : (
+                              <div className="author-placeholder">
+                                {post.author_name?.charAt(0) || 'A'}
+                              </div>
+                            )}
+                            <span>{post.author_name || 'Autor'}</span>
+                          </div>
+                          <span className="post-card-date">
+                            {formatDate(post.published_at || post.created_at)}
+                          </span>
+                          {post.reading_time && (
+                            <span className="post-card-reading">{post.reading_time} min</span>
+                          )}
+                        </div>
+                        <div className="post-card-stats">
+                          <span className="post-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                              <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            {post.view_count || 0}
+                          </span>
+                          <span className="post-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                            </svg>
+                            {post.like_count || 0}
+                          </span>
+                          <span className="post-stat">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                            </svg>
+                            {post.comment_count || 0}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
 
               {totalPages > 1 && (

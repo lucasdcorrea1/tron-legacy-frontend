@@ -106,43 +106,116 @@ export default function Home() {
           </div>
 
           {loadingPosts ? (
-            <div className="loading">Carregando...</div>
+            <div className="loading">
+              <div className="loading-spinner"></div>
+              <span>Carregando posts...</span>
+            </div>
           ) : posts.length === 0 ? (
-            <div className="empty">Nenhum post ainda.</div>
+            <div className="empty">
+              <span className="empty-icon">&#9997;</span>
+              <p>Nenhum post publicado ainda.</p>
+            </div>
           ) : (
-            <div className="posts-grid">
-              {posts.map(post => (
-                <Link to={`/blog/${post.slug}`} key={post._id || post.id} className="post-card">
-                  <div className="post-image">
-                    {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
+            <div className="posts-feed">
+              {/* Featured Post */}
+              {posts[0] && (
+                <Link to={`/blog/${posts[0].slug}`} className="featured-post">
+                  <div className="featured-image">
+                    {(posts[0].cover_images && posts[0].cover_images.length > 0) || posts[0].cover_image ? (
                       <ImageCarousel
-                        images={post.cover_images}
-                        legacyImage={post.cover_image}
-                        size="thumb"
-                        alt={post.title}
-                        showControls={post.cover_images && post.cover_images.length > 1}
+                        images={posts[0].cover_images}
+                        legacyImage={posts[0].cover_image}
+                        size="card"
+                        alt={posts[0].title}
+                        showControls={posts[0].cover_images && posts[0].cover_images.length > 1}
                       />
                     ) : (
                       <div className="post-image-placeholder">
-                        {post.title.charAt(0)}
+                        {posts[0].title.charAt(0)}
                       </div>
                     )}
+                    <div className="featured-overlay"></div>
                   </div>
-                  <div className="post-content">
-                    {post.category && <span className="post-category">{post.category}</span>}
-                    <h3 className="post-title">{post.title}</h3>
-                    {post.excerpt && <p className="post-excerpt">{post.excerpt}</p>}
-                    <div className="post-meta">
-                      <span>{formatDate(post.published_at || post.created_at)}</span>
-                      {post.reading_time && <span>{post.reading_time} min</span>}
-                    </div>
-                    <div className="post-stats">
-                      <span>{post.view_count || 0} views</span>
-                      <span>{post.like_count || 0} likes</span>
+                  <div className="featured-content">
+                    <div className="featured-badge">Destaque</div>
+                    {posts[0].category && <span className="post-category">{posts[0].category}</span>}
+                    <h3 className="featured-title">{posts[0].title}</h3>
+                    {posts[0].excerpt && <p className="featured-excerpt">{posts[0].excerpt}</p>}
+                    <div className="post-meta-row">
+                      <span className="meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {formatDate(posts[0].published_at || posts[0].created_at)}
+                      </span>
+                      {posts[0].reading_time && (
+                        <span className="meta-item">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                          {posts[0].reading_time} min de leitura
+                        </span>
+                      )}
+                      <span className="meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        {posts[0].view_count || 0}
+                      </span>
+                      <span className="meta-item">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        {posts[0].like_count || 0}
+                      </span>
                     </div>
                   </div>
                 </Link>
-              ))}
+              )}
+
+              {/* Secondary Posts */}
+              {posts.length > 1 && (
+                <div className="posts-grid">
+                  {posts.slice(1).map(post => (
+                    <Link to={`/blog/${post.slug}`} key={post._id || post.id} className="post-card">
+                      <div className="post-image">
+                        {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
+                          <ImageCarousel
+                            images={post.cover_images}
+                            legacyImage={post.cover_image}
+                            size="thumb"
+                            alt={post.title}
+                            showControls={post.cover_images && post.cover_images.length > 1}
+                          />
+                        ) : (
+                          <div className="post-image-placeholder">
+                            {post.title.charAt(0)}
+                          </div>
+                        )}
+                      </div>
+                      <div className="post-content">
+                        {post.category && <span className="post-category">{post.category}</span>}
+                        <h3 className="post-title">{post.title}</h3>
+                        {post.excerpt && <p className="post-excerpt">{post.excerpt}</p>}
+                        <div className="post-meta-row">
+                          <span className="meta-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {formatDate(post.published_at || post.created_at)}
+                          </span>
+                          {post.reading_time && (
+                            <span className="meta-item">
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                              {post.reading_time} min
+                            </span>
+                          )}
+                        </div>
+                        <div className="post-stats-row">
+                          <span className="stat-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            {post.view_count || 0}
+                          </span>
+                          <span className="stat-item">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            {post.like_count || 0}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
