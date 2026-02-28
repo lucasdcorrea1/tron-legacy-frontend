@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import './Home.css';
 
 const TOTAL_SECTIONS = 3;
-const COOLDOWN_MS = 700;
+const COOLDOWN_MS = 1000;
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
@@ -18,6 +18,7 @@ export default function Home() {
   const sectionsRef = useRef([]);
   const touchStartY = useRef(0);
   const isLocked = useRef(false);
+  const activeSectionRef = useRef(0);
 
   // Resize listener
   useEffect(() => {
@@ -67,6 +68,7 @@ export default function Home() {
     if (isLocked.current) return;
 
     isLocked.current = true;
+    activeSectionRef.current = index;
     setActiveSection(index);
 
     // Trigger entry animation
@@ -89,15 +91,15 @@ export default function Home() {
       if (isLocked.current) return;
 
       if (e.deltaY > 0) {
-        goToSection(activeSection + 1);
+        goToSection(activeSectionRef.current + 1);
       } else if (e.deltaY < 0) {
-        goToSection(activeSection - 1);
+        goToSection(activeSectionRef.current - 1);
       }
     };
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
-  }, [activeSection, goToSection, isMobile]);
+  }, [goToSection, isMobile]);
 
   // Touch — swipe up/down (desktop only, mobile uses native scroll)
   useEffect(() => {
@@ -114,9 +116,9 @@ export default function Home() {
       if (Math.abs(deltaY) < 50) return;
 
       if (deltaY > 0) {
-        goToSection(activeSection + 1);
+        goToSection(activeSectionRef.current + 1);
       } else {
-        goToSection(activeSection - 1);
+        goToSection(activeSectionRef.current - 1);
       }
     };
 
@@ -126,7 +128,7 @@ export default function Home() {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [activeSection, goToSection, isMobile]);
+  }, [goToSection, isMobile]);
 
   // Keyboard — arrows / page keys (desktop only)
   useEffect(() => {
@@ -134,16 +136,16 @@ export default function Home() {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault();
-        goToSection(activeSection + 1);
+        goToSection(activeSectionRef.current + 1);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        goToSection(activeSection - 1);
+        goToSection(activeSectionRef.current - 1);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeSection, goToSection, isMobile]);
+  }, [goToSection, isMobile]);
 
   const setSectionRef = useCallback((index) => (el) => {
     sectionsRef.current[index] = el;
