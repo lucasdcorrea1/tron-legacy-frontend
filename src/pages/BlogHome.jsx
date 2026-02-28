@@ -22,6 +22,7 @@ export default function BlogHome() {
 
   useEffect(() => {
     fetchPosts();
+    if (page > 1) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [page, category]);
 
   const fetchPosts = async () => {

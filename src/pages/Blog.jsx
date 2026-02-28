@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
+import AdSlot from '../components/AdSlot';
 import './Blog.css';
 
 export default function Blog() {
@@ -15,9 +16,17 @@ export default function Blog() {
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const limit = 9;
+  const [showSidebarAds, setShowSidebarAds] = useState(() => window.innerWidth > 1200);
+
+  useEffect(() => {
+    const handleResize = () => setShowSidebarAds(window.innerWidth > 1200);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchPosts();
+    if (page > 1) window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [page, category]);
 
   const fetchPosts = async () => {
@@ -71,6 +80,10 @@ export default function Blog() {
 
       {/* Main Content */}
       <main className="blog-main">
+        <div className="blog-body">
+        {showSidebarAds && (
+          <aside className="ad-sidebar ad-sidebar-left" />
+        )}
         <div className="blog-container">
           {/* Category Filters */}
           {categories.length > 0 && (
@@ -210,6 +223,16 @@ export default function Blog() {
               )}
             </>
           )}
+        </div>
+        {showSidebarAds && (
+          <aside className="ad-sidebar ad-sidebar-right">
+            <AdSlot
+              slot="9257625337"
+              format="auto"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+            />
+          </aside>
+        )}
         </div>
       </main>
 
