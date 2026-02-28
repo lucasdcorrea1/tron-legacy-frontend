@@ -56,10 +56,16 @@ export default function Blog() {
 
       {/* Hero */}
       <section className="blog-hero">
+        <div className="blog-hero-grid" />
+        <div className="blog-hero-glow" />
         <div className="blog-hero-content">
-          <span className="blog-badge">Blog</span>
-          <h1>Tron Legacy</h1>
-          <p>Artigos, tutoriais e novidades sobre tecnologia</p>
+          <h1 className="blog-hero-title">
+            Tron <span className="neon-text">Legacy</span>
+          </h1>
+          <p className="blog-hero-subtitle">
+            Dentro do grid &mdash; explorando código, sistemas e o futuro digital.
+          </p>
+          <div className="blog-hero-line" />
         </div>
       </section>
 
