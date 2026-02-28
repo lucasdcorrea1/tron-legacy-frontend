@@ -239,6 +239,8 @@
   gap: 1.5rem;
   align-self: start;
   padding-top: 3rem;
+  min-width: 160px;
+  min-height: 600px;
 }
 
 .blog-main .ad-sidebar-left {
@@ -247,6 +249,16 @@
 
 .blog-main .ad-sidebar-right {
   justify-self: start;
+}
+
+/* Placeholder when ad hasn't loaded */
+.blog-main .ad-sidebar .adsbygoogle:empty {
+  display: block !important;
+  width: 160px;
+  min-height: 600px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
 }
 
 /* Category Filters */
