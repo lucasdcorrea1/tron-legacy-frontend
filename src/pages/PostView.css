@@ -56,14 +56,15 @@
   padding: 0 1rem;
   overflow: hidden;
   border-radius: 16px;
+  aspect-ratio: 21/9;
 }
 
 .postview-cover img {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   border-radius: 16px;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 /* 3-Column Layout: sidebar-left | article | sidebar-right */
@@ -96,13 +97,7 @@
 
 .ad-slot {
   width: 160px;
-  height: 600px;
-  border: 2px dashed rgba(168, 85, 247, 0.2);
-  border-radius: 12px;
-  background: rgba(168, 85, 247, 0.03);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 600px;
 }
 
 .ad-sidebar-left {
@@ -122,13 +117,7 @@
 }
 
 .ad-slot-label {
-  color: rgba(168, 85, 247, 0.3);
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  display: none;
 }
 
 .article-header {
@@ -875,6 +864,17 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+  .postview-cover {
+    max-width: 100%;
+    padding: 0;
+    border-radius: 0;
+    aspect-ratio: 16/9;
+  }
+
+  .postview-cover img {
+    border-radius: 0;
+  }
+
   .postview-header {
     padding: 1rem;
   }

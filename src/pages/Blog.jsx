@@ -211,10 +211,7 @@ export default function Blog() {
       <footer className="blog-footer">
         <div className="footer-container">
           <div className="footer-content">
-            <Link to="/" className="logo">
-              <span className="logo-icon">W</span>
-              <span className="logo-text">whodo</span>
-            </Link>
+            <Link to="/" className="footer-brand-link">whodo</Link>
             <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer" className="footer-whatsapp">WhatsApp</a>
             <p>&copy; {new Date().getFullYear()} Whodo Group LTDA - CNPJ 59.704.711/0001-90</p>
             <p className="footer-rights">Todos os direitos reservados.</p>

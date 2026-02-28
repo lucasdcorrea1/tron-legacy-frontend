@@ -26,32 +26,6 @@
   align-items: center;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-}
-
-.logo-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: white;
-}
-
-.logo-text {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #fafafa;
-}
-
 /* Mobile Menu Button */
 .mobile-menu-btn {
   display: none;
@@ -589,6 +563,19 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 2rem;
+}
+
+.footer-brand-link {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fafafa;
+  text-decoration: none;
+  letter-spacing: -0.025em;
+  transition: color 0.2s;
+}
+
+.footer-brand-link:hover {
+  color: #a855f7;
 }
 
 .footer-content {

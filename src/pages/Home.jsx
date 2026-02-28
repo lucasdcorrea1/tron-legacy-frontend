@@ -6,25 +6,61 @@ import Header from '../components/Header';
 import './Home.css';
 
 const TOTAL_SECTIONS = 3;
-const COOLDOWN_MS = 1200;
+const COOLDOWN_MS = 700;
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
 
   const homeRef = useRef(null);
   const sectionsRef = useRef([]);
   const touchStartY = useRef(0);
   const isLocked = useRef(false);
 
+  // Resize listener
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Mobile: IntersectionObserver for animations + active dot sync
+  useEffect(() => {
+    if (!isMobile) return;
+    // On mobile, make all existing sections visible immediately for initial render
+    sectionsRef.current.forEach((section) => {
+      if (section) section.classList.add('section-visible');
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('section-visible');
+            const idx = sectionsRef.current.findIndex((el) => el === entry.target);
+            if (idx !== -1) setActiveSection(idx);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    sectionsRef.current.forEach((section) => {
+      if (section) observer.observe(section);
+    });
+    return () => observer.disconnect();
+  }, [isMobile]);
+
   useEffect(() => {
     fetchPosts();
-    // Trigger first section animation on mount
-    setTimeout(() => {
-      sectionsRef.current[0]?.classList.add('section-visible');
-    }, 100);
-  }, []);
+    // Desktop: trigger first section animation on mount
+    if (!isMobile) {
+      setTimeout(() => {
+        sectionsRef.current[0]?.classList.add('section-visible');
+      }, 100);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const goToSection = useCallback((index) => {
     if (index < 0 || index >= TOTAL_SECTIONS) return;
@@ -42,8 +78,9 @@ export default function Home() {
     }, COOLDOWN_MS);
   }, []);
 
-  // Wheel — hijack, one tick = one section
+  // Wheel — hijack, one tick = one section (desktop only)
   useEffect(() => {
+    if (isMobile) return;
     const container = homeRef.current;
     if (!container) return;
 
@@ -60,10 +97,11 @@ export default function Home() {
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     return () => container.removeEventListener('wheel', handleWheel);
-  }, [activeSection, goToSection]);
+  }, [activeSection, goToSection, isMobile]);
 
-  // Touch — swipe up/down
+  // Touch — swipe up/down (desktop only, mobile uses native scroll)
   useEffect(() => {
+    if (isMobile) return;
     const container = homeRef.current;
     if (!container) return;
 
@@ -88,10 +126,11 @@ export default function Home() {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [activeSection, goToSection]);
+  }, [activeSection, goToSection, isMobile]);
 
-  // Keyboard — arrows / page keys
+  // Keyboard — arrows / page keys (desktop only)
   useEffect(() => {
+    if (isMobile) return;
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault();
@@ -104,11 +143,19 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeSection, goToSection]);
+  }, [activeSection, goToSection, isMobile]);
 
   const setSectionRef = useCallback((index) => (el) => {
     sectionsRef.current[index] = el;
   }, []);
+
+  const handleDotClick = useCallback((index) => {
+    if (isMobile) {
+      sectionsRef.current[index]?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      goToSection(index);
+    }
+  }, [isMobile, goToSection]);
 
   const fetchPosts = async () => {
     try {
@@ -134,13 +181,22 @@ export default function Home() {
     <div className="home" ref={homeRef}>
       <Header />
 
+      {/* Lava lamp */}
+      <div className="home-orbs">
+        <div className="home-orb home-orb--1" />
+        <div className="home-orb home-orb--2" />
+        <div className="home-orb home-orb--3" />
+      </div>
+      {/* Frosted glass over orbs */}
+      <div className="home-glass" />
+
       {/* Scroll Indicator Dots */}
       <div className="scroll-dots">
         {[0, 1, 2].map((i) => (
           <button
             key={i}
             className={`scroll-dot ${activeSection === i ? 'active' : ''}`}
-            onClick={() => goToSection(i)}
+            onClick={() => handleDotClick(i)}
             aria-label={`Ir para seção ${i + 1}`}
           />
         ))}
@@ -149,11 +205,10 @@ export default function Home() {
       {/* Sections Track — slides via translateY */}
       <div
         className="sections-track"
-        style={{ transform: `translateY(-${activeSection * 100}vh)` }}
+        style={isMobile ? undefined : { transform: `translateY(-${activeSection * 100}vh)` }}
       >
         {/* Tela 1 - Hero */}
         <section className="section-snap" ref={setSectionRef(0)}>
-          <div className="hero-glow"></div>
           <div className="hero-inner">
             <div className="hero-content">
               <p className="hero-tagline animate-item">Do conceito à realidade</p>
@@ -264,88 +319,59 @@ export default function Home() {
         <section className="section-snap section-cta-footer" ref={setSectionRef(2)}>
           <div className="cta-footer-content">
             <div className="cta-inner">
-              <h2 className="cta-title animate-item">Pronto para começar?</h2>
+              <span className="audit-badge animate-item">Auditoria gratuita</span>
+              <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
+                Descubra onde seu negócio<br />
+                está <span className="text-gradient">perdendo dinheiro</span>
+              </h2>
               <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Código 100% customizado para o seu negócio. Escolha o escopo e a gente constrói.
+                Analisamos sua operação de graça e mostramos exatamente o que está travando seu crescimento.
               </p>
 
-              <div className="pricing-grid">
-                {/* Site Sob Medida */}
-                <div className="pricing-card animate-card" style={{ transitionDelay: '0.2s' }}>
-                  <div className="pricing-header">
-                    <h3 className="pricing-name">Site Sob Medida</h3>
-                    <div className="pricing-price-wrapper">
-                      <span className="pricing-price-label">a partir de</span>
-                      <span className="pricing-price">R$ 2.500</span>
-                    </div>
-                  </div>
-                  <ul className="pricing-features">
-                    <li>Site institucional ou landing page</li>
-                    <li>Design exclusivo e responsivo</li>
-                    <li>SEO técnico configurado</li>
-                    <li>Entrega em até 15 dias</li>
-                  </ul>
-                  <a href="https://wa.me/5516999493490?text=Olá!%20Tenho%20interesse%20em%20um%20Site%20Sob%20Medida" target="_blank" rel="noopener noreferrer" className="pricing-cta btn-ghost">
-                    Solicitar Orçamento
-                  </a>
+              <div className="audit-benefits animate-item" style={{ transitionDelay: '0.2s' }}>
+                <div className="audit-benefit">
+                  <span className="audit-benefit-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </span>
+                  <span className="audit-benefit-text">Processos que consomem tempo</span>
                 </div>
+                <div className="audit-benefit">
+                  <span className="audit-benefit-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                  </span>
+                  <span className="audit-benefit-text">Gargalos que custam dinheiro</span>
+                </div>
+                <div className="audit-benefit">
+                  <span className="audit-benefit-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  </span>
+                  <span className="audit-benefit-text">Ações práticas de melhoria</span>
+                </div>
+                <div className="audit-benefit">
+                  <span className="audit-benefit-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  </span>
+                  <span className="audit-benefit-text">Relatório personalizado</span>
+                </div>
+              </div>
 
-                {/* Aplicação Web (featured) */}
-                <div className="pricing-card featured animate-card" style={{ transitionDelay: '0.35s' }}>
-                  <span className="pricing-badge">Mais Procurado</span>
-                  <div className="pricing-header">
-                    <h3 className="pricing-name">Aplicação Web</h3>
-                    <div className="pricing-price-wrapper">
-                      <span className="pricing-price-label">a partir de</span>
-                      <span className="pricing-price">R$ 8.000</span>
-                    </div>
-                  </div>
-                  <ul className="pricing-features">
-                    <li>Sistema web completo com backend</li>
-                    <li>Painel admin personalizado</li>
-                    <li>Banco de dados e API REST</li>
-                    <li>Autenticação e permissões</li>
-                    <li>Deploy e hospedagem configurados</li>
-                    <li>30 dias de suporte pós-entrega</li>
-                  </ul>
-                  <a href="https://wa.me/5516999493490?text=Olá!%20Tenho%20interesse%20em%20uma%20Aplicação%20Web%20customizada" target="_blank" rel="noopener noreferrer" className="pricing-cta btn-primary">
-                    Quero Minha Aplicação
-                  </a>
-                </div>
-
-                {/* Software House */}
-                <div className="pricing-card animate-card" style={{ transitionDelay: '0.5s' }}>
-                  <span className="pricing-badge premium">Enterprise</span>
-                  <div className="pricing-header">
-                    <h3 className="pricing-name">Software House</h3>
-                    <div className="pricing-price-wrapper">
-                      <span className="pricing-price">Sob consulta</span>
-                    </div>
-                  </div>
-                  <ul className="pricing-features">
-                    <li>Projeto completo web + mobile</li>
-                    <li>Arquitetura escalável sob medida</li>
-                    <li>Integrações com APIs e ERPs</li>
-                    <li>Equipe dedicada ao seu projeto</li>
-                    <li>CI/CD e infraestrutura DevOps</li>
-                    <li>Consultoria técnica contínua</li>
-                    <li>Manutenção e evolução do sistema</li>
-                  </ul>
-                  <a href="https://wa.me/5516999493490?text=Olá!%20Preciso%20de%20um%20projeto%20de%20software%20completo%20(Software%20House)" target="_blank" rel="noopener noreferrer" className="pricing-cta btn-ghost">
-                    Fale com a Equipe
-                  </a>
-                </div>
+              <div className="audit-cta-wrapper animate-item" style={{ transitionDelay: '0.3s' }}>
+                <a
+                  href="https://wa.me/5516999493490?text=Oi!%20Quero%20a%20auditoria%20gratuita"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="audit-cta-btn"
+                >
+                  Quero minha auditoria gratuita
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+                <p className="audit-reassurance">Sem compromisso. Sem custo. Leva 15 minutos.</p>
               </div>
             </div>
           </div>
           <footer className="footer-compact">
             <div className="footer-compact-inner">
-              <div className="footer-brand-compact">
-                <Link to="/" className="logo">
-                  <span className="logo-mark">W</span>
-                  <span className="logo-text">whodo</span>
-                </Link>
-              </div>
+              <Link to="/" className="footer-brand-compact">whodo</Link>
               <div className="footer-links-compact">
                 <Link to="/blog">Blog</Link>
                 <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer">WhatsApp</a>

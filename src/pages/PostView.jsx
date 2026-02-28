@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { blog, API_URL, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
+import AdSlot from '../components/AdSlot';
 import hljs from 'highlight.js/lib/core';
 import javascript from 'highlight.js/lib/languages/javascript';
 import typescript from 'highlight.js/lib/languages/typescript';
@@ -111,23 +112,6 @@ export default function PostView() {
     }
   }, [post]);
 
-  // Initialize AdSense ads (only visible ones, with delay for layout settle)
-  useEffect(() => {
-    if (!post) return;
-    const timer = setTimeout(() => {
-      try {
-        const ads = document.querySelectorAll('.adsbygoogle');
-        ads.forEach((ad) => {
-          if (!ad.dataset.adsbygoogleStatus && ad.offsetParent !== null) {
-            (window.adsbygoogle = window.adsbygoogle || []).push({});
-          }
-        });
-      } catch (e) {
-        // AdSense not ready yet
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [post, showSidebarAds]);
 
   const fetchPost = async () => {
     setLoading(true);
@@ -482,12 +466,11 @@ export default function PostView() {
 
         {/* In-article Ad */}
         <div className="ad-in-article">
-          <ins className="adsbygoogle"
+          <AdSlot
+            slot="4024287013"
+            format="fluid"
+            layout="in-article"
             style={{ display: 'block', textAlign: 'center' }}
-            data-ad-layout="in-article"
-            data-ad-format="fluid"
-            data-ad-client="ca-pub-8952525362331082"
-            data-ad-slot="4024287013"
           />
         </div>
 
@@ -505,13 +488,11 @@ export default function PostView() {
         {/* Right Ad Sidebar - only render when viewport is wide enough */}
         {showSidebarAds && (
           <aside className="ad-sidebar ad-sidebar-right">
-            <div className="ad-slot">
-              <ins className="adsbygoogle"
-                style={{ display: 'inline-block', width: '160px', height: '600px' }}
-                data-ad-client="ca-pub-8952525362331082"
-                data-ad-slot="9257625337"
-              />
-            </div>
+            <AdSlot
+              slot="9257625337"
+              format="auto"
+              style={{ display: 'inline-block', width: '160px', height: '600px' }}
+            />
           </aside>
         )}
       </div>
@@ -600,6 +581,7 @@ export default function PostView() {
           )}
         </div>
       </section>
+
     </div>
   );
 }
