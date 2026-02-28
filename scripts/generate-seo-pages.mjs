@@ -198,12 +198,53 @@ async function main() {
       writePage(`blog/${post.slug}/index.html`, injectMetaTags(indexHtml, postMeta));
     }
 
-    console.log(`\nSEO pages generated successfully! (${posts.length + 2} pages total)`);
+    // 4. Generate sitemap.xml
+    generateSitemap(posts);
+
+    console.log(`\nSEO pages generated successfully! (${posts.length + 2} pages + sitemap.xml)`);
   } catch (err) {
     console.error(`\n  Warning: Could not fetch posts from API: ${err.message}`);
     console.log('  Static pages (home, blog) were still generated.');
     console.log('  Blog post pages will rely on client-side meta tags.\n');
+
+    // Generate sitemap with static pages only
+    generateSitemap([]);
   }
+}
+
+function generateSitemap(posts) {
+  const today = new Date().toISOString().split('T')[0];
+
+  let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${SITE_URL}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>`;
+
+  for (const post of posts) {
+    const lastMod = (post.updated_at || post.published_at || post.created_at || '').split('T')[0];
+    xml += `
+  <url>
+    <loc>${SITE_URL}/blog/${post.slug}</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+  }
+
+  xml += `
+</urlset>
+`;
+
+  writeFileSync(resolve(DIST_DIR, 'sitemap.xml'), xml, 'utf-8');
+  console.log(`  Generated: sitemap.xml (${posts.length + 2} URLs)`);
 }
 
 main();

@@ -7,4 +7,4 @@ Disallow: /admin
 Disallow: /admin/
 Disallow: /login
 
-Sitemap: https://tron-legacy-api.onrender.com/api/v1/sitemap.xml
+Sitemap: https://whodo.com.br/sitemap.xml
