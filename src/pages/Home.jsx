@@ -277,7 +277,7 @@ export default function Home() {
                         <ImageCarousel
                           images={post.cover_images}
                           legacyImage={post.cover_image}
-                          size="card"
+                          size="banner"
                           alt={post.title}
                           showControls={post.cover_images && post.cover_images.length > 1}
                         />

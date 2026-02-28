@@ -111,7 +111,7 @@ export default function Blog() {
                           <ImageCarousel
                             images={post.cover_images}
                             legacyImage={post.cover_image}
-                            size={isFeatured ? 'card' : 'thumb'}
+                            size={isFeatured ? 'banner' : 'card'}
                             alt={post.title}
                             showControls={post.cover_images && post.cover_images.length > 1}
                           />
