@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { blog, API_URL, getImageUrl } from '../services/api';
@@ -381,8 +382,67 @@ export default function PostView() {
 
   const hasMoreComments = comments.length < commentsTotal;
 
+  const postTitle = post.meta_title || post.title;
+  const postDescription = post.meta_description || post.excerpt || post.title;
+  const postUrl = `https://whodo.com.br/blog/${post.slug}`;
+  const postImage = post.cover_images && post.cover_images.length > 0
+    ? getImageUrl(post.cover_images[0], 'banner')
+    : post.cover_image
+      ? getImageUrl(post.cover_image, 'banner')
+      : 'https://whodo.com.br/teste-image-home.png';
+  const publishedDate = post.published_at || post.created_at;
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: postTitle,
+    description: postDescription,
+    image: postImage,
+    url: postUrl,
+    datePublished: publishedDate,
+    dateModified: post.updated_at || publishedDate,
+    author: {
+      '@type': 'Person',
+      name: post.author_name || 'Whodo',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Whodo',
+      url: 'https://whodo.com.br',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': postUrl,
+    },
+    ...(post.tags && post.tags.length > 0 && { keywords: post.tags.join(', ') }),
+    ...(post.reading_time && { timeRequired: `PT${post.reading_time}M` }),
+  };
+
   return (
     <div className="postview-page">
+      <Helmet>
+        <title>{postTitle} | Whodo Blog</title>
+        <meta name="description" content={postDescription} />
+        <link rel="canonical" href={postUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={postUrl} />
+        <meta property="og:title" content={postTitle} />
+        <meta property="og:description" content={postDescription} />
+        <meta property="og:image" content={postImage} />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="Whodo" />
+        <meta property="article:published_time" content={publishedDate} />
+        {post.updated_at && <meta property="article:modified_time" content={post.updated_at} />}
+        {post.category && <meta property="article:section" content={post.category} />}
+        {post.tags && post.tags.map(tag => (
+          <meta property="article:tag" content={tag} key={tag} />
+        ))}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={postTitle} />
+        <meta name="twitter:description" content={postDescription} />
+        <meta name="twitter:image" content={postImage} />
+        <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+      </Helmet>
       <Header />
 
       {((post.cover_images && post.cover_images.length > 0) || post.cover_image) && (

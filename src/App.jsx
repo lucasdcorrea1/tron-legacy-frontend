@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import PrivateRoute from './components/PrivateRoute';
@@ -15,6 +16,7 @@ import './styles/global.css';
 
 export default function App() {
   return (
+    <HelmetProvider>
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
@@ -78,5 +80,6 @@ export default function App() {
       </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
+    </HelmetProvider>
   );
 }

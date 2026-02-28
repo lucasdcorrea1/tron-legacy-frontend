@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
@@ -181,6 +182,22 @@ export default function Home() {
 
   return (
     <div className="home" ref={homeRef}>
+      <Helmet>
+        <title>Whodo - Transforme suas ideias em soluções digitais</title>
+        <meta name="description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença." />
+        <link rel="canonical" href="https://whodo.com.br/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://whodo.com.br/" />
+        <meta property="og:title" content="Whodo - Transforme suas ideias em soluções digitais" />
+        <meta property="og:description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença." />
+        <meta property="og:image" content="https://whodo.com.br/teste-image-home.png" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="Whodo" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Whodo - Transforme suas ideias em soluções digitais" />
+        <meta name="twitter:description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio." />
+        <meta name="twitter:image" content="https://whodo.com.br/teste-image-home.png" />
+      </Helmet>
       <Header />
 
       {/* Lava lamp */}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
@@ -61,6 +62,20 @@ export default function Blog() {
 
   return (
     <div className="blog-page">
+      <Helmet>
+        <title>Blog Tron Legacy - Artigos sobre Tecnologia | Whodo</title>
+        <meta name="description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software. Explorando código, sistemas e o futuro digital." />
+        <link rel="canonical" href="https://whodo.com.br/blog" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://whodo.com.br/blog" />
+        <meta property="og:title" content="Blog Tron Legacy - Artigos sobre Tecnologia" />
+        <meta property="og:description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software." />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="og:site_name" content="Whodo" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Blog Tron Legacy - Artigos sobre Tecnologia" />
+        <meta name="twitter:description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software." />
+      </Helmet>
       <Header />
 
       {/* Hero */}
