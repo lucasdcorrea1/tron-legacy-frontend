@@ -55,7 +55,7 @@ export default function Services() {
   const serviceLd = {
     '@context': 'https://schema.org',
     '@type': 'Service',
-    serviceType: 'Desenvolvimento de Software',
+    serviceType: 'Desenvolvimento de Soluções Digitais',
     provider: {
       '@type': 'Organization',
       name: 'Whodo',
@@ -85,17 +85,17 @@ export default function Services() {
   return (
     <div className="svc">
       <Helmet>
-        <title>Serviços de Desenvolvimento de Software | Whodo</title>
+        <title>Serviços de Desenvolvimento de Soluções Digitais | Whodo</title>
         <meta name="description" content="Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita." />
         <link rel="canonical" href="https://whodo.com.br/servicos" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://whodo.com.br/servicos" />
-        <meta property="og:title" content="Serviços de Desenvolvimento de Software | Whodo" />
+        <meta property="og:title" content="Serviços de Desenvolvimento de Soluções Digitais | Whodo" />
         <meta property="og:description" content="Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita." />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Whodo" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Serviços de Desenvolvimento de Software | Whodo" />
+        <meta name="twitter:title" content="Serviços de Desenvolvimento de Soluções Digitais | Whodo" />
         <meta name="twitter:description" content="Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita." />
         <script type="application/ld+json">{JSON.stringify(serviceLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
@@ -116,7 +116,7 @@ export default function Services() {
         <div className="svc-hero-inner">
           <span className="svc-tagline">O que fazemos</span>
           <h1 className="svc-title">
-            Seu problema vira <span className="text-gradient">software</span>
+            Seu problema vira <span className="text-gradient">solução</span>
           </h1>
           <p className="svc-subtitle">
             Entendemos o desafio, desenhamos a solução e entregamos rodando.
