@@ -1,0 +1,22 @@
+{
+  "name": "Whodo - Soluções Digitais",
+  "short_name": "Whodo",
+  "description": "Transforme suas ideias em soluções digitais. Blog sobre tecnologia, programação e desenvolvimento.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#a855f7",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

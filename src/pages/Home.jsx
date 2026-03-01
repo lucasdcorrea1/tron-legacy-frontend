@@ -197,6 +197,22 @@ export default function Home() {
         <meta name="twitter:title" content="Whodo - Transforme suas ideias em soluções digitais" />
         <meta name="twitter:description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio." />
         <meta name="twitter:image" content="https://whodo.com.br/teste-image-home.png" />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Organization',
+          name: 'Whodo',
+          url: 'https://whodo.com.br',
+          description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio.',
+          logo: { '@type': 'ImageObject', url: 'https://whodo.com.br/favicon.svg' },
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Whodo',
+          url: 'https://whodo.com.br',
+          inLanguage: 'pt-BR',
+          publisher: { '@type': 'Organization', name: 'Whodo' },
+        })}</script>
       </Helmet>
       <Header />
 
@@ -230,7 +246,7 @@ export default function Home() {
         <section className="section-snap" ref={setSectionRef(0)}>
           <div className="hero-inner">
             <div className="hero-content">
-              <p className="hero-tagline animate-item">Do conceito à realidade</p>
+              <p className="hero-tagline animate-item">Onde a inovação ganha forma</p>
               <h1 className="hero-title animate-item" style={{ transitionDelay: '0.1s' }}>
                 Transforme suas ideias em <span className="text-gradient">soluções digitais</span>
               </h1>

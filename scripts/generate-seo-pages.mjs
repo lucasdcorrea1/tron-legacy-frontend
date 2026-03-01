@@ -35,7 +35,7 @@ function getImageUrl(url) {
   return `${API_URL}${url}`;
 }
 
-function generateMetaTags({ title, description, url, image, type, publishedTime, modifiedTime, tags, author, jsonLd }) {
+function generateMetaTags({ title, description, url, image, type, publishedTime, modifiedTime, tags, author, jsonLd, extraJsonLd }) {
   const safeTitle = escapeHtml(title);
   const safeDesc = escapeHtml(description);
 
@@ -79,6 +79,10 @@ function generateMetaTags({ title, description, url, image, type, publishedTime,
     meta += `\n    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`;
   }
 
+  if (extraJsonLd) {
+    meta += `\n    <script type="application/ld+json">${JSON.stringify(extraJsonLd)}</script>`;
+  }
+
   return meta;
 }
 
@@ -119,11 +123,56 @@ async function main() {
       name: 'Whodo',
       url: SITE_URL,
       description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio.',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/favicon.svg`,
+      },
+    },
+    extraJsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Whodo',
+      url: SITE_URL,
+      inLanguage: 'pt-BR',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Whodo',
+        url: SITE_URL,
+      },
     },
   });
   writePage('index.html', injectMetaTags(indexHtml, homeMeta));
 
-  // 2. Blog listing page
+  // 2. Services page
+  const servicesMeta = generateMetaTags({
+    title: 'Serviços de Desenvolvimento de Software | Whodo',
+    description: 'Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita.',
+    url: `${SITE_URL}/servicos`,
+    type: 'website',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      serviceType: 'Desenvolvimento de Software',
+      provider: {
+        '@type': 'Organization',
+        name: 'Whodo',
+        url: SITE_URL,
+        logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.svg` },
+      },
+      areaServed: { '@type': 'Country', name: 'Brasil' },
+    },
+    extraJsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Serviços', item: `${SITE_URL}/servicos` },
+      ],
+    },
+  });
+  writePage('servicos/index.html', injectMetaTags(indexHtml, servicesMeta));
+
+  // 3. Blog listing page
   const blogMeta = generateMetaTags({
     title: 'Blog Tron Legacy - Artigos sobre Tecnologia | Whodo',
     description: 'Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software.',
@@ -135,7 +184,21 @@ async function main() {
       name: 'Tron Legacy',
       url: `${SITE_URL}/blog`,
       description: 'Artigos, tutoriais e novidades sobre tecnologia.',
-      publisher: { '@type': 'Organization', name: 'Whodo', url: SITE_URL },
+      inLanguage: 'pt-BR',
+      publisher: {
+        '@type': 'Organization',
+        name: 'Whodo',
+        url: SITE_URL,
+        logo: { '@type': 'ImageObject', url: `${SITE_URL}/favicon.svg` },
+      },
+    },
+    extraJsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+        { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
+      ],
     },
   });
   writePage('blog/index.html', injectMetaTags(indexHtml, blogMeta));
@@ -176,22 +239,43 @@ async function main() {
           '@type': 'BlogPosting',
           headline: postTitle,
           description: postDescription,
-          image: coverImage,
+          image: {
+            '@type': 'ImageObject',
+            url: coverImage,
+            width: 1920,
+            height: 1080,
+          },
           url: postUrl,
           datePublished: publishedDate,
           dateModified: post.updated_at || publishedDate,
           author: {
             '@type': 'Person',
             name: post.author_name || 'Whodo',
+            url: SITE_URL,
           },
           publisher: {
             '@type': 'Organization',
             name: 'Whodo',
             url: SITE_URL,
+            logo: {
+              '@type': 'ImageObject',
+              url: `${SITE_URL}/favicon.svg`,
+            },
           },
           mainEntityOfPage: { '@type': 'WebPage', '@id': postUrl },
+          inLanguage: 'pt-BR',
+          ...(post.category && { articleSection: post.category }),
           ...(post.tags && post.tags.length > 0 && { keywords: post.tags.join(', ') }),
           ...(post.reading_time && { timeRequired: `PT${post.reading_time}M` }),
+        },
+        extraJsonLd: {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` },
+            { '@type': 'ListItem', position: 3, name: postTitle, item: postUrl },
+          ],
         },
       });
 
@@ -201,7 +285,10 @@ async function main() {
     // 4. Generate sitemap.xml
     generateSitemap(posts);
 
-    console.log(`\nSEO pages generated successfully! (${posts.length + 2} pages + sitemap.xml)`);
+    // 5. Generate RSS feed
+    generateRssFeed(posts);
+
+    console.log(`\nSEO pages generated successfully! (${posts.length + 3} pages + sitemap.xml + feed.xml)`);
   } catch (err) {
     console.error(`\n  Warning: Could not fetch posts from API: ${err.message}`);
     console.log('  Static pages (home, blog) were still generated.');
@@ -221,6 +308,11 @@ function generateSitemap(posts) {
     <loc>${SITE_URL}/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>${SITE_URL}/servicos</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>${SITE_URL}/blog</loc>
@@ -244,7 +336,47 @@ function generateSitemap(posts) {
 `;
 
   writeFileSync(resolve(DIST_DIR, 'sitemap.xml'), xml, 'utf-8');
-  console.log(`  Generated: sitemap.xml (${posts.length + 2} URLs)`);
+  console.log(`  Generated: sitemap.xml (${posts.length + 3} URLs)`);
+}
+
+function generateRssFeed(posts) {
+  const buildDate = new Date().toUTCString();
+
+  let rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Whodo Blog - Tron Legacy</title>
+    <link>${SITE_URL}/blog</link>
+    <description>Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software.</description>
+    <language>pt-BR</language>
+    <lastBuildDate>${buildDate}</lastBuildDate>
+    <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />`;
+
+  for (const post of posts) {
+    const postTitle = escapeHtml(post.meta_title || post.title);
+    const postDescription = escapeHtml(post.meta_description || post.excerpt || post.title);
+    const postUrl = `${SITE_URL}/blog/${post.slug}`;
+    const pubDate = new Date(post.published_at || post.created_at).toUTCString();
+
+    rss += `
+    <item>
+      <title>${postTitle}</title>
+      <link>${postUrl}</link>
+      <guid isPermaLink="true">${postUrl}</guid>
+      <description>${postDescription}</description>
+      <pubDate>${pubDate}</pubDate>
+      ${post.author_name ? `<author>noreply@whodo.com.br (${escapeHtml(post.author_name)})</author>` : ''}
+      ${post.category ? `<category>${escapeHtml(post.category)}</category>` : ''}
+    </item>`;
+  }
+
+  rss += `
+  </channel>
+</rss>
+`;
+
+  writeFileSync(resolve(DIST_DIR, 'feed.xml'), rss, 'utf-8');
+  console.log(`  Generated: feed.xml (${posts.length} items)`);
 }
 
 main();

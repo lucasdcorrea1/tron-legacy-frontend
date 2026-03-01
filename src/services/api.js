@@ -215,6 +215,15 @@ export const auth = {
   isAuthenticated: () => !!localStorage.getItem('token'),
 };
 
+export const emailMarketing = {
+  listTemplates: () => api.get('/api/v1/admin/email-marketing/templates'),
+  previewTemplate: (id, data) => api.post(`/api/v1/admin/email-marketing/templates/${id}/preview`, data),
+  getAudience: () => api.get('/api/v1/admin/email-marketing/audience'),
+  send: (data) => api.post('/api/v1/admin/email-marketing/send', data),
+  listBroadcasts: () => api.get('/api/v1/admin/email-marketing/broadcasts'),
+  getBroadcast: (id) => api.get(`/api/v1/admin/email-marketing/broadcasts/${id}`),
+};
+
 export const profile = {
   get: () => api.get('/api/v1/profile'),
   update: (data) => api.put('/api/v1/profile', data),

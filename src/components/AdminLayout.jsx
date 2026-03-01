@@ -37,6 +37,12 @@ const Icons = {
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
   ),
+  email: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2" />
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+    </svg>
+  ),
   blog: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
@@ -79,6 +85,7 @@ const menuItems = [
 
 const adminItems = [
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
+  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing' },
 ];
 
 export default function AdminLayout({ children }) {

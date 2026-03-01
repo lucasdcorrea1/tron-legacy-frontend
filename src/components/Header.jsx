@@ -64,6 +64,8 @@ export default function Header() {
         <button
           className="site-menu-btn"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={mobileMenuOpen}
         >
           <span className={`site-hamburger ${mobileMenuOpen ? 'open' : ''}`} />
         </button>
@@ -75,6 +77,13 @@ export default function Header() {
             onClick={closeMenus}
           >
             Home
+          </Link>
+          <Link
+            to="/servicos"
+            className={`site-nav-link ${isActive('/servicos') ? 'active' : ''}`}
+            onClick={closeMenus}
+          >
+            Serviços
           </Link>
           <Link
             to="/blog"
@@ -91,6 +100,9 @@ export default function Header() {
                 <button
                   className={`site-avatar-btn ${showUserMenu ? 'open' : ''}`}
                   onClick={() => setShowUserMenu(!showUserMenu)}
+                  aria-label="Menu do usuário"
+                  aria-expanded={showUserMenu}
+                  aria-haspopup="true"
                 >
                   <UserAvatar profile={profile} size="sm" />
                 </button>

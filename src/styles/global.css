@@ -16,11 +16,24 @@
   --success: #16a34a;
 }
 
+html {
+  overflow-y: scroll;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  cursor: default;
+}
+
+/* Only show text cursor where selection makes sense */
+.article-content,
+.comment-content,
+input,
+textarea {
+  cursor: text;
 }
 
 a {

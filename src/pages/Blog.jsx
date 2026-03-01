@@ -5,6 +5,7 @@ import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
 import AdSlot from '../components/AdSlot';
+import NewsletterForm from '../components/NewsletterForm';
 import './Blog.css';
 
 export default function Blog() {
@@ -75,6 +76,28 @@ export default function Blog() {
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Blog Tron Legacy - Artigos sobre Tecnologia" />
         <meta name="twitter:description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software." />
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'Blog',
+          name: 'Tron Legacy',
+          url: 'https://whodo.com.br/blog',
+          description: 'Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software.',
+          inLanguage: 'pt-BR',
+          publisher: {
+            '@type': 'Organization',
+            name: 'Whodo',
+            url: 'https://whodo.com.br',
+            logo: { '@type': 'ImageObject', url: 'https://whodo.com.br/favicon.svg' },
+          },
+        })}</script>
+        <script type="application/ld+json">{JSON.stringify({
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://whodo.com.br' },
+            { '@type': 'ListItem', position: 2, name: 'Blog', item: 'https://whodo.com.br/blog' },
+          ],
+        })}</script>
       </Helmet>
       <Header />
 
@@ -250,6 +273,11 @@ export default function Blog() {
         )}
         </div>
       </main>
+
+      {/* Newsletter */}
+      <div className="blog-container" style={{ padding: '0 1.5rem' }}>
+        <NewsletterForm />
+      </div>
 
       {/* Footer */}
       <footer className="blog-footer">

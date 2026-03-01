@@ -143,6 +143,7 @@ export default function ImageCarousel({
                 src={src}
                 alt={alt || `Image ${i + 1}`}
                 draggable="false"
+                loading="lazy"
               />
             </div>
           ))}

@@ -11,7 +11,10 @@ import PostList from './pages/PostList';
 import PostForm from './pages/PostForm';
 import Blog from './pages/Blog';
 import PostView from './pages/PostView';
+import Services from './pages/Services';
+import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
+import EmailMarketing from './pages/EmailMarketing';
 import './styles/global.css';
 
 export default function App() {
@@ -24,6 +27,8 @@ export default function App() {
           {/* Public routes */}
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/servicos" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<PostView />} />
 
@@ -65,6 +70,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <PostForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/email-marketing"
+            element={
+              <PrivateRoute>
+                <EmailMarketing />
               </PrivateRoute>
             }
           />

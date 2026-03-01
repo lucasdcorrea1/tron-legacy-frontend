@@ -166,6 +166,12 @@ export default function Login() {
               : (mode === 'login' ? 'Entrar' : 'Criar conta')
             }
           </button>
+
+          {mode === 'login' && (
+            <Link to="/reset-password" className="forgot-password-link">
+              Esqueci minha senha
+            </Link>
+          )}
         </form>
       </div>
     </div>
