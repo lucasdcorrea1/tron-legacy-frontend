@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
@@ -6,10 +6,13 @@ import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
 import AdSlot from '../components/AdSlot';
 import NewsletterForm from '../components/NewsletterForm';
+import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Blog.css';
 
 export default function Blog() {
   const navigate = useNavigate();
+  const blogRef = useRef(null);
+  useHorizontalPageSwipe(blogRef);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -62,7 +65,7 @@ export default function Blog() {
   const totalPages = Math.ceil(total / limit);
 
   return (
-    <div className="blog-page">
+    <div className="blog-page" ref={blogRef}>
       <Helmet>
         <title>Blog Tron Legacy - Artigos sobre Tecnologia | Whodo</title>
         <meta name="description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software. Explorando código, sistemas e o futuro digital." />

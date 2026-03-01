@@ -15,6 +15,7 @@ export default function EmailMarketing() {
   const toast = useToast();
   const iframeRef = useRef(null);
 
+  const [tab, setTab] = useState('send'); // 'send' | 'subscribers'
   const [step, setStep] = useState(0);
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -23,6 +24,11 @@ export default function EmailMarketing() {
   const [sending, setSending] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [previewHTML, setPreviewHTML] = useState('');
+
+  // Subscribers
+  const [subscribers, setSubscribers] = useState([]);
+  const [subsLoading, setSubsLoading] = useState(false);
+  const [subsSearch, setSubsSearch] = useState('');
 
   // Form fields
   const [subject, setSubject] = useState('');
@@ -36,6 +42,13 @@ export default function EmailMarketing() {
     loadTemplates();
     loadAudience();
   }, []);
+
+  // Load subscribers when tab switches
+  useEffect(() => {
+    if (tab === 'subscribers' && subscribers.length === 0) {
+      loadSubscribers();
+    }
+  }, [tab]);
 
   const loadTemplates = async () => {
     try {
@@ -55,6 +68,34 @@ export default function EmailMarketing() {
       // Non-critical — just won't show audience count
     }
   };
+
+  const loadSubscribers = async () => {
+    setSubsLoading(true);
+    try {
+      const data = await emailMarketing.listSubscribers();
+      setSubscribers(data.data || []);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao carregar inscritos');
+    } finally {
+      setSubsLoading(false);
+    }
+  };
+
+  const handleDeleteSubscriber = async (id, email) => {
+    if (!window.confirm(`Remover ${email} da lista?`)) return;
+    try {
+      await emailMarketing.deleteSubscriber(id);
+      setSubscribers((prev) => prev.filter((s) => s.id !== id));
+      toast.success(`${email} removido`);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao remover inscrito');
+    }
+  };
+
+  const filteredSubscribers = subscribers.filter((s) =>
+    (s.email || '').toLowerCase().includes(subsSearch.toLowerCase()) ||
+    (s.first_name || '').toLowerCase().includes(subsSearch.toLowerCase())
+  );
 
   const handleSelectTemplate = (template) => {
     setSelectedTemplate(template);
@@ -136,6 +177,84 @@ export default function EmailMarketing() {
           <h1>Email Marketing</h1>
           <p>Envie emails para os inscritos da newsletter</p>
         </div>
+
+        {/* Tab switcher */}
+        <div className="em-tabs">
+          <button
+            className={`em-tab ${tab === 'send' ? 'active' : ''}`}
+            onClick={() => setTab('send')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Enviar Email
+          </button>
+          <button
+            className={`em-tab ${tab === 'subscribers' ? 'active' : ''}`}
+            onClick={() => setTab('subscribers')}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Inscritos {subscribers.length > 0 && <span className="em-tab-count">{subscribers.length}</span>}
+          </button>
+        </div>
+
+        {/* ====== SUBSCRIBERS TAB ====== */}
+        {tab === 'subscribers' && (
+          <div className="em-subscribers">
+            <div className="em-subs-header">
+              <input
+                type="text"
+                className="em-subs-search"
+                placeholder="Buscar por email ou nome..."
+                value={subsSearch}
+                onChange={(e) => setSubsSearch(e.target.value)}
+              />
+              <button className="em-btn em-btn-secondary" onClick={loadSubscribers} disabled={subsLoading}>
+                {subsLoading ? 'Atualizando...' : 'Atualizar'}
+              </button>
+            </div>
+
+            {subsLoading && subscribers.length === 0 ? (
+              <div className="em-loading">
+                <span className="em-spinner" />
+                Carregando inscritos...
+              </div>
+            ) : filteredSubscribers.length === 0 ? (
+              <div className="em-subs-empty">
+                {subsSearch ? 'Nenhum inscrito encontrado.' : 'Nenhum inscrito ainda.'}
+              </div>
+            ) : (
+              <div className="em-subs-list">
+                <div className="em-subs-row em-subs-row-header">
+                  <span>Email</span>
+                  <span>Nome</span>
+                  <span>Data</span>
+                  <span></span>
+                </div>
+                {filteredSubscribers.map((s) => (
+                  <div key={s.id} className={`em-subs-row ${s.unsubscribed ? 'unsubscribed' : ''}`}>
+                    <span className="em-subs-email">{s.email}</span>
+                    <span className="em-subs-name">{s.first_name || '—'}</span>
+                    <span className="em-subs-date">
+                      {s.created_at ? new Date(s.created_at).toLocaleDateString('pt-BR') : '—'}
+                    </span>
+                    <span className="em-subs-actions">
+                      {s.unsubscribed && <span className="em-subs-badge-unsub">Cancelou</span>}
+                      <button
+                        className="em-subs-delete"
+                        onClick={() => handleDeleteSubscriber(s.id, s.email)}
+                        title="Remover inscrito"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      </button>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ====== SEND EMAIL TAB ====== */}
+        {tab === 'send' && <>
 
         {/* Audience bar */}
         {audienceCount && (
@@ -318,6 +437,8 @@ export default function EmailMarketing() {
             </div>
           </div>
         )}
+
+        </>}
 
         {/* Confirm dialog */}
         {showConfirm && (

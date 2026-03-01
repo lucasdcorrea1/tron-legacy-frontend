@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
+import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Home.css';
 
 const TOTAL_SECTIONS = 3;
@@ -16,10 +17,38 @@ export default function Home() {
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
 
   const homeRef = useRef(null);
+  const heroGlowRef = useRef(null);
   const sectionsRef = useRef([]);
   const touchStartY = useRef(0);
   const isLocked = useRef(false);
   const activeSectionRef = useRef(0);
+
+  useHorizontalPageSwipe(homeRef);
+
+  // Mouse glow on hero
+  useEffect(() => {
+    const section = sectionsRef.current[0];
+    const glow = heroGlowRef.current;
+    if (!section || !glow) return;
+
+    const handleMouseMove = (e) => {
+      const rect = section.getBoundingClientRect();
+      glow.style.setProperty('--glow-x', `${e.clientX - rect.left}px`);
+      glow.style.setProperty('--glow-y', `${e.clientY - rect.top}px`);
+      glow.style.opacity = '1';
+    };
+
+    const handleMouseLeave = () => {
+      glow.style.opacity = '0';
+    };
+
+    section.addEventListener('mousemove', handleMouseMove);
+    section.addEventListener('mouseleave', handleMouseLeave);
+    return () => {
+      section.removeEventListener('mousemove', handleMouseMove);
+      section.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   // Resize listener
   useEffect(() => {
@@ -244,6 +273,8 @@ export default function Home() {
       >
         {/* Tela 1 - Hero */}
         <section className="section-snap" ref={setSectionRef(0)}>
+          <div className="hero-grid" />
+          <div className="hero-glow" ref={heroGlowRef} />
           <div className="hero-inner">
             <div className="hero-content">
               <p className="hero-tagline animate-item">Onde a inovação ganha forma</p>
@@ -280,12 +311,8 @@ export default function Home() {
         {/* Tela 2 - Blog */}
         <section className="section-snap section-blog" ref={setSectionRef(1)}>
           <div className="section-inner">
-            <div className="section-header">
-              <p className="section-tagline animate-item">Blog</p>
-              <h2 className="section-title animate-item" style={{ transitionDelay: '0.1s' }}>Tron Legacy</h2>
-              <p className="section-description animate-item" style={{ transitionDelay: '0.15s' }}>
-                Artigos, tutoriais e novidades sobre tecnologia
-              </p>
+            <div className="section-header section-header--compact">
+              <h2 className="section-title animate-item">Blog</h2>
             </div>
 
             {loadingPosts ? (

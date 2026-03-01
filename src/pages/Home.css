@@ -136,6 +136,41 @@
   position: relative;
 }
 
+/* Hero grid background */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(168, 85, 247, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
+  animation: heroGridPulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes heroGridPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Mouse glow — lights up the grid lines around cursor */
+.hero-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(168, 85, 247, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(168, 85, 247, 0.35) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(circle 200px at var(--glow-x, -200px) var(--glow-y, -200px), black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle 200px at var(--glow-x, -200px) var(--glow-y, -200px), black 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
 /* btn-outline used by blog section CTA */
 .btn-outline {
   padding: 0.5rem 1.25rem;
@@ -405,7 +440,7 @@
    TELA 2 - BLOG
    ============================================ */
 .section-blog {
-  padding: 0 2rem;
+  padding: 4rem 2rem 0;
 }
 
 /* section-blog glows removed — using global .home-orbs layer */
@@ -991,7 +1026,7 @@
 
   /* Blog */
   .section-blog {
-    padding: 0 1rem;
+    padding: 4rem 1rem 0;
   }
 
   .blog-cards-grid {

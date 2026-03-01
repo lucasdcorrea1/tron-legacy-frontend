@@ -222,6 +222,8 @@ export const emailMarketing = {
   send: (data) => api.post('/api/v1/admin/email-marketing/send', data),
   listBroadcasts: () => api.get('/api/v1/admin/email-marketing/broadcasts'),
   getBroadcast: (id) => api.get(`/api/v1/admin/email-marketing/broadcasts/${id}`),
+  listSubscribers: () => api.get('/api/v1/admin/email-marketing/subscribers'),
+  deleteSubscriber: (id) => api.delete(`/api/v1/admin/email-marketing/subscribers/${id}`),
 };
 
 export const profile = {
