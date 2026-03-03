@@ -343,10 +343,79 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* Cover Banner */
+.profile-cover-banner {
+  grid-column: 1 / -1;
+  position: relative;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #1e1b4b 100%);
+}
+
+.cover-upload-btn {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  color: #e4e4e7;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cover-upload-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Social Links */
+.social-links-section {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.social-links-section h4 {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.social-links-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.social-input input {
+  width: 100%;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .profile-layout {
     grid-template-columns: 1fr;
+  }
+
+  .profile-cover-banner {
+    height: 120px;
   }
 
   .avatar-card {
@@ -371,6 +440,10 @@
   }
 
   .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .social-links-grid {
     grid-template-columns: 1fr;
   }
 }

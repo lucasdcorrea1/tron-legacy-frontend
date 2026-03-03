@@ -7,6 +7,7 @@ import Header from '../components/Header';
 import AdSlot from '../components/AdSlot';
 import NewsletterForm from '../components/NewsletterForm';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
+import AuthorHoverCard from '../components/AuthorHoverCard';
 import './Blog.css';
 
 export default function Blog() {
@@ -199,16 +200,24 @@ export default function Blog() {
                           </div>
                         )}
                         <div className="post-card-meta">
-                          <div className="post-card-author">
-                            {post.author_avatar ? (
-                              <img src={getImageUrl(post.author_avatar)} alt={post.author_name} />
-                            ) : (
-                              <div className="author-placeholder">
-                                {post.author_name?.charAt(0) || 'A'}
-                              </div>
-                            )}
-                            <span>{post.author_name || 'Autor'}</span>
-                          </div>
+                          <AuthorHoverCard
+                            name={post.author_name}
+                            avatar={post.author_avatar}
+                            bio={post.author_bio}
+                            coverImage={post.author_cover_image}
+                            social={post.author_social}
+                          >
+                            <div className="post-card-author">
+                              {post.author_avatar ? (
+                                <img src={getImageUrl(post.author_avatar)} alt={post.author_name} />
+                              ) : (
+                                <div className="author-placeholder">
+                                  {post.author_name?.charAt(0) || 'A'}
+                                </div>
+                              )}
+                              <span>{post.author_name || 'Autor'}</span>
+                            </div>
+                          </AuthorHoverCard>
                           <span className="post-card-date">
                             {formatDate(post.published_at || post.created_at)}
                           </span>

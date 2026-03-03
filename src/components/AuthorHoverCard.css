@@ -1,0 +1,295 @@
+/* ============================
+   Author Hover Card (mini)
+   ============================ */
+.ahc-trigger {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.ahc-card {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 300px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  animation: ahcFadeIn 0.2s ease-out;
+}
+
+.ahc-below { top: calc(100% + 8px); }
+.ahc-above { bottom: calc(100% + 8px); }
+
+@keyframes ahcFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.ahc-cover { height: 80px; overflow: hidden; }
+.ahc-cover-img { width: 100%; height: 100%; object-fit: cover; }
+.ahc-cover-placeholder {
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #1e1b4b 100%);
+}
+
+.ahc-body { padding: 0 16px 16px; position: relative; }
+
+.ahc-avatar-row { margin-top: -24px; margin-bottom: 8px; }
+
+.ahc-avatar {
+  width: 48px; height: 48px; border-radius: 50%;
+  object-fit: cover; border: 3px solid #18181b;
+}
+.ahc-avatar-placeholder {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; font-weight: 600; border: 3px solid #18181b;
+}
+
+.ahc-name { color: #fafafa; font-size: 0.95rem; font-weight: 600; margin: 0 0 4px; }
+
+.ahc-bio {
+  color: #a1a1aa; font-size: 0.8rem; line-height: 1.4; margin: 0 0 10px;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.ahc-socials {
+  display: flex; gap: 8px; padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.ahc-social-link {
+  width: 28px; height: 28px; padding: 5px; border-radius: 6px;
+  color: #a1a1aa; background: rgba(255, 255, 255, 0.04);
+  transition: color 0.2s, background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.ahc-social-link:hover { color: #e4e4e7; background: rgba(255, 255, 255, 0.1); }
+.ahc-social-link svg { width: 16px; height: 16px; }
+
+.ahc-expand-hint {
+  text-align: center; color: #52525b; font-size: 0.7rem;
+  margin-top: 10px; letter-spacing: 0.02em;
+}
+
+/* ============================
+   Author Modal (expanded)
+   ============================ */
+
+/* Overlay */
+.ahc-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(0px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  animation: ahcOverlayIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.ahc-overlay--out {
+  animation: ahcOverlayOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes ahcOverlayIn {
+  from { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); }
+  to   { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(10px); }
+}
+@keyframes ahcOverlayOut {
+  from { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(10px); }
+  to   { background: rgba(0, 0, 0, 0); backdrop-filter: blur(0px); }
+}
+
+/* Modal card */
+.ahc-modal {
+  position: relative; width: 100%; max-width: 440px;
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 24px; overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 24px 80px rgba(0, 0, 0, 0.6),
+    0 0 120px -20px rgba(139, 92, 246, 0.15);
+  animation: ahcModalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.ahc-modal--out {
+  animation: ahcModalOut 0.28s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes ahcModalIn {
+  0%   { opacity: 0; transform: scale(0.85) translateY(30px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes ahcModalOut {
+  0%   { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.92) translateY(16px); }
+}
+
+/* Close btn */
+.ahc-modal-close {
+  position: absolute; top: 14px; right: 14px; z-index: 3;
+  width: 36px; height: 36px; padding: 0; border: none; border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(12px);
+  color: rgba(255, 255, 255, 0.8); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, transform 0.2s;
+}
+.ahc-modal-close:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: rotate(90deg);
+}
+.ahc-modal-close svg { width: 18px; height: 18px; }
+
+/* ── Cover ── */
+.ahc-modal-cover {
+  position: relative; height: 180px; overflow: hidden;
+  animation: ahcCoverReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+.ahc-modal-cover img {
+  width: 100%; height: 100%; object-fit: cover;
+}
+.ahc-modal-cover-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(to top, #141416, transparent);
+  pointer-events: none;
+}
+
+@keyframes ahcCoverReveal {
+  from { opacity: 0; transform: scale(1.08); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Avatar hero ── */
+.ahc-modal-avatar-hero {
+  display: flex; justify-content: center;
+  margin-top: -56px; position: relative; z-index: 2;
+  animation: ahcAvatarPop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+@keyframes ahcAvatarPop {
+  0%   { opacity: 0; transform: scale(0.5) translateY(20px); }
+  60%  { transform: scale(1.06) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.ahc-modal-avatar-ring {
+  position: relative;
+  padding: 4px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #8b5cf6 100%);
+  box-shadow:
+    0 0 24px rgba(139, 92, 246, 0.4),
+    0 0 60px rgba(139, 92, 246, 0.15);
+}
+
+.ahc-modal-avatar {
+  display: block;
+  width: 108px; height: 108px;
+  border-radius: 50%; object-fit: cover;
+  border: 4px solid #141416;
+}
+
+.ahc-modal-avatar-placeholder {
+  width: 108px; height: 108px; border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 2.8rem; font-weight: 700;
+  border: 4px solid #141416;
+}
+
+/* ── Info ── */
+.ahc-modal-info {
+  padding: 12px 32px 32px; text-align: center;
+}
+
+.ahc-modal-name {
+  color: #fafafa; font-size: 1.5rem; font-weight: 700;
+  margin: 8px 0 0; letter-spacing: -0.01em;
+  animation: ahcInfoSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+.ahc-modal-bio {
+  color: #a1a1aa; font-size: 0.9rem; line-height: 1.7;
+  margin: 8px 0 0; white-space: pre-line;
+  animation: ahcInfoSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
+}
+
+@keyframes ahcInfoSlide {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Social buttons ── */
+.ahc-modal-socials {
+  display: flex; flex-direction: column; gap: 0;
+  margin-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 8px;
+}
+
+.ahc-modal-social-btn {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: #d4d4d8;
+  font-size: 0.88rem; font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.15s;
+  animation: ahcSocialSlide 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(0.42s + var(--btn-i, 0) * 0.06s);
+}
+
+@keyframes ahcSocialSlide {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.ahc-modal-social-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fafafa;
+}
+.ahc-modal-social-btn:hover .ahc-modal-social-icon {
+  color: var(--btn-accent, #a78bfa);
+}
+
+.ahc-modal-social-icon {
+  width: 36px; height: 36px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #71717a;
+  transition: color 0.2s, background 0.2s;
+}
+.ahc-modal-social-btn:hover .ahc-modal-social-icon {
+  background: rgba(255, 255, 255, 0.08);
+}
+.ahc-modal-social-icon svg { width: 18px; height: 18px; }
+
+.ahc-modal-social-label {
+  flex: 1; text-align: left;
+}
+
+/* ============================
+   Responsive
+   ============================ */
+@media (max-width: 480px) {
+  .ahc-overlay { padding: 16px; }
+
+  .ahc-modal {
+    max-width: 100%; border-radius: 20px;
+  }
+  .ahc-modal-cover { height: 140px; }
+
+  .ahc-modal-avatar-hero { margin-top: -44px; }
+
+  .ahc-modal-avatar,
+  .ahc-modal-avatar-placeholder {
+    width: 88px; height: 88px;
+  }
+  .ahc-modal-avatar-placeholder { font-size: 2.2rem; }
+
+  .ahc-modal-info { padding: 10px 20px 24px; }
+  .ahc-modal-name { font-size: 1.25rem; }
+}

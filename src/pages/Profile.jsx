@@ -15,17 +15,27 @@ export default function Profile() {
   const { profile: authProfile, updateProfile } = useAuth();
   const toast = useToast();
   const fileInputRef = useRef(null);
+  const coverInputRef = useRef(null);
 
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
 
   // Form fields
   const [name, setName] = useState('');
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [coverImage, setCoverImage] = useState('');
+
+  // Social links
+  const [instagram, setInstagram] = useState('');
+  const [twitter, setTwitter] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
+  const [website, setWebsite] = useState('');
 
   // Settings
   const [language, setLanguage] = useState('pt-BR');
@@ -47,6 +57,16 @@ export default function Profile() {
       setName(data.name || '');
       setBio(data.bio || '');
       setAvatar(data.avatar || '');
+      setCoverImage(data.cover_image || '');
+
+      // Social links
+      if (data.social_links) {
+        setInstagram(data.social_links.instagram || '');
+        setTwitter(data.social_links.twitter || '');
+        setLinkedin(data.social_links.linkedin || '');
+        setGithub(data.social_links.github || '');
+        setWebsite(data.social_links.website || '');
+      }
 
       // Sync with global context
       updateProfile({
@@ -109,12 +129,33 @@ export default function Profile() {
     }
   };
 
+  const handleCoverImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const result = await profileApi.uploadCoverImage(file);
+      setCoverImage(result.cover_image || '');
+      toast.success('Foto de capa atualizada!', 'Perfil');
+    } catch (err) {
+      toast.error(err.message || 'Erro ao enviar foto de capa');
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = '';
+    }
+  };
+
   const handleSaveProfile = async (e) => {
     e.preventDefault();
     setSaving(true);
 
     try {
-      await profileApi.update({ name, bio });
+      await profileApi.update({
+        name,
+        bio,
+        social_links: { instagram, twitter, linkedin, github, website },
+      });
       updateProfile({ name, bio });
       toast.success('Perfil atualizado com sucesso!', 'Salvo');
     } catch (err) {
@@ -164,6 +205,26 @@ export default function Profile() {
         </div>
 
         <div className="profile-layout">
+          {/* Cover Banner */}
+          <div className="profile-cover-banner">
+            {coverImage ? (
+              <img src={getImageUrl(coverImage)} alt="Capa" className="cover-image" />
+            ) : (
+              <div className="cover-image-placeholder" />
+            )}
+            <label className="cover-upload-btn">
+              {uploadingCover ? 'Enviando...' : 'Alterar capa'}
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleCoverImageUpload}
+                disabled={uploadingCover}
+                hidden
+              />
+            </label>
+          </div>
+
           {/* Avatar Card */}
           <div className="profile-card avatar-card">
             <div className="avatar-wrapper">
@@ -243,6 +304,62 @@ export default function Profile() {
                     placeholder="Conte um pouco sobre você..."
                     rows={4}
                   />
+                </div>
+
+                <div className="social-links-section">
+                  <h4>Redes Sociais</h4>
+                  <div className="social-links-grid">
+                    <div className="form-group social-input">
+                      <label htmlFor="instagram">Instagram</label>
+                      <input
+                        type="url"
+                        id="instagram"
+                        value={instagram}
+                        onChange={(e) => setInstagram(e.target.value)}
+                        placeholder="https://instagram.com/usuario"
+                      />
+                    </div>
+                    <div className="form-group social-input">
+                      <label htmlFor="twitter">X / Twitter</label>
+                      <input
+                        type="url"
+                        id="twitter"
+                        value={twitter}
+                        onChange={(e) => setTwitter(e.target.value)}
+                        placeholder="https://x.com/usuario"
+                      />
+                    </div>
+                    <div className="form-group social-input">
+                      <label htmlFor="linkedin">LinkedIn</label>
+                      <input
+                        type="url"
+                        id="linkedin"
+                        value={linkedin}
+                        onChange={(e) => setLinkedin(e.target.value)}
+                        placeholder="https://linkedin.com/in/usuario"
+                      />
+                    </div>
+                    <div className="form-group social-input">
+                      <label htmlFor="github">GitHub</label>
+                      <input
+                        type="url"
+                        id="github"
+                        value={github}
+                        onChange={(e) => setGithub(e.target.value)}
+                        placeholder="https://github.com/usuario"
+                      />
+                    </div>
+                    <div className="form-group social-input">
+                      <label htmlFor="website">Website</label>
+                      <input
+                        type="url"
+                        id="website"
+                        value={website}
+                        onChange={(e) => setWebsite(e.target.value)}
+                        placeholder="https://meusite.com"
+                      />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="form-row">

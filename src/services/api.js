@@ -256,4 +256,29 @@ export const profile = {
     }
   },
   removeAvatar: () => api.delete('/api/v1/profile/avatar'),
+  uploadCoverImage: async (file) => {
+    const formData = new FormData();
+    formData.append('cover_image', file);
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/profile/cover-image`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Erro no upload (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError') {
+        throw new Error('Erro de conexão com o servidor');
+      }
+      throw error;
+    }
+  },
 };

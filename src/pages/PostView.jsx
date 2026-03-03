@@ -20,6 +20,7 @@ import sql from 'highlight.js/lib/languages/sql';
 import yaml from 'highlight.js/lib/languages/yaml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import 'highlight.js/styles/github-dark.css';
+import AuthorHoverCard from '../components/AuthorHoverCard';
 import './PostView.css';
 
 hljs.registerLanguage('javascript', javascript);
@@ -639,16 +640,24 @@ export default function PostView() {
           <h1 className="article-title">{post.title}</h1>
 
           <div className="article-meta">
-            <div className="article-author">
-              {post.author_avatar ? (
-                <img src={getImageUrl(post.author_avatar)} alt={post.author_name} className="author-avatar" loading="lazy" />
-              ) : (
-                <div className="author-avatar-placeholder">
-                  {post.author_name?.charAt(0) || 'A'}
-                </div>
-              )}
-              <span className="author-name">{post.author_name || 'Autor'}</span>
-            </div>
+            <AuthorHoverCard
+              name={post.author_name}
+              avatar={post.author_avatar}
+              bio={post.author_bio}
+              coverImage={post.author_cover_image}
+              social={post.author_social}
+            >
+              <div className="article-author">
+                {post.author_avatar ? (
+                  <img src={getImageUrl(post.author_avatar)} alt={post.author_name} className="author-avatar" loading="lazy" />
+                ) : (
+                  <div className="author-avatar-placeholder">
+                    {post.author_name?.charAt(0) || 'A'}
+                  </div>
+                )}
+                <span className="author-name">{post.author_name || 'Autor'}</span>
+              </div>
+            </AuthorHoverCard>
             <span className="meta-divider">·</span>
             <span className="article-date">{formatDate(post.published_at || post.created_at)}</span>
             {post.reading_time && (
@@ -813,6 +822,39 @@ export default function PostView() {
 
           {/* Newsletter */}
           <NewsletterForm />
+
+          {/* Mobile Author Card */}
+          <div className="mobile-author-card">
+            <div className="mobile-author-cover">
+              {post.author_cover_image ? (
+                <img src={getImageUrl(post.author_cover_image)} alt="" />
+              ) : (
+                <div className="mobile-author-cover-placeholder" />
+              )}
+            </div>
+            <div className="mobile-author-body">
+              <div className="mobile-author-avatar-row">
+                {post.author_avatar ? (
+                  <img src={getImageUrl(post.author_avatar)} alt={post.author_name} className="mobile-author-avatar" />
+                ) : (
+                  <div className="mobile-author-avatar-placeholder">
+                    {post.author_name?.charAt(0) || 'A'}
+                  </div>
+                )}
+              </div>
+              <h4 className="mobile-author-name">{post.author_name || 'Autor'}</h4>
+              {post.author_bio && <p className="mobile-author-bio">{post.author_bio}</p>}
+              {post.author_social && (post.author_social.instagram || post.author_social.twitter || post.author_social.linkedin || post.author_social.github || post.author_social.website) && (
+                <div className="mobile-author-socials">
+                  {post.author_social.instagram && <a href={post.author_social.instagram} target="_blank" rel="noopener noreferrer">Instagram</a>}
+                  {post.author_social.twitter && <a href={post.author_social.twitter} target="_blank" rel="noopener noreferrer">X</a>}
+                  {post.author_social.linkedin && <a href={post.author_social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>}
+                  {post.author_social.github && <a href={post.author_social.github} target="_blank" rel="noopener noreferrer">GitHub</a>}
+                  {post.author_social.website && <a href={post.author_social.website} target="_blank" rel="noopener noreferrer">Site</a>}
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Comments Section */}
           <section className="comments-section">
