@@ -959,6 +959,14 @@
     scroll-snap-align: start;
   }
 
+  /* Kill heavy effects on mobile */
+  .home-orbs,
+  .home-glass,
+  .hero-grid,
+  .hero-glow {
+    display: none !important;
+  }
+
   /* Scroll dots */
   .scroll-dots {
     right: 1rem;
@@ -1094,6 +1102,7 @@
     max-width: 320px;
     padding: 1rem 2rem;
     font-size: 1rem;
+    animation: none;
   }
 
   .footer-compact {

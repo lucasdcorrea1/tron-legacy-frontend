@@ -74,11 +74,13 @@ export default function Blog() {
         <meta property="og:url" content="https://whodo.com.br/blog" />
         <meta property="og:title" content="Blog Tron Legacy - Artigos sobre Tecnologia" />
         <meta property="og:description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software." />
+        <meta property="og:image" content="https://whodo.com.br/teste-image-home.png" />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Whodo" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Blog Tron Legacy - Artigos sobre Tecnologia" />
         <meta name="twitter:description" content="Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software." />
+        <meta name="twitter:image" content="https://whodo.com.br/teste-image-home.png" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'Blog',

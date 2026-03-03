@@ -8,10 +8,32 @@ import './Services.css';
 const TOTAL_SECTIONS = 3;
 const COOLDOWN_MS = 1000;
 
+const FAQ_DATA = [
+  {
+    q: 'Quanto custa desenvolver um site ou sistema?',
+    a: 'Cada projeto é único, então o investimento depende do escopo, funcionalidades e prazos. Após uma conversa inicial gratuita, montamos uma proposta detalhada com valores transparentes — sem surpresas.',
+  },
+  {
+    q: 'Quanto tempo leva pra ficar pronto?',
+    a: 'Projetos simples como landing pages ficam prontos em 1–2 semanas. Sistemas mais complexos levam de 4 a 12 semanas. Definimos cronograma realista na proposta e fazemos entregas semanais para você acompanhar a evolução.',
+  },
+  {
+    q: 'Vocês fazem manutenção depois da entrega?',
+    a: 'Sim. Oferecemos planos de suporte e manutenção contínua para garantir que tudo continue funcionando, seguro e atualizado. Correções críticas são tratadas com prioridade.',
+  },
+  {
+    q: 'Preciso ter conhecimento técnico pra acompanhar?',
+    a: 'Não. Traduzimos toda a parte técnica em linguagem clara. Você acompanha o progresso com entregas visuais semanais e tem canal direto com a equipe para tirar dúvidas a qualquer momento.',
+  },
+  {
+    q: 'Como funciona o pagamento?',
+    a: 'Trabalhamos com pagamento dividido em etapas vinculadas a entregas — você só paga conforme o projeto avança. Aceitamos Pix, boleto e cartão de crédito.',
+  },
+];
+
 export default function Services() {
   const [activeSection, setActiveSection] = useState(0);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
-
   const pageRef = useRef(null);
   const svcGlowRef = useRef(null);
   const sectionsRef = useRef([]);
@@ -160,6 +182,16 @@ export default function Services() {
     ],
   };
 
+  const faqLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: FAQ_DATA.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  };
+
   return (
     <div className="svc" ref={pageRef}>
       <Helmet>
@@ -177,6 +209,7 @@ export default function Services() {
         <meta name="twitter:description" content="Desenvolvimento de sites, sistemas de gestão, aplicativos mobile e automação de processos. Soluções digitais sob medida para empresas de todos os portes." />
         <script type="application/ld+json">{JSON.stringify(serviceLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
+        <script type="application/ld+json">{JSON.stringify(faqLd)}</script>
       </Helmet>
 
       <Header />

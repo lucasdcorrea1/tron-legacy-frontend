@@ -1,21 +1,23 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import PrivateRoute from './components/PrivateRoute';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Admin from './pages/Admin';
-import Users from './pages/Users';
-import PostList from './pages/PostList';
-import PostForm from './pages/PostForm';
-import Blog from './pages/Blog';
-import PostView from './pages/PostView';
-import Services from './pages/Services';
-import ResetPassword from './pages/ResetPassword';
-import Profile from './pages/Profile';
-import EmailMarketing from './pages/EmailMarketing';
 import './styles/global.css';
+
+const Home = lazy(() => import('./pages/Home'));
+const Login = lazy(() => import('./pages/Login'));
+const Admin = lazy(() => import('./pages/Admin'));
+const Users = lazy(() => import('./pages/Users'));
+const PostList = lazy(() => import('./pages/PostList'));
+const PostForm = lazy(() => import('./pages/PostForm'));
+const Blog = lazy(() => import('./pages/Blog'));
+const PostView = lazy(() => import('./pages/PostView'));
+const Services = lazy(() => import('./pages/Services'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Profile = lazy(() => import('./pages/Profile'));
+const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
 
 export default function App() {
   return (
@@ -23,6 +25,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
+        <Suspense fallback={null}>
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
@@ -90,6 +93,7 @@ export default function App() {
             }
           />
         </Routes>
+        </Suspense>
       </BrowserRouter>
       </ToastProvider>
     </AuthProvider>

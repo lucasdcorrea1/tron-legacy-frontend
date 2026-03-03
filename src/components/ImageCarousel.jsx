@@ -138,7 +138,7 @@ export default function ImageCarousel({
           }}
         >
           {resolvedImages.map((src, i) => (
-            <div key={i} className="carousel-slide">
+            <div key={i} className="carousel-slide" style={{ left: `${i * 100}%` }}>
               <img
                 src={src}
                 alt={alt || `Image ${i + 1}`}

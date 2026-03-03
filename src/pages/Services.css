@@ -663,6 +663,14 @@
     scroll-snap-align: start;
   }
 
+  /* Kill heavy effects on mobile */
+  .svc-orbs,
+  .svc-glass,
+  .svc-hero-grid,
+  .svc-hero-glow {
+    display: none !important;
+  }
+
   .svc-dots {
     right: 1rem;
     gap: 10px;
@@ -752,6 +760,7 @@
     max-width: 320px;
     padding: 1rem 2rem;
     font-size: 1rem;
+    animation: none;
   }
 
   .svc-footer {

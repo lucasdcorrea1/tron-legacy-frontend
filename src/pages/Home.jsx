@@ -233,6 +233,26 @@ export default function Home() {
           url: 'https://whodo.com.br',
           description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio.',
           logo: { '@type': 'ImageObject', url: 'https://whodo.com.br/favicon.svg' },
+          contactPoint: {
+            '@type': 'ContactPoint',
+            telephone: '+55-16-99949-3490',
+            contactType: 'customer service',
+            areaServed: 'BR',
+            availableLanguage: 'Portuguese',
+          },
+          address: {
+            '@type': 'PostalAddress',
+            addressLocality: 'Ribeirão Preto',
+            addressRegion: 'SP',
+            addressCountry: 'BR',
+          },
+          areaServed: {
+            '@type': 'Country',
+            name: 'Brazil',
+          },
+          sameAs: [
+            'https://wa.me/5516999493490',
+          ],
         })}</script>
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
