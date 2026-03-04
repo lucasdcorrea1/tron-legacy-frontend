@@ -5,8 +5,8 @@ import { users } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Users.css';
 
-const ROLES = ['admin', 'author', 'user'];
-const ROLE_LABELS = { admin: 'Admin', author: 'Autor', user: 'Usuário' };
+const ROLES = ['superuser', 'admin', 'author', 'user'];
+const ROLE_LABELS = { superuser: 'Super User', admin: 'Admin', author: 'Autor', user: 'Usuário' };
 
 export default function Users() {
   const { profile } = useAuth();
@@ -23,7 +23,7 @@ export default function Users() {
   const limit = 20;
 
   useEffect(() => {
-    if (profile?.role !== 'admin') {
+    if (profile?.role !== 'admin' && profile?.role !== 'superuser') {
       navigate('/admin');
       return;
     }

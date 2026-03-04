@@ -281,7 +281,8 @@ export default function PostView() {
       profile.id === commentUserId ||
       profile._id === postAuthorId ||
       profile.id === postAuthorId ||
-      profile.role === 'admin'
+      profile.role === 'admin' ||
+      profile.role === 'superuser'
     );
   };
 
