@@ -5,11 +5,13 @@ import { users } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Users.css';
 
-const ROLES = ['superuser', 'admin', 'author', 'user'];
+const ALL_ROLES = ['superuser', 'admin', 'author', 'user'];
 const ROLE_LABELS = { superuser: 'Super User', admin: 'Admin', author: 'Autor', user: 'Usuário' };
 
 export default function Users() {
   const { profile } = useAuth();
+  const isSuperuser = profile?.role === 'superuser';
+  const assignableRoles = isSuperuser ? ALL_ROLES : ALL_ROLES.filter(r => r !== 'superuser');
   const navigate = useNavigate();
   const [userList, setUserList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -105,7 +107,7 @@ export default function Users() {
             >
               Todos
             </button>
-            {ROLES.map(role => (
+            {ALL_ROLES.map(role => (
               <button
                 key={role}
                 className={`role-filter ${roleFilter === role ? 'active' : ''}`}
@@ -157,12 +159,15 @@ export default function Users() {
                         <select
                           value={user.role}
                           onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                          disabled={updatingId === user.id}
+                          disabled={updatingId === user.id || (user.role === 'superuser' && !isSuperuser)}
                           className="role-select"
                         >
-                          {ROLES.map(role => (
+                          {assignableRoles.map(role => (
                             <option key={role} value={role}>{ROLE_LABELS[role]}</option>
                           ))}
+                          {user.role === 'superuser' && !isSuperuser && (
+                            <option value="superuser">{ROLE_LABELS.superuser}</option>
+                          )}
                         </select>
                         {updatingId === user.id && <span className="updating">...</span>}
                       </td>
@@ -202,12 +207,15 @@ export default function Users() {
                       <select
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                        disabled={updatingId === user.id}
+                        disabled={updatingId === user.id || (user.role === 'superuser' && !isSuperuser)}
                         className="role-select"
                       >
-                        {ROLES.map(role => (
+                        {assignableRoles.map(role => (
                           <option key={role} value={role}>{ROLE_LABELS[role]}</option>
                         ))}
+                        {user.role === 'superuser' && !isSuperuser && (
+                          <option value="superuser">{ROLE_LABELS.superuser}</option>
+                        )}
                       </select>
                     </div>
                   </div>
