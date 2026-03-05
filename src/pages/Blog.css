@@ -89,7 +89,7 @@
 }
 
 .nav-link.active {
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
 }
 
@@ -293,7 +293,7 @@
 .category-chip.active {
   background: rgba(168, 85, 247, 0.15);
   border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* States */
@@ -505,7 +505,7 @@
 .post-card-placeholder span {
   font-size: 2.5rem;
   font-weight: 700;
-  color: #a855f7;
+  color: #c084fc;
 }
 
 .post-card-featured .post-card-placeholder span {
@@ -516,7 +516,7 @@
   display: inline-block;
   padding: 0.25rem 0.75rem;
   background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  color: #c084fc;
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 6px;
@@ -701,7 +701,7 @@
 }
 
 .footer-brand-link:hover {
-  color: #a855f7;
+  color: #c084fc;
 }
 
 .footer-content {

@@ -131,8 +131,8 @@
 }
 
 .svc-dot {
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 2px solid rgba(168, 85, 247, 0.4);
   background: transparent;
@@ -142,13 +142,13 @@
 }
 
 .svc-dot:hover {
-  border-color: #a855f7;
+  border-color: #c084fc;
   background: rgba(168, 85, 247, 0.3);
 }
 
 .svc-dot.active {
   background: #a855f7;
-  border-color: #a855f7;
+  border-color: #c084fc;
   box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
 }
 
@@ -245,7 +245,7 @@
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 100px;
@@ -348,7 +348,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border-radius: 100px;
 }
@@ -478,7 +478,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 100px;
@@ -632,7 +632,7 @@
   transition: color 0.2s;
 }
 
-.svc-footer-brand:hover { color: #a855f7; }
+.svc-footer-brand:hover { color: #c084fc; }
 
 .svc-footer-links {
   display: flex;
@@ -688,8 +688,8 @@
   }
 
   .svc-dot {
-    width: 8px;
-    height: 8px;
+    width: 24px;
+    height: 24px;
   }
 
   .svc-scroll-hint {

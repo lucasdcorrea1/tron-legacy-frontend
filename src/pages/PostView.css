@@ -47,7 +47,7 @@
 }
 
 .back-link:hover {
-  color: #a855f7;
+  color: #c084fc;
   text-decoration: none;
 }
 
@@ -181,7 +181,7 @@
 
 .toc-link.toc-active {
   color: #c084fc;
-  border-left-color: #a855f7;
+  border-left-color: #c084fc;
   background: rgba(168, 85, 247, 0.06);
 }
 
@@ -241,7 +241,7 @@
 .sidebar-share-copy:hover {
   background: rgba(168, 85, 247, 0.12);
   border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* Sidebar Mini CTA */
@@ -772,7 +772,7 @@
 .tag-badge:hover {
   background: rgba(168, 85, 247, 0.15);
   border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* Share Buttons */
@@ -847,7 +847,7 @@
 .share-copy:hover {
   background: rgba(168, 85, 247, 0.15);
   border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* Engagement Stats */
@@ -946,7 +946,7 @@
 
 .comment-form textarea:focus {
   outline: none;
-  border-color: #a855f7;
+  border-color: #c084fc;
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
@@ -1114,7 +1114,7 @@
 .load-more-btn:hover {
   background: rgba(255, 255, 255, 0.04);
   border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* Gradient text utility */

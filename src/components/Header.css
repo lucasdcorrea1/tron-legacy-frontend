@@ -119,7 +119,7 @@
 }
 
 .site-nav-link.active {
-  color: #a855f7;
+  color: #c084fc;
 }
 
 /* Enter button */
@@ -220,7 +220,7 @@
 }
 
 .site-avatar-btn.open {
-  border-color: #a855f7;
+  border-color: #c084fc;
   box-shadow: 0 0 16px rgba(168, 85, 247, 0.25);
 }
 

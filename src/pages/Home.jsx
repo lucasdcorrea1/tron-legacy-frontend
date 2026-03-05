@@ -287,7 +287,7 @@ export default function Home() {
       </div>
 
       {/* Sections Track — slides via translateY */}
-      <div
+      <main
         className="sections-track"
         style={isMobile ? undefined : { transform: `translateY(-${activeSection * 100}vh)` }}
       >
@@ -462,7 +462,7 @@ export default function Home() {
             </div>
           </footer>
         </section>
-      </div>
+      </main>
     </div>
   );
 }

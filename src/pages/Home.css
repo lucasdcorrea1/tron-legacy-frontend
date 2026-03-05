@@ -205,9 +205,10 @@
 }
 
 .scroll-dot {
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
+  position: relative;
   border: 2px solid rgba(168, 85, 247, 0.4);
   background: transparent;
   cursor: pointer;
@@ -216,13 +217,13 @@
 }
 
 .scroll-dot:hover {
-  border-color: #a855f7;
+  border-color: #c084fc;
   background: rgba(168, 85, 247, 0.3);
 }
 
 .scroll-dot.active {
   background: #a855f7;
-  border-color: #a855f7;
+  border-color: #c084fc;
   box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
 }
 
@@ -340,7 +341,7 @@
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border: 1px solid rgba(168, 85, 247, 0.2);
   border-radius: 100px;
@@ -472,7 +473,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border-radius: 100px;
 }
@@ -558,7 +559,7 @@
   justify-content: center;
   font-size: 3rem;
   font-weight: 700;
-  color: #a855f7;
+  color: #c084fc;
   background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
 }
 
@@ -578,7 +579,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #a855f7;
+  color: #c084fc;
   background: rgba(168, 85, 247, 0.1);
   border: 1px solid rgba(168, 85, 247, 0.15);
   border-radius: 6px;
@@ -644,7 +645,7 @@
   width: 32px;
   height: 32px;
   border: 3px solid rgba(168, 85, 247, 0.15);
-  border-top-color: #a855f7;
+  border-top-color: #c084fc;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -853,7 +854,7 @@
 }
 
 .footer-brand-compact:hover {
-  color: #a855f7;
+  color: #c084fc;
 }
 
 .footer-links-compact {
@@ -961,8 +962,8 @@
   }
 
   .scroll-dot {
-    width: 8px;
-    height: 8px;
+    width: 24px;
+    height: 24px;
   }
 
   /* Hero */

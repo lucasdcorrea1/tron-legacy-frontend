@@ -235,7 +235,7 @@ export default function Services() {
       </div>
 
       {/* Sections */}
-      <div
+      <main
         className="svc-track"
         style={isMobile ? undefined : { transform: `translateY(-${activeSection * 100}vh)` }}
       >
@@ -399,7 +399,7 @@ export default function Services() {
             </div>
           </footer>
         </section>
-      </div>
+      </main>
     </div>
   );
 }
