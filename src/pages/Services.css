@@ -176,14 +176,14 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  color: #71717a;
+  color: #a1a1aa;
 }
 
 .svc-scroll-arrow {
   width: 20px;
   height: 20px;
-  border-right: 2px solid #71717a;
-  border-bottom: 2px solid #71717a;
+  border-right: 2px solid #a1a1aa;
+  border-bottom: 2px solid #a1a1aa;
   transform: rotate(45deg);
 }
 
@@ -364,7 +364,7 @@
 
 .svc-services-subtitle {
   font-size: 1.0625rem;
-  color: #71717a;
+  color: #a1a1aa;
   line-height: 1.7;
 }
 
@@ -439,7 +439,7 @@
 
 .svc-service-text p {
   font-size: 0.875rem;
-  color: #71717a;
+  color: #a1a1aa;
   line-height: 1.55;
   margin: 0;
 }
@@ -533,7 +533,7 @@
 .svc-process-desc {
   display: block;
   font-size: 0.8125rem;
-  color: #71717a;
+  color: #a1a1aa;
   line-height: 1.45;
 }
 
@@ -640,7 +640,7 @@
 }
 
 .svc-footer-links a {
-  color: #71717a;
+  color: #a1a1aa;
   font-size: 0.875rem;
   transition: color 0.2s;
 }
@@ -648,7 +648,7 @@
 .svc-footer-links a:hover { color: #fafafa; }
 
 .svc-footer-copy {
-  color: #3f3f46;
+  color: #a1a1aa;
   font-size: 0.8125rem;
 }
 

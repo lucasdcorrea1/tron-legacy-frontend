@@ -19,13 +19,13 @@ const styles = {
     animation: 'cookieSlideUp 0.3s ease-out',
   },
   text: {
-    color: '#a1a1aa',
+    color: '#d4d4d8',
     fontSize: '0.8125rem',
     lineHeight: 1.5,
     maxWidth: '600px',
   },
   link: {
-    color: '#a855f7',
+    color: '#c084fc',
     textDecoration: 'underline',
   },
   buttons: {
@@ -47,7 +47,7 @@ const styles = {
     padding: '0.5rem 1.25rem',
     fontSize: '0.8125rem',
     fontWeight: 600,
-    color: '#a1a1aa',
+    color: '#d4d4d8',
     background: 'rgba(255,255,255,0.06)',
     border: '1px solid rgba(255,255,255,0.1)',
     borderRadius: '8px',

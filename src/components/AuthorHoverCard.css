@@ -259,7 +259,7 @@
   display: flex; align-items: center; justify-content: center;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
-  color: #71717a;
+  color: #a1a1aa;
   transition: color 0.2s, background 0.2s;
 }
 .ahc-modal-social-btn:hover .ahc-modal-social-icon {
