@@ -3,14 +3,18 @@ import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
+import CookieConsent from './components/CookieConsent';
 import PrivateRoute from './components/PrivateRoute';
 import './styles/global.css';
 
-function MetaPixelPageView() {
+function PageTracker() {
   const location = useLocation();
   useEffect(() => {
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'PageView');
+    }
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', { page_path: location.pathname });
     }
   }, [location.pathname]);
   return null;
@@ -36,7 +40,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
-        <MetaPixelPageView />
+        <PageTracker />
         <Suspense fallback={null}>
         <Routes>
           {/* Public routes */}
@@ -117,6 +121,7 @@ export default function App() {
       </BrowserRouter>
       </ToastProvider>
     </AuthProvider>
+    <CookieConsent />
     </HelmetProvider>
   );
 }

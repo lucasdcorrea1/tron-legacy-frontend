@@ -171,7 +171,7 @@ export default function PostView() {
       const data = await blog.getStats(slug);
       setStats(data);
     } catch (err) {
-      console.error('Erro ao carregar stats:', err);
+      // ignore stats fetch error
     }
   };
 
@@ -187,7 +187,7 @@ export default function PostView() {
       setCommentsTotal(data.total || 0);
       setCommentsPage(page);
     } catch (err) {
-      console.error('Erro ao carregar comentários:', err);
+      // ignore comments fetch error
     } finally {
       setCommentsLoading(false);
     }

@@ -17,14 +17,14 @@ const getInitialState = () => {
     const userStr = localStorage.getItem('user');
     if (userStr) user = JSON.parse(userStr);
   } catch (e) {
-    console.error('Error parsing user:', e);
+    // silently ignore corrupt localStorage
   }
 
   try {
     const profileStr = localStorage.getItem('profile');
     if (profileStr) profile = JSON.parse(profileStr);
   } catch (e) {
-    console.error('Error parsing profile:', e);
+    // silently ignore corrupt localStorage
   }
 
   return { user, profile };

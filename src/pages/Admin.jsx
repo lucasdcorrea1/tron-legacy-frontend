@@ -27,7 +27,7 @@ export default function Admin() {
         drafts: posts.filter(p => p.status === 'draft').length,
       });
     } catch (err) {
-      console.error(err);
+      // ignore fetch error
     } finally {
       setLoading(false);
     }

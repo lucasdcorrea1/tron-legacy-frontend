@@ -49,7 +49,7 @@ export default function PostForm() {
       setMetaTitle(post.meta_title || '');
       setMetaDescription(post.meta_description || '');
     } catch (err) {
-      console.error('Erro ao carregar post:', err);
+      // error already shown via toast below
       toast.error('Erro ao carregar post: ' + err.message);
     } finally {
       setLoadingPost(false);

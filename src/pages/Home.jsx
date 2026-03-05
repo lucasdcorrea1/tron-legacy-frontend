@@ -194,7 +194,7 @@ export default function Home() {
       const data = await blog.list({ page: 1, limit: 3 });
       setPosts(data.posts || []);
     } catch (err) {
-      console.error('Erro ao carregar posts:', err);
+      // ignore fetch error
     } finally {
       setLoadingPosts(false);
     }
