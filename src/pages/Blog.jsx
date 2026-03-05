@@ -168,6 +168,9 @@ export default function Blog() {
                       key={post.id}
                       className={isFeatured ? 'post-card-featured' : 'post-card'}
                       onClick={() => navigate(`/blog/${post.slug}`)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/blog/${post.slug}`); }}
+                      tabIndex={0}
+                      role="link"
                     >
                       <div className="post-card-image">
                         {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (

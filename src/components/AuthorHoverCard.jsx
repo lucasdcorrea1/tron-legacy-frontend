@@ -85,7 +85,7 @@ function AuthorModal({ name, avatar, bio, coverImage, social, onClose }) {
 
   return createPortal(
     <div className={`ahc-overlay ${closing ? 'ahc-overlay--out' : ''}`} onClick={handleClose}>
-      <div className={`ahc-modal ${closing ? 'ahc-modal--out' : ''}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`ahc-modal ${closing ? 'ahc-modal--out' : ''}`} role="dialog" aria-modal="true" aria-label={`Perfil de ${name}`} onClick={(e) => e.stopPropagation()}>
         {/* Close */}
         <button className="ahc-modal-close" onClick={handleClose} aria-label="Fechar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

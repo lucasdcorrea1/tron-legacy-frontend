@@ -215,12 +215,12 @@ export default function Services() {
       <Header />
 
       {/* Lava lamp */}
-      <div className="svc-orbs">
+      <div className="svc-orbs" aria-hidden="true">
         <div className="svc-orb svc-orb--1" />
         <div className="svc-orb svc-orb--2" />
         <div className="svc-orb svc-orb--3" />
       </div>
-      <div className="svc-glass" />
+      <div className="svc-glass" aria-hidden="true" />
 
       {/* Dots */}
       <div className="svc-dots">
@@ -241,8 +241,8 @@ export default function Services() {
       >
         {/* ── Seção 1: Hero ── */}
         <section className="svc-section" ref={setSectionRef(0)}>
-          <div className="svc-hero-grid" />
-          <div className="svc-hero-glow" ref={svcGlowRef} />
+          <div className="svc-hero-grid" aria-hidden="true" />
+          <div className="svc-hero-glow" ref={svcGlowRef} aria-hidden="true" />
           <div className="svc-hero-inner">
             <div className="svc-hero-content">
               <p className="svc-tagline svc-anim">Soluções sob medida</p>

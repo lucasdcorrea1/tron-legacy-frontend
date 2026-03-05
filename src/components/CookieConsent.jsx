@@ -82,7 +82,7 @@ export default function CookieConsent() {
   return (
     <>
       <style>{`@keyframes cookieSlideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }`}</style>
-      <div style={styles.banner} role="alert" aria-label="Cookie consent">
+      <div style={styles.banner} role="region" aria-label="Consentimento de cookies">
         <p style={styles.text}>
           Usamos cookies para analytics e personalizar sua experiencia.
         </p>

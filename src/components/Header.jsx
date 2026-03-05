@@ -66,11 +66,12 @@ export default function Header() {
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? 'Fechar menu' : 'Abrir menu'}
           aria-expanded={mobileMenuOpen}
+          aria-controls="site-nav"
         >
           <span className={`site-hamburger ${mobileMenuOpen ? 'open' : ''}`} />
         </button>
 
-        <nav className={`site-nav ${mobileMenuOpen ? 'nav-open' : ''}`}>
+        <nav id="site-nav" className={`site-nav ${mobileMenuOpen ? 'nav-open' : ''}`}>
           <Link
             to="/"
             className={`site-nav-link ${isActive('/') ? 'active' : ''}`}

@@ -266,13 +266,13 @@ export default function Home() {
       <Header />
 
       {/* Lava lamp */}
-      <div className="home-orbs">
+      <div className="home-orbs" aria-hidden="true">
         <div className="home-orb home-orb--1" />
         <div className="home-orb home-orb--2" />
         <div className="home-orb home-orb--3" />
       </div>
       {/* Frosted glass over orbs */}
-      <div className="home-glass" />
+      <div className="home-glass" aria-hidden="true" />
 
       {/* Scroll Indicator Dots */}
       <div className="scroll-dots">
@@ -293,8 +293,8 @@ export default function Home() {
       >
         {/* Tela 1 - Hero */}
         <section className="section-snap" ref={setSectionRef(0)}>
-          <div className="hero-grid" />
-          <div className="hero-glow" ref={heroGlowRef} />
+          <div className="hero-grid" aria-hidden="true" />
+          <div className="hero-glow" ref={heroGlowRef} aria-hidden="true" />
           <div className="hero-inner">
             <div className="hero-content">
               <p className="hero-tagline animate-item">Onde a inovação ganha forma</p>
