@@ -23,6 +23,48 @@ export function getImageUrl(url, size) {
   return `${API_URL}${url}`;
 }
 
+// ── Refresh-token deduplication ──────────────────────────────────────
+// Only one refresh request flies at a time; concurrent callers queue behind it.
+let refreshPromise = null;
+
+async function refreshAccessToken() {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) throw new Error('No refresh token');
+
+    const res = await fetch(`${API_URL}/api/v1/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!res.ok) throw new Error('Refresh failed');
+
+    const data = await res.json();
+    // Persist the new pair
+    if (data.token) localStorage.setItem('token', data.token);
+    if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token);
+    if (data.user) localStorage.setItem('user', JSON.stringify(data.user));
+    if (data.profile) localStorage.setItem('profile', JSON.stringify(data.profile));
+    return data;
+  })().finally(() => {
+    refreshPromise = null;
+  });
+
+  return refreshPromise;
+}
+
+function forceLogout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+  localStorage.removeItem('profile');
+  window.location.href = '/login';
+}
+
+// ── Core JSON request helper with 401 retry ──────────────────────────
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('token');
 
@@ -35,7 +77,20 @@ async function request(endpoint, options = {}) {
     ...options,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, config);
+  let response = await fetch(`${API_URL}${endpoint}`, config);
+
+  // On 401, attempt a silent refresh then retry once
+  if (response.status === 401 && localStorage.getItem('refreshToken')) {
+    try {
+      await refreshAccessToken();
+      const newToken = localStorage.getItem('token');
+      config.headers = { ...config.headers, Authorization: `Bearer ${newToken}` };
+      response = await fetch(`${API_URL}${endpoint}`, config);
+    } catch {
+      forceLogout();
+      throw new Error('Sessão expirada');
+    }
+  }
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Erro de conexão' }));
@@ -43,6 +98,29 @@ async function request(endpoint, options = {}) {
   }
 
   return response.json();
+}
+
+// ── fetchWithAuth: for non-JSON requests (file uploads, etc.) ────────
+// Returns the raw Response so callers can handle status codes themselves.
+async function fetchWithAuth(url, options = {}) {
+  const token = localStorage.getItem('token');
+  const headers = { ...(token && { Authorization: `Bearer ${token}` }), ...options.headers };
+
+  let response = await fetch(url, { ...options, headers });
+
+  if (response.status === 401 && localStorage.getItem('refreshToken')) {
+    try {
+      await refreshAccessToken();
+      const newToken = localStorage.getItem('token');
+      headers.Authorization = `Bearer ${newToken}`;
+      response = await fetch(url, { ...options, headers });
+    } catch {
+      forceLogout();
+      throw new Error('Sessão expirada');
+    }
+  }
+
+  return response;
 }
 
 export const api = {
@@ -86,12 +164,10 @@ export const blog = {
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('image', file);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/blog/upload`, {
+      const response = await fetchWithAuth(`${API_URL}/api/v1/blog/upload`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -117,12 +193,9 @@ export const blog = {
 
   // Engagement endpoints
   recordView: async (slug) => {
-    const token = localStorage.getItem('token');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
     try {
-      await fetch(`${API_URL}/api/v1/blog/posts/${slug}/view`, {
+      await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/view`, {
         method: 'POST',
-        headers,
       });
     } catch {
       // Fire and forget - don't throw errors
@@ -130,19 +203,15 @@ export const blog = {
   },
 
   getStats: async (slug) => {
-    const token = localStorage.getItem('token');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/stats`, { headers });
+    const response = await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/stats`, {});
     if (!response.ok) throw new Error('Erro ao carregar estatísticas');
     return response.json();
   },
 
   toggleLike: async (slug) => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Faça login para curtir');
-    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/like`, {
+    if (!localStorage.getItem('token')) throw new Error('Faça login para curtir');
+    const response = await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/like`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (response.status === 401) throw new Error('Faça login para curtir');
     if (!response.ok) throw new Error('Erro ao processar like');
@@ -158,14 +227,10 @@ export const blog = {
   },
 
   createComment: async (slug, content) => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Faça login para comentar');
-    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/comments`, {
+    if (!localStorage.getItem('token')) throw new Error('Faça login para comentar');
+    const response = await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/comments`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ content }),
     });
     if (response.status === 401) throw new Error('Faça login para comentar');
@@ -175,11 +240,9 @@ export const blog = {
   },
 
   deleteComment: async (slug, commentId) => {
-    const token = localStorage.getItem('token');
-    if (!token) throw new Error('Não autorizado');
-    const response = await fetch(`${API_URL}/api/v1/blog/posts/${slug}/comments/${commentId}`, {
+    if (!localStorage.getItem('token')) throw new Error('Não autorizado');
+    const response = await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/comments/${commentId}`, {
       method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
     });
     if (response.status === 403) throw new Error('Sem permissão para deletar');
     if (!response.ok) throw new Error('Erro ao deletar comentário');
@@ -204,12 +267,28 @@ export const auth = {
   login: (credentials) => api.post('/api/v1/auth/login', credentials),
   register: (data) => api.post('/api/v1/auth/register', data),
   me: () => api.get('/api/v1/auth/me'),
-  logout: () => {
+  refresh: () => refreshAccessToken(),
+  logout: async () => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    // Best-effort server-side invalidation
+    if (refreshToken) {
+      try {
+        await fetch(`${API_URL}/api/v1/auth/logout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+      } catch {
+        // Ignore network errors on logout
+      }
+    }
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     localStorage.removeItem('profile');
   },
   getToken: () => localStorage.getItem('token'),
+  getRefreshToken: () => localStorage.getItem('refreshToken'),
   getUser: () => safeJsonParse(localStorage.getItem('user')),
   getProfile: () => safeJsonParse(localStorage.getItem('profile')),
   isAuthenticated: () => !!localStorage.getItem('token'),
@@ -243,12 +322,10 @@ export const instagram = {
   uploadImage: async (file) => {
     const formData = new FormData();
     formData.append('image', file);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/admin/instagram/upload`, {
+      const response = await fetchWithAuth(`${API_URL}/api/v1/admin/instagram/upload`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -274,12 +351,10 @@ export const profile = {
   uploadAvatar: async (file) => {
     const formData = new FormData();
     formData.append('avatar', file);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/profile/avatar`, {
+      const response = await fetchWithAuth(`${API_URL}/api/v1/profile/avatar`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -300,12 +375,10 @@ export const profile = {
   uploadCoverImage: async (file) => {
     const formData = new FormData();
     formData.append('cover_image', file);
-    const token = localStorage.getItem('token');
 
     try {
-      const response = await fetch(`${API_URL}/api/v1/profile/cover-image`, {
+      const response = await fetchWithAuth(`${API_URL}/api/v1/profile/cover-image`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 

@@ -51,6 +51,7 @@ export function AuthProvider({ children }) {
     }).catch(() => {
       // Token expired or invalid — force logout
       localStorage.removeItem('token');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       localStorage.removeItem('profile');
       setUser(null);
@@ -61,6 +62,9 @@ export function AuthProvider({ children }) {
   const saveAuthData = (data) => {
     if (data.token) {
       localStorage.setItem('token', data.token);
+    }
+    if (data.refresh_token) {
+      localStorage.setItem('refreshToken', data.refresh_token);
     }
     // Handle both flat response and nested user/profile
     const userData = data.user || data;
@@ -99,10 +103,8 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('profile');
+  const logout = async () => {
+    await auth.logout();
     setUser(null);
     setProfile(null);
   };
