@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { blog } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './PostList.css';
 
 export default function PostList() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
+  const isSuperuser = profile?.role === 'superuser';
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -55,7 +58,7 @@ export default function PostList() {
       <div className="posts-page">
         <div className="page-header">
           <div>
-            <h1>Meus Posts</h1>
+            <h1>{isSuperuser ? 'Todos os Posts' : 'Meus Posts'}</h1>
             <p>{total} post{total !== 1 ? 's' : ''} no total</p>
           </div>
           <button
@@ -84,9 +87,10 @@ export default function PostList() {
           </div>
         ) : (
           <>
-            <div className="posts-table">
+            <div className={`posts-table ${isSuperuser ? 'has-author' : ''}`}>
               <div className="table-header">
                 <span className="col-title">Título</span>
+                {isSuperuser && <span className="col-author">Autor</span>}
                 <span className="col-category">Categoria</span>
                 <span className="col-status">Status</span>
                 <span className="col-date">Data</span>
@@ -102,6 +106,11 @@ export default function PostList() {
                     >
                       {post.title}
                     </span>
+                    {isSuperuser && (
+                      <span className="col-author">
+                        {post.author?.name || '-'}
+                      </span>
+                    )}
                     <span className="col-category">
                       {post.category || '-'}
                     </span>
@@ -151,6 +160,12 @@ export default function PostList() {
                       </span>
                     </div>
                     <div className="post-card-meta">
+                      {isSuperuser && post.author?.name && (
+                        <>
+                          <span>{post.author.name}</span>
+                          <span>•</span>
+                        </>
+                      )}
                       <span>{post.category || 'Sem categoria'}</span>
                       <span>•</span>
                       <span>{formatDate(post.created_at)}</span>

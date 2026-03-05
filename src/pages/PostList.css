@@ -98,6 +98,17 @@
   transition: background 0.2s;
 }
 
+/* Superuser: extra author column */
+.posts-table.has-author .table-header,
+.posts-table.has-author .table-row {
+  grid-template-columns: 1fr 140px 130px 100px 90px 100px;
+}
+
+.col-author {
+  color: #a1a1aa;
+  font-size: 0.875rem;
+}
+
 .table-row:last-child {
   border-bottom: none;
 }

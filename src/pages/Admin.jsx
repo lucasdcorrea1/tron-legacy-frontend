@@ -8,6 +8,7 @@ import './Admin.css';
 export default function Admin() {
   const { profile } = useAuth();
   const navigate = useNavigate();
+  const isSuperuser = profile?.role === 'superuser';
   const [stats, setStats] = useState({ posts: 0, published: 0, drafts: 0 });
   const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -120,7 +121,7 @@ export default function Admin() {
         {/* Recent Posts */}
         <div className="section">
           <div className="section-header">
-            <h2>Posts Recentes</h2>
+            <h2>{isSuperuser ? 'Posts Recentes (Todos)' : 'Posts Recentes'}</h2>
             <button
               className="btn-link"
               onClick={() => navigate('/admin/posts')}
