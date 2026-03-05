@@ -315,11 +315,17 @@ export default function Home() {
               </div>
             </div>
             <div className="hero-visual animate-item" style={{ transitionDelay: '0.2s' }}>
-              <img
-                src="/teste-image-home.png"
-                alt="Digital Innovation"
-                className="hero-image"
-              />
+              <picture>
+                <source srcSet="/teste-image-home.webp" type="image/webp" />
+                <img
+                  src="/teste-image-home.png"
+                  alt="Digital Innovation"
+                  className="hero-image"
+                  width="960"
+                  height="536"
+                  fetchPriority="high"
+                />
+              </picture>
             </div>
           </div>
           <button className="scroll-hint" onClick={() => goToSection(1)} aria-label="Rolar para próxima seção">
