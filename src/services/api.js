@@ -226,6 +226,47 @@ export const emailMarketing = {
   deleteSubscriber: (id) => api.delete(`/api/v1/admin/email-marketing/subscribers/${id}`),
 };
 
+export const instagram = {
+  getConfig: () => api.get('/api/v1/admin/instagram/config'),
+  list: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.status) query.append('status', params.status);
+    const queryString = query.toString();
+    return api.get(`/api/v1/admin/instagram/schedules${queryString ? `?${queryString}` : ''}`);
+  },
+  getById: (id) => api.get(`/api/v1/admin/instagram/schedules/${id}`),
+  create: (data) => api.post('/api/v1/admin/instagram/schedules', data),
+  update: (id, data) => api.put(`/api/v1/admin/instagram/schedules/${id}`, data),
+  delete: (id) => api.delete(`/api/v1/admin/instagram/schedules/${id}`),
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const token = localStorage.getItem('token');
+
+    try {
+      const response = await fetch(`${API_URL}/api/v1/admin/instagram/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Erro no upload (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError') {
+        throw new Error('Erro de conexão com o servidor');
+      }
+      throw error;
+    }
+  },
+};
+
 export const profile = {
   get: () => api.get('/api/v1/profile'),
   update: (data) => api.put('/api/v1/profile', data),

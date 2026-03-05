@@ -1,10 +1,20 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import PrivateRoute from './components/PrivateRoute';
 import './styles/global.css';
+
+function MetaPixelPageView() {
+  const location = useLocation();
+  useEffect(() => {
+    if (typeof window.fbq === 'function') {
+      window.fbq('track', 'PageView');
+    }
+  }, [location.pathname]);
+  return null;
+}
 
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
@@ -18,6 +28,7 @@ const Services = lazy(() => import('./pages/Services'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Profile = lazy(() => import('./pages/Profile'));
 const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
+const InstagramScheduling = lazy(() => import('./pages/InstagramScheduling'));
 
 export default function App() {
   return (
@@ -25,6 +36,7 @@ export default function App() {
     <AuthProvider>
       <ToastProvider>
       <BrowserRouter>
+        <MetaPixelPageView />
         <Suspense fallback={null}>
         <Routes>
           {/* Public routes */}
@@ -81,6 +93,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <EmailMarketing />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/instagram"
+            element={
+              <PrivateRoute>
+                <InstagramScheduling />
               </PrivateRoute>
             }
           />
