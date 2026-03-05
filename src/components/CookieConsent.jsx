@@ -38,7 +38,7 @@ const styles = {
     fontSize: '0.8125rem',
     fontWeight: 600,
     color: '#fff',
-    background: '#7c3aed',
+    background: '#6d28d9',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
