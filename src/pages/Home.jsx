@@ -322,10 +322,10 @@ export default function Home() {
               />
             </div>
           </div>
-          <div className="scroll-hint" onClick={() => goToSection(1)}>
+          <button className="scroll-hint" onClick={() => goToSection(1)} aria-label="Rolar para próxima seção">
             <span className="scroll-hint-text">Scroll</span>
             <div className="scroll-hint-arrow"></div>
-          </div>
+          </button>
         </section>
 
         {/* Tela 2 - Blog */}

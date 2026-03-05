@@ -43,6 +43,8 @@ const socialIcons = {
   ),
 };
 
+const socialLabels = { instagram: 'Instagram', twitter: 'Twitter', linkedin: 'LinkedIn', github: 'GitHub', website: 'Website' };
+
 const SocialIcon = ({ type, url }) => {
   if (!url) return null;
   return (
@@ -51,6 +53,7 @@ const SocialIcon = ({ type, url }) => {
       target="_blank"
       rel="noopener noreferrer"
       className="ahc-social-link"
+      aria-label={socialLabels[type] || type}
       onClick={(e) => e.stopPropagation()}
     >
       {socialIcons[type]}

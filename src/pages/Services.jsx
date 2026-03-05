@@ -269,10 +269,10 @@ export default function Services() {
               </div>
             </div>
           </div>
-          <div className="svc-scroll-hint" onClick={() => goToSection(1)}>
+          <button className="svc-scroll-hint" onClick={() => goToSection(1)} aria-label="Rolar para próxima seção">
             <span className="svc-scroll-text">Scroll</span>
             <div className="svc-scroll-arrow" />
-          </div>
+          </button>
         </section>
 
         {/* ── Seção 2: Serviços ── */}

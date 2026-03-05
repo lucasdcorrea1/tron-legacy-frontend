@@ -54,6 +54,7 @@ export default function NewsletterForm() {
                   if (status === 'error') setStatus('idle');
                 }}
                 placeholder="seu@email.com"
+                aria-label="Seu email"
                 required
                 disabled={status === 'loading'}
                 className="newsletter-input"

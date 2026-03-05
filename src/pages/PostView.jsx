@@ -869,6 +869,7 @@ export default function PostView() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={isAuthenticated ? "Escreva um comentário..." : "Faça login para comentar"}
+                aria-label="Escreva um comentário"
                 disabled={!isAuthenticated || commentSubmitting}
                 maxLength={2000}
                 rows={3}
