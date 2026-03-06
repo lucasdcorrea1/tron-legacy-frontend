@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { instagram } from '../services/api';
+import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
 import { InstagramAutoReplyContent } from './InstagramAutoReply';
 import { InstagramLeadsContent } from './InstagramLeads';
@@ -8,7 +9,7 @@ import { InstagramAnalyticsContent } from './InstagramAnalytics';
 import './InstagramPage.css';
 
 const TABS = [
-  { key: 'config', label: 'Configuração', alwaysVisible: true },
+  { key: 'config', label: 'Configuracao', alwaysVisible: true },
   { key: 'agendamento', label: 'Agendamento' },
   { key: 'autoreply', label: 'Auto-Resposta' },
   { key: 'leads', label: 'Leads' },
@@ -30,8 +31,10 @@ export default function InstagramPage() {
   }, []);
 
   const handleConfigChange = (isConfigured) => {
+    const wasNotConfigured = configured === false;
     setConfigured(isConfigured);
-    if (isConfigured && activeTab === 'config') {
+    // Only auto-redirect when user just saved config for the first time
+    if (isConfigured && wasNotConfigured) {
       setActiveTab('agendamento');
     }
   };
@@ -51,7 +54,7 @@ export default function InstagramPage() {
         {configured === null ? (
           <div className="ig-unified-loading">
             <span className="ig-spinner" />
-            Verificando configuração...
+            Verificando configuracao...
           </div>
         ) : (
           <>
@@ -69,7 +72,7 @@ export default function InstagramPage() {
 
             <div className="ig-unified-content">
               {activeTab === 'config' && (
-                <InstagramSchedulingContent
+                <InstagramConfig
                   configuredProp={configured}
                   onConfigChange={handleConfigChange}
                 />

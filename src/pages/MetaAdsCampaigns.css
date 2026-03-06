@@ -1,0 +1,188 @@
+.mads-campaigns-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.mads-campaigns-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mads-filter-select {
+  padding: 0.5rem 0.75rem;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: #e4e4e7;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.mads-campaigns-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mads-campaign-card {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: border-color 0.2s;
+}
+
+.mads-campaign-card:hover {
+  border-color: #3f3f46;
+}
+
+.mads-campaign-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.mads-campaign-info h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  margin: 0 0 0.25rem;
+}
+
+.mads-campaign-objective {
+  font-size: 0.78rem;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mads-status-badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mads-campaign-budget {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0;
+  border-top: 1px solid #27272a;
+  border-bottom: 1px solid #27272a;
+  margin-bottom: 0.75rem;
+}
+
+.mads-budget-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.mads-budget-label {
+  font-size: 0.72rem;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mads-budget-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e4e4e7;
+}
+
+.mads-campaign-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.mads-btn-action {
+  background: #27272a;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mads-btn-action:hover {
+  background: #3f3f46;
+}
+
+.mads-btn-action.delete:hover {
+  background: #2d1215;
+  border-color: #991b1b;
+}
+
+.mads-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #71717a;
+}
+
+.mads-empty p {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+}
+
+.mads-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 0;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+}
+
+.mads-error {
+  padding: 0.6rem 0.75rem;
+  background: #2d1215;
+  border: 1px solid #991b1b;
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.82rem;
+  margin-bottom: 1rem;
+}
+
+.mads-btn {
+  padding: 0.55rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mads-btn.primary {
+  background: #6366f1;
+  color: white;
+}
+
+.mads-btn.primary:hover {
+  background: #4f46e5;
+}
+
+@media (max-width: 640px) {
+  .mads-campaigns-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mads-campaign-budget {
+    gap: 1rem;
+  }
+}

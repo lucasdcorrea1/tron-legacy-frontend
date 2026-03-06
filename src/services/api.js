@@ -416,6 +416,146 @@ export const instagramAnalytics = {
   engagement: () => api.get('/api/v1/admin/instagram/analytics/engagement'),
 };
 
+export const metaAds = {
+  // Campaigns
+  listCampaigns: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.status) query.append('status', params.status);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/campaigns${qs ? `?${qs}` : ''}`);
+  },
+  getCampaign: (id) => api.get(`/api/v1/admin/meta-ads/campaigns/${id}`),
+  createCampaign: (data) => api.post('/api/v1/admin/meta-ads/campaigns', data),
+  updateCampaign: (id, data) => api.put(`/api/v1/admin/meta-ads/campaigns/${id}`, data),
+  deleteCampaign: (id) => api.delete(`/api/v1/admin/meta-ads/campaigns/${id}`),
+  updateCampaignStatus: (id, status) => request(`/api/v1/admin/meta-ads/campaigns/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
+
+  // Ad Sets
+  listAdSets: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.campaign_id) query.append('campaign_id', params.campaign_id);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/adsets${qs ? `?${qs}` : ''}`);
+  },
+  getAdSet: (id) => api.get(`/api/v1/admin/meta-ads/adsets/${id}`),
+  createAdSet: (data) => api.post('/api/v1/admin/meta-ads/adsets', data),
+  updateAdSet: (id, data) => api.put(`/api/v1/admin/meta-ads/adsets/${id}`, data),
+  deleteAdSet: (id) => api.delete(`/api/v1/admin/meta-ads/adsets/${id}`),
+  updateAdSetStatus: (id, status) => request(`/api/v1/admin/meta-ads/adsets/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
+
+  // Ads
+  listAds: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.adset_id) query.append('adset_id', params.adset_id);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/ads${qs ? `?${qs}` : ''}`);
+  },
+  getAd: (id) => api.get(`/api/v1/admin/meta-ads/ads/${id}`),
+  createAd: (data) => api.post('/api/v1/admin/meta-ads/ads', data),
+  updateAd: (id, data) => api.put(`/api/v1/admin/meta-ads/ads/${id}`, data),
+  deleteAd: (id) => api.delete(`/api/v1/admin/meta-ads/ads/${id}`),
+  updateAdStatus: (id, status) => request(`/api/v1/admin/meta-ads/ads/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status }),
+  }),
+
+  // Insights
+  getInsights: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.level) query.append('level', params.level);
+    if (params.date_start) query.append('date_start', params.date_start);
+    if (params.date_stop) query.append('date_stop', params.date_stop);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/insights${qs ? `?${qs}` : ''}`);
+  },
+  getCampaignInsights: (id, params = {}) => {
+    const query = new URLSearchParams();
+    if (params.date_start) query.append('date_start', params.date_start);
+    if (params.date_stop) query.append('date_stop', params.date_stop);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/campaigns/${id}/insights${qs ? `?${qs}` : ''}`);
+  },
+
+  // Upload
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/meta-ads/upload/image`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `Erro no upload (${response.status})`);
+    }
+    return response.json();
+  },
+  uploadVideo: async (file, title) => {
+    const formData = new FormData();
+    formData.append('video', file);
+    if (title) formData.append('title', title);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/meta-ads/upload/video`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `Erro no upload (${response.status})`);
+    }
+    return response.json();
+  },
+
+  // Targeting
+  searchInterests: (q) => api.get(`/api/v1/admin/meta-ads/targeting/interests?q=${encodeURIComponent(q)}`),
+  searchLocations: (q) => api.get(`/api/v1/admin/meta-ads/targeting/locations?q=${encodeURIComponent(q)}`),
+  listAudiences: () => api.get('/api/v1/admin/meta-ads/targeting/audiences'),
+
+  // Presets
+  listPresets: () => api.get('/api/v1/admin/meta-ads/presets'),
+  createPreset: (data) => api.post('/api/v1/admin/meta-ads/presets', data),
+  deletePreset: (id) => api.delete(`/api/v1/admin/meta-ads/presets/${id}`),
+
+  // Templates
+  listTemplates: () => api.get('/api/v1/admin/meta-ads/templates'),
+  createTemplate: (data) => api.post('/api/v1/admin/meta-ads/templates', data),
+  deleteTemplate: (id) => api.delete(`/api/v1/admin/meta-ads/templates/${id}`),
+
+  // Budget Alerts
+  listAlerts: () => api.get('/api/v1/admin/meta-ads/alerts'),
+  createAlert: (data) => api.post('/api/v1/admin/meta-ads/alerts', data),
+  updateAlert: (id, data) => api.put(`/api/v1/admin/meta-ads/alerts/${id}`, data),
+  deleteAlert: (id) => api.delete(`/api/v1/admin/meta-ads/alerts/${id}`),
+};
+
+export const autoBoost = {
+  // Rules
+  listRules: () => api.get('/api/v1/admin/auto-boost/rules'),
+  getRule: (id) => api.get(`/api/v1/admin/auto-boost/rules/${id}`),
+  createRule: (data) => api.post('/api/v1/admin/auto-boost/rules', data),
+  updateRule: (id, data) => api.put(`/api/v1/admin/auto-boost/rules/${id}`, data),
+  toggleRule: (id, active) => request(`/api/v1/admin/auto-boost/rules/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ active }),
+  }),
+  deleteRule: (id) => api.delete(`/api/v1/admin/auto-boost/rules/${id}`),
+
+  // Logs
+  listLogs: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.rule_id) query.append('rule_id', params.rule_id);
+    if (params.status) query.append('status', params.status);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/auto-boost/logs${qs ? `?${qs}` : ''}`);
+  },
+};
+
 export const profile = {
   get: () => api.get('/api/v1/profile'),
   update: (data) => api.put('/api/v1/profile', data),

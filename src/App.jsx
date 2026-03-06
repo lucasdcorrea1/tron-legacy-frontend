@@ -35,6 +35,9 @@ const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
 const InstagramPage = lazy(() => import('./pages/InstagramPage'));
 const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
 const Legal = lazy(() => import('./pages/Legal'));
+const MetaAdsPage = lazy(() => import('./pages/MetaAdsPage'));
+const MetaAdsCampaignForm = lazy(() => import('./pages/MetaAdsCampaignForm'));
+const AutoBoostPage = lazy(() => import('./pages/AutoBoostPage'));
 
 export default function App() {
   return (
@@ -109,6 +112,38 @@ export default function App() {
             element={
               <PrivateRoute>
                 <InstagramPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/meta-ads"
+            element={
+              <PrivateRoute>
+                <MetaAdsPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/meta-ads/campaigns/new"
+            element={
+              <PrivateRoute>
+                <MetaAdsCampaignForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/meta-ads/campaigns/edit/:id"
+            element={
+              <PrivateRoute>
+                <MetaAdsCampaignForm />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/auto-boost"
+            element={
+              <PrivateRoute>
+                <AutoBoostPage />
               </PrivateRoute>
             }
           />

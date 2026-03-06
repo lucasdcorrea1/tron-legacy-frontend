@@ -24,22 +24,9 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
   const [tab, setTab] = useState('agenda');
   const [configured, setConfigured] = useState(configuredProp ?? null);
-  const [configSource, setConfigSource] = useState('');
-  const [configAccountIdDisplay, setConfigAccountIdDisplay] = useState('');
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-
-  // Config form state
-  const [configAccountId, setConfigAccountId] = useState('');
-  const [configAccessToken, setConfigAccessToken] = useState('');
-  const [savingConfig, setSavingConfig] = useState(false);
-
-  // Test connection & feed state
-  const [testResult, setTestResult] = useState(null);
-  const [testLoading, setTestLoading] = useState(false);
-  const [feed, setFeed] = useState([]);
-  const [feedLoading, setFeedLoading] = useState(false);
 
   // List state
   const [schedules, setSchedules] = useState([]);
@@ -76,78 +63,10 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     try {
       const data = await instagram.getConfig();
       setConfigured(data.configured);
-      setConfigSource(data.source || '');
-      setConfigAccountIdDisplay(data.account_id || '');
       onConfigChange?.(data.configured);
     } catch {
       setConfigured(false);
       onConfigChange?.(false);
-    }
-  };
-
-  const handleSaveConfig = async () => {
-    if (!configAccountId.trim() || !configAccessToken.trim()) {
-      toast.warning('Preencha Account ID e Access Token');
-      return;
-    }
-    setSavingConfig(true);
-    try {
-      await instagram.saveConfig({
-        instagram_account_id: configAccountId.trim(),
-        access_token: configAccessToken.trim(),
-      });
-      toast.success('Configuracao salva com sucesso!');
-      setConfigAccountId('');
-      setConfigAccessToken('');
-      await checkConfig();
-      if (!configured) setTab('agenda');
-    } catch (err) {
-      toast.error(err.message || 'Erro ao salvar configuracao');
-    } finally {
-      setSavingConfig(false);
-    }
-  };
-
-  const handleDeleteConfig = async () => {
-    try {
-      await instagram.deleteConfig();
-      toast.success('Configuracao removida');
-      setTestResult(null);
-      setFeed([]);
-      await checkConfig();
-    } catch (err) {
-      toast.error(err.message || 'Erro ao remover configuracao');
-    }
-  };
-
-  const handleTestConnection = async () => {
-    setTestLoading(true);
-    setTestResult(null);
-    try {
-      const data = await instagram.testConnection();
-      setTestResult(data);
-      if (data.success) {
-        toast.success(`Conectado: @${data.username}`);
-      } else {
-        toast.error('Falha na conexao — verifique as credenciais');
-      }
-    } catch (err) {
-      setTestResult({ success: false, error: err.message });
-      toast.error(err.message || 'Erro ao testar conexao');
-    } finally {
-      setTestLoading(false);
-    }
-  };
-
-  const handleLoadFeed = async () => {
-    setFeedLoading(true);
-    try {
-      const data = await instagram.getFeed(12);
-      setFeed(data.data || []);
-    } catch (err) {
-      toast.error(err.message || 'Erro ao carregar feed');
-    } finally {
-      setFeedLoading(false);
     }
   };
 
@@ -292,64 +211,16 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     }
   };
 
-  // Not configured screen — show inline config form
+  // Not configured screen — redirect to config tab
   if (configured === false) {
     return (
         <div className="ig-page">
-          <div className="page-header">
-            <h1>Instagram</h1>
-            <p>Agende posts no Instagram diretamente do painel</p>
-          </div>
           <div className="ig-not-configured">
             <div className="ig-not-configured-icon">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.5" /></svg>
             </div>
             <h2>Instagram nao configurado</h2>
-            <p>Insira as credenciais do Instagram Graph API para comecar a agendar posts.</p>
-
-            <div className="ig-config-form">
-              <div className="ig-form-group">
-                <label>Instagram Account ID</label>
-                <input
-                  type="text"
-                  value={configAccountId}
-                  onChange={(e) => setConfigAccountId(e.target.value)}
-                  placeholder="Ex: 17841473285320059"
-                />
-              </div>
-              <div className="ig-form-group">
-                <label>Access Token</label>
-                <input
-                  type="password"
-                  value={configAccessToken}
-                  onChange={(e) => setConfigAccessToken(e.target.value)}
-                  placeholder="Token do Meta Business Suite"
-                />
-              </div>
-              <button
-                className="ig-btn ig-btn-primary"
-                onClick={handleSaveConfig}
-                disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
-                style={{ width: '100%' }}
-              >
-                {savingConfig ? (
-                  <>
-                    <span className="ig-spinner" style={{ display: 'inline-block', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                    Salvando...
-                  </>
-                ) : 'Salvar configuracao'}
-              </button>
-            </div>
-
-            <div className="ig-setup-steps">
-              <p style={{ fontSize: '0.8rem', color: '#71717a', marginBottom: '0.75rem' }}>Onde encontrar essas credenciais:</p>
-              <ol>
-                <li>Acesse <strong>developers.facebook.com</strong> e crie um App</li>
-                <li>Adicione o produto <strong>Instagram Graph API</strong></li>
-                <li>Conecte sua Instagram Business Account</li>
-                <li>Gere um Access Token com permissoes: <code>instagram_basic</code>, <code>instagram_content_publish</code></li>
-              </ol>
-            </div>
+            <p>Configure as credenciais na aba <strong>Configuracao</strong> para comecar a agendar posts.</p>
           </div>
         </div>
     );
@@ -390,13 +261,6 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
             Novo Post
-          </button>
-          <button
-            className={`ig-tab ${tab === 'config' ? 'active' : ''}`}
-            onClick={() => setTab('config')}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
-            Configuracao
           </button>
         </div>
 
@@ -718,172 +582,6 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
               </div>
             )}
           </>
-        )}
-
-        {/* ====== CONFIG TAB ====== */}
-        {tab === 'config' && (
-          <div className="ig-config-section">
-            {/* Status */}
-            <div className="ig-config-status">
-              <h3>Status da configuracao</h3>
-              {configured ? (
-                <div className="ig-config-info">
-                  <div className="ig-config-badge ig-config-badge-ok">Configurado</div>
-                  <div className="ig-config-detail">
-                    <span className="ig-config-detail-label">Account ID:</span>
-                    <span className="ig-config-detail-value">{configAccountIdDisplay}</span>
-                  </div>
-                  <div className="ig-config-detail">
-                    <span className="ig-config-detail-label">Fonte:</span>
-                    <span className="ig-config-detail-value">
-                      {configSource === 'user' ? 'Configuracao do usuario (banco de dados)' : 'Variaveis de ambiente (servidor)'}
-                    </span>
-                  </div>
-                  <div className="ig-config-actions-row">
-                    <button
-                      className="ig-btn ig-btn-primary"
-                      onClick={handleTestConnection}
-                      disabled={testLoading}
-                      style={{ flex: 1 }}
-                    >
-                      {testLoading ? (
-                        <>
-                          <span className="ig-spinner" style={{ display: 'inline-block', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                          Testando...
-                        </>
-                      ) : 'Testar conexao'}
-                    </button>
-                    <button
-                      className="ig-btn ig-btn-secondary"
-                      onClick={handleLoadFeed}
-                      disabled={feedLoading}
-                      style={{ flex: 1 }}
-                    >
-                      {feedLoading ? (
-                        <>
-                          <span className="ig-spinner" style={{ display: 'inline-block', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                          Carregando...
-                        </>
-                      ) : 'Ver feed'}
-                    </button>
-                    {configSource === 'user' && (
-                      <button
-                        className="ig-btn ig-btn-secondary"
-                        style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.2)' }}
-                        onClick={handleDeleteConfig}
-                      >
-                        Remover
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="ig-config-info">
-                  <div className="ig-config-badge ig-config-badge-off">Nao configurado</div>
-                </div>
-              )}
-            </div>
-
-            {/* Test result */}
-            {testResult && (
-              <div className={`ig-test-result ${testResult.success ? 'success' : 'error'}`}>
-                {testResult.success ? (
-                  <div className="ig-test-profile">
-                    {testResult.profile_picture_url && (
-                      <img src={testResult.profile_picture_url} alt="" className="ig-test-avatar" />
-                    )}
-                    <div className="ig-test-info">
-                      <strong>@{testResult.username}</strong>
-                      {testResult.name && <span className="ig-test-name">{testResult.name}</span>}
-                      <div className="ig-test-stats">
-                        <span>{testResult.followers_count?.toLocaleString('pt-BR') || 0} seguidores</span>
-                        <span>{testResult.media_count?.toLocaleString('pt-BR') || 0} posts</span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <strong>Falha na conexao</strong>
-                    <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', opacity: 0.8 }}>
-                      {typeof testResult.error === 'string' ? testResult.error : JSON.stringify(testResult.error)}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Feed */}
-            {feed.length > 0 && (
-              <div className="ig-feed-section">
-                <h3>Feed recente ({feed.length} posts)</h3>
-                <div className="ig-feed-grid">
-                  {feed.map((post) => (
-                    <a
-                      key={post.id}
-                      href={post.permalink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ig-feed-item"
-                    >
-                      <img
-                        src={post.media_type === 'VIDEO' ? post.thumbnail_url : post.media_url}
-                        alt=""
-                      />
-                      {post.media_type === 'CAROUSEL_ALBUM' && (
-                        <span className="ig-feed-item-badge">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h2v12H4V6zm14 0h2v12h-2V6zm-4-2H10a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/></svg>
-                        </span>
-                      )}
-                      {post.media_type === 'VIDEO' && (
-                        <span className="ig-feed-item-badge">
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                        </span>
-                      )}
-                      <div className="ig-feed-item-overlay">
-                        {post.like_count != null && <span>&#9829; {post.like_count}</span>}
-                        {post.comments_count != null && <span>&#128172; {post.comments_count}</span>}
-                      </div>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Config form */}
-            <div className="ig-config-form">
-              <h3>{configured && configSource === 'user' ? 'Atualizar credenciais' : 'Configurar credenciais'}</h3>
-              <div className="ig-form-group">
-                <label>Instagram Account ID</label>
-                <input
-                  type="text"
-                  value={configAccountId}
-                  onChange={(e) => setConfigAccountId(e.target.value)}
-                  placeholder="Ex: 17841473285320059"
-                />
-              </div>
-              <div className="ig-form-group">
-                <label>Access Token</label>
-                <input
-                  type="password"
-                  value={configAccessToken}
-                  onChange={(e) => setConfigAccessToken(e.target.value)}
-                  placeholder="Token do Meta Business Suite"
-                />
-              </div>
-              <button
-                className="ig-btn ig-btn-primary"
-                onClick={handleSaveConfig}
-                disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
-              >
-                {savingConfig ? (
-                  <>
-                    <span className="ig-spinner" style={{ display: 'inline-block', marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                    Salvando...
-                  </>
-                ) : 'Salvar configuracao'}
-              </button>
-            </div>
-          </div>
         )}
 
         {/* Confirm schedule dialog */}

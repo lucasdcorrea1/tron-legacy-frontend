@@ -1,0 +1,248 @@
+.mads-config-section {
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mads-config-section h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  margin: 0 0 0.5rem;
+}
+
+.mads-config-hint {
+  color: #71717a;
+  font-size: 0.82rem;
+  margin: 0 0 1.25rem;
+  line-height: 1.5;
+}
+
+.mads-config-hint code {
+  background: #27272a;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: #a78bfa;
+}
+
+.mads-config-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: #1a2e1a;
+  border: 1px solid #166534;
+  border-radius: 8px;
+  color: #86efac;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.mads-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  flex-shrink: 0;
+}
+
+.mads-config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mads-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-bottom: 0.35rem;
+}
+
+.mads-field input {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  background: #09090b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: #f4f4f5;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.mads-field input:focus {
+  border-color: #6366f1;
+}
+
+.mads-error {
+  padding: 0.6rem 0.75rem;
+  background: #2d1215;
+  border: 1px solid #991b1b;
+  border-radius: 8px;
+  color: #fca5a5;
+  font-size: 0.82rem;
+}
+
+.mads-config-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mads-btn {
+  padding: 0.55rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.mads-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mads-btn.primary {
+  background: #6366f1;
+  color: white;
+}
+
+.mads-btn.primary:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.mads-btn.secondary {
+  background: #27272a;
+  color: #e4e4e7;
+  border: 1px solid #3f3f46;
+}
+
+.mads-btn.secondary:hover:not(:disabled) {
+  background: #3f3f46;
+}
+
+.mads-btn.small {
+  padding: 0.4rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+.mads-btn-text {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  color: #a1a1aa;
+}
+
+.mads-btn-text:hover { color: #e4e4e7; }
+.mads-btn-text.danger { color: #f87171; }
+.mads-btn-text.danger:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
+.mads-btn-text.success { color: #4ade80; }
+.mads-btn-text.success:hover { color: #22c55e; }
+
+.mads-test-result {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.mads-test-result.success {
+  background: #1a2e1a;
+  border: 1px solid #166534;
+  color: #86efac;
+}
+
+.mads-test-result.error {
+  background: #2d1215;
+  border: 1px solid #991b1b;
+  color: #fca5a5;
+}
+
+.mads-test-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
+
+/* Budget Alerts */
+.mads-alert-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.mads-alert-form select,
+.mads-alert-form input {
+  padding: 0.45rem 0.65rem;
+  background: #09090b;
+  border: 1px solid #3f3f46;
+  border-radius: 8px;
+  color: #f4f4f5;
+  font-size: 0.82rem;
+}
+
+.mads-alert-form select { min-width: 140px; }
+.mads-alert-form input[type="number"] { width: 120px; }
+.mads-alert-form input[type="text"] { flex: 1; min-width: 140px; }
+
+.mads-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mads-alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  background: #09090b;
+  border: 1px solid #27272a;
+  border-radius: 8px;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.mads-alert-item.inactive {
+  opacity: 0.5;
+}
+
+.mads-alert-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+}
+
+.mads-alert-type {
+  font-weight: 600;
+  color: #e4e4e7;
+}
+
+.mads-alert-threshold {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.mads-alert-actions {
+  display: flex;
+  gap: 0.25rem;
+}

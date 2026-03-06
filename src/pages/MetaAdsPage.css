@@ -1,0 +1,71 @@
+.mads-page {
+  max-width: 960px;
+}
+
+.mads-page .page-header {
+  margin-bottom: 2.5rem;
+}
+
+.mads-page .page-header h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #f4f4f5;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mads-page .page-header p {
+  color: #71717a;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.mads-tabs {
+  margin-bottom: 1.75rem;
+}
+
+.mads-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 0;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+}
+
+.mads-not-configured {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: #18181b;
+  border: 1px solid #27272a;
+  border-radius: 12px;
+}
+
+.mads-not-configured-icon {
+  color: #71717a;
+  margin-bottom: 1rem;
+}
+
+.mads-not-configured h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  margin: 0 0 0.5rem;
+}
+
+.mads-not-configured p {
+  color: #a1a1aa;
+  font-size: 0.9rem;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.mads-not-configured strong {
+  color: #e4e4e7;
+}
