@@ -100,6 +100,7 @@ export function InstagramAutoReplyContent() {
       case 'sent': return 'Enviado';
       case 'failed': return 'Falhou';
       case 'skipped_cooldown': return 'Cooldown';
+      case 'no_match': return 'Sem regra';
       default: return s;
     }
   };
@@ -444,6 +445,7 @@ function LiveFeed({ statusLabel, triggerLabel }) {
       case 'sent': return '\u2705';
       case 'failed': return '\u274C';
       case 'skipped_cooldown': return '\u23F3';
+      case 'no_match': return '\uD83D\uDD0D';
       default: return '';
     }
   };
