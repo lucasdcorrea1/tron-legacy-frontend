@@ -120,7 +120,7 @@ export default function AdminLayout({ children }) {
     if (!isAdmin) return;
     instagram.getConfig()
       .then(data => {
-        setIgConnected(!!data?.instagram_account_id);
+        setIgConnected(!!data?.configured);
       })
       .catch(() => setIgConnected(false));
   }, [isAdmin]);
