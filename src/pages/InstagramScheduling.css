@@ -771,6 +771,241 @@
   font-size: 0.95rem;
 }
 
+/* Config section */
+.ig-config-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.ig-config-status {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.ig-config-status h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #fafafa;
+  font-weight: 600;
+}
+
+.ig-config-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.ig-config-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.ig-config-badge-ok {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.ig-config-badge-off {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+.ig-config-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.ig-config-detail-label {
+  color: #71717a;
+  font-weight: 600;
+}
+
+.ig-config-detail-value {
+  color: #d4d4d8;
+  font-family: 'Courier New', monospace;
+}
+
+.ig-config-form {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+  max-width: 500px;
+}
+
+.ig-not-configured .ig-config-form {
+  margin: 0 auto 2rem;
+  text-align: left;
+}
+
+.ig-config-form h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #fafafa;
+  font-weight: 600;
+}
+
+.ig-form-group input[type="text"],
+.ig-form-group input[type="password"] {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #fafafa;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ig-form-group input[type="text"]:focus,
+.ig-form-group input[type="password"]:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+/* Config actions row */
+.ig-config-actions-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Test result */
+.ig-test-result {
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.ig-test-result.success {
+  background: rgba(34, 197, 94, 0.08);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.ig-test-result.error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.ig-test-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ig-test-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(168, 85, 247, 0.3);
+}
+
+.ig-test-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ig-test-info strong {
+  color: #fafafa;
+  font-size: 1rem;
+}
+
+.ig-test-name {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+}
+
+.ig-test-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: #71717a;
+  margin-top: 0.2rem;
+}
+
+/* Feed section */
+.ig-feed-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.ig-feed-section h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #fafafa;
+  font-weight: 600;
+}
+
+.ig-feed-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 4px;
+}
+
+.ig-feed-item {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 4px;
+  display: block;
+}
+
+.ig-feed-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.ig-feed-item:hover img {
+  transform: scale(1.05);
+}
+
+.ig-feed-item-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: #fff;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+}
+
+.ig-feed-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.ig-feed-item:hover .ig-feed-item-overlay {
+  opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .ig-steps {

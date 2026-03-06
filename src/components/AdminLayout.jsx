@@ -93,7 +93,11 @@ const menuItems = [
 const adminItems = [
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing' },
-  { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram' },
+  { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', exact: true },
+  { path: '/admin/instagram/autoreply', icon: Icons.instagram, label: 'Auto-Resposta', exact: true },
+  { path: '/admin/instagram/leads', icon: Icons.users, label: 'Leads IG', exact: true },
+  { path: '/admin/instagram/analytics', icon: Icons.dashboard, label: 'Analytics IG', exact: true },
+  { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true },
 ];
 
 export default function AdminLayout({ children }) {
@@ -164,7 +168,7 @@ export default function AdminLayout({ children }) {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`nav-item ${isActive(item.path) ? 'active' : ''}`}
+                  className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
                   onClick={closeMobileMenu}
                 >
                   <span className="nav-icon">{item.icon}</span>

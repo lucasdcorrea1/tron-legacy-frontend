@@ -33,6 +33,10 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Profile = lazy(() => import('./pages/Profile'));
 const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
 const InstagramScheduling = lazy(() => import('./pages/InstagramScheduling'));
+const InstagramAutoReply = lazy(() => import('./pages/InstagramAutoReply'));
+const InstagramLeads = lazy(() => import('./pages/InstagramLeads'));
+const InstagramAnalytics = lazy(() => import('./pages/InstagramAnalytics'));
+const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
 
 export default function App() {
   return (
@@ -105,6 +109,38 @@ export default function App() {
             element={
               <PrivateRoute>
                 <InstagramScheduling />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/instagram/autoreply"
+            element={
+              <PrivateRoute>
+                <InstagramAutoReply />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/instagram/leads"
+            element={
+              <PrivateRoute>
+                <InstagramLeads />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/instagram/analytics"
+            element={
+              <PrivateRoute>
+                <InstagramAnalytics />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/cta-analytics"
+            element={
+              <PrivateRoute>
+                <CTAAnalytics />
               </PrivateRoute>
             }
           />

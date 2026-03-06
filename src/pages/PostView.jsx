@@ -768,6 +768,80 @@ export default function PostView() {
 
         {/* Below-article content in center column */}
         <div className="postview-center-col">
+          {/* Product CTA - DreamDesk */}
+          <section className="product-cta">
+            <div className="product-cta-card">
+              {/* Decorative DreamDesk UI elements */}
+              <div className="product-cta-deco" aria-hidden="true">
+                {/* Mini kanban board */}
+                <div className="deco-kanban">
+                  <div className="deco-kanban-col">
+                    <div className="deco-kanban-header" />
+                    <div className="deco-kanban-item" />
+                    <div className="deco-kanban-item deco-kanban-item--accent" />
+                  </div>
+                  <div className="deco-kanban-col">
+                    <div className="deco-kanban-header" />
+                    <div className="deco-kanban-item" />
+                  </div>
+                  <div className="deco-kanban-col">
+                    <div className="deco-kanban-header" />
+                    <div className="deco-kanban-item deco-kanban-item--done" />
+                    <div className="deco-kanban-item deco-kanban-item--done" />
+                  </div>
+                </div>
+                {/* Timeline bars */}
+                <div className="deco-timeline">
+                  <div className="deco-timeline-bar" style={{ width: '80%' }} />
+                  <div className="deco-timeline-bar deco-timeline-bar--short" style={{ width: '55%' }} />
+                  <div className="deco-timeline-bar" style={{ width: '70%' }} />
+                </div>
+                {/* AI sparkle dots */}
+                <div className="deco-sparkle deco-sparkle--1" />
+                <div className="deco-sparkle deco-sparkle--2" />
+                <div className="deco-sparkle deco-sparkle--3" />
+              </div>
+
+              <div className="product-cta-body">
+                <div className="product-cta-text">
+                  <span className="product-cta-badge">Ferramenta Recomendada</span>
+                  <h2 className="product-cta-title">Organize seu negócio com IA</h2>
+                  <p className="product-cta-description">
+                    DreamDesk combina gestão de projetos, colaboração de equipe e automação
+                    inteligente — tudo em uma plataforma.
+                  </p>
+                  <div className="product-cta-features">
+                    <span className="product-cta-feature">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Kanban + Timelines
+                    </span>
+                    <span className="product-cta-feature">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Gestão de tickets
+                    </span>
+                    <span className="product-cta-feature">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      Automação com IA
+                    </span>
+                  </div>
+                </div>
+                <div className="product-cta-action">
+                  <a
+                    href={`https://dreamdesk.app/landing?utm_source=whodo_blog&utm_medium=cta_banner&utm_campaign=dreamdesk&utm_content=${slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="product-cta-btn"
+                    onClick={() => blog.trackCTAClick(slug, 'dreamdesk')}
+                  >
+                    Conhecer DreamDesk
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </a>
+                  <p className="product-cta-reassurance">Plano gratuito. Sem cartão.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* Service CTA */}
           <section className="service-cta">
             <div className="service-cta-card">

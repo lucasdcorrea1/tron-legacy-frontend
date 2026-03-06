@@ -1,0 +1,539 @@
+/* Instagram Analytics page — prefixed with analytics- */
+
+.analytics-page {
+  max-width: 1000px;
+}
+
+.analytics-page .page-header {
+  margin-bottom: 2rem;
+}
+
+.analytics-page .page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fafafa;
+  margin: 0 0 0.25rem;
+}
+
+.analytics-page .page-header p {
+  color: #a1a1aa;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* Tabs */
+.analytics-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: 0.5rem;
+}
+
+.analytics-tab {
+  padding: 0.625rem 1.25rem;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: #71717a;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.analytics-tab:hover {
+  color: #d4d4d8;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.analytics-tab.active {
+  color: #a855f7;
+  background: rgba(168, 85, 247, 0.1);
+}
+
+/* Toolbar */
+.analytics-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.analytics-select {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  color: #d4d4d8;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+.analytics-select option {
+  background: #18181b;
+  color: #fafafa;
+}
+
+.analytics-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+
+.analytics-btn-primary {
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: #fff;
+}
+
+.analytics-btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.3);
+}
+
+.analytics-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.analytics-btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4d4d8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.analytics-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Stats cards row */
+.analytics-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-stat-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.analytics-stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fafafa;
+  line-height: 1;
+  margin-bottom: 0.35rem;
+}
+
+.analytics-stat-label {
+  font-size: 0.75rem;
+  color: #71717a;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.analytics-stat-card.green .analytics-stat-value { color: #22c55e; }
+.analytics-stat-card.red .analytics-stat-value { color: #ef4444; }
+.analytics-stat-card.yellow .analytics-stat-value { color: #facc15; }
+.analytics-stat-card.purple .analytics-stat-value { color: #a855f7; }
+.analytics-stat-card.blue .analytics-stat-value { color: #60a5fa; }
+
+/* Section titles */
+.analytics-section {
+  margin-bottom: 2rem;
+}
+
+.analytics-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fafafa;
+  margin: 0 0 1rem;
+}
+
+/* Bar chart (CSS) */
+.analytics-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 140px;
+  padding: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.analytics-bar {
+  flex: 1;
+  min-width: 0;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #a855f7 0%, #6366f1 100%);
+  position: relative;
+  transition: height 0.3s;
+  cursor: default;
+}
+
+.analytics-bar:hover {
+  opacity: 0.85;
+}
+
+.analytics-bar-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #27272a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fafafa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.analytics-bar:hover .analytics-bar-tooltip {
+  display: block;
+}
+
+.analytics-bar-labels {
+  display: flex;
+  gap: 3px;
+  margin-top: 0.4rem;
+}
+
+.analytics-bar-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.6rem;
+  color: #71717a;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Daily trend (dual bars) */
+.analytics-daily-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 120px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.analytics-daily-group {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 100%;
+  min-width: 0;
+  position: relative;
+}
+
+.analytics-daily-bar-sent {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+  transition: height 0.3s;
+}
+
+.analytics-daily-bar-failed {
+  flex: 1;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  transition: height 0.3s;
+}
+
+.analytics-daily-labels {
+  display: flex;
+  gap: 4px;
+  margin-top: 0.4rem;
+}
+
+.analytics-daily-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.55rem;
+  color: #71717a;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.analytics-daily-legend {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: #a1a1aa;
+}
+
+.analytics-daily-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+}
+
+/* Progress bar (for rankings) */
+.analytics-ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.analytics-ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.analytics-ranking-name {
+  font-size: 0.85rem;
+  color: #d4d4d8;
+  min-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.analytics-ranking-bar-wrap {
+  flex: 1;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.analytics-ranking-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #a855f7 0%, #6366f1 100%);
+  transition: width 0.3s;
+}
+
+.analytics-ranking-count {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* Hourly grid */
+.analytics-hourly-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+}
+
+.analytics-hour-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  transition: all 0.2s;
+  position: relative;
+  cursor: default;
+}
+
+.analytics-hour-cell-label {
+  color: #71717a;
+  font-weight: 600;
+}
+
+.analytics-hour-cell-value {
+  color: #fafafa;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+/* Engagement — post cards */
+.analytics-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.analytics-post-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.analytics-post-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.analytics-post-thumb {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.03);
+  display: block;
+}
+
+.analytics-post-info {
+  padding: 1rem;
+}
+
+.analytics-post-caption {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  margin: 0 0 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+}
+
+.analytics-post-metrics {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.analytics-post-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.analytics-post-metric-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.analytics-post-metric-label {
+  font-size: 0.65rem;
+  color: #71717a;
+  text-transform: uppercase;
+}
+
+/* Engagement rate color */
+.analytics-eng-badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.analytics-eng-high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.analytics-eng-mid {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.analytics-eng-low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* Loading & Empty */
+.analytics-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: #a1a1aa;
+  gap: 0.75rem;
+}
+
+.analytics-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(168, 85, 247, 0.2);
+  border-top-color: #a855f7;
+  border-radius: 50%;
+  animation: analytics-spin 0.6s linear infinite;
+}
+
+@keyframes analytics-spin {
+  to { transform: rotate(360deg); }
+}
+
+.analytics-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #71717a;
+  font-size: 0.9rem;
+}
+
+/* Two-column layout */
+.analytics-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.analytics-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.analytics-card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #d4d4d8;
+  margin: 0 0 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .analytics-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-hourly-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .analytics-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .analytics-toolbar {
+    flex-direction: column;
+  }
+
+  .analytics-ranking-name {
+    min-width: 70px;
+    font-size: 0.75rem;
+  }
+}

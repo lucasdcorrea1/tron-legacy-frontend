@@ -239,6 +239,18 @@ export const blog = {
     return response.json();
   },
 
+  trackCTAClick: async (slug, cta) => {
+    try {
+      await fetch(`${API_URL}/api/v1/blog/posts/${slug}/cta-click`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cta }),
+      });
+    } catch {
+      // Fire and forget
+    }
+  },
+
   deleteComment: async (slug, commentId) => {
     if (!localStorage.getItem('token')) throw new Error('Não autorizado');
     const response = await fetchWithAuth(`${API_URL}/api/v1/blog/posts/${slug}/comments/${commentId}`, {
@@ -248,6 +260,10 @@ export const blog = {
     if (!response.ok) throw new Error('Erro ao deletar comentário');
     return response.json();
   },
+};
+
+export const ctaAnalytics = {
+  get: (days = 30) => api.get(`/api/v1/admin/cta-analytics?days=${days}`),
 };
 
 export const users = {
@@ -307,6 +323,10 @@ export const emailMarketing = {
 
 export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
+  saveConfig: (data) => api.put('/api/v1/admin/instagram/config', data),
+  deleteConfig: () => api.delete('/api/v1/admin/instagram/config'),
+  testConnection: () => api.get('/api/v1/admin/instagram/test'),
+  getFeed: (limit = 12) => api.get(`/api/v1/admin/instagram/feed?limit=${limit}`),
   list: (params = {}) => {
     const query = new URLSearchParams();
     if (params.page) query.append('page', params.page);
@@ -342,6 +362,58 @@ export const instagram = {
       throw error;
     }
   },
+};
+
+export const instagramAutoReply = {
+  listRules: () => api.get('/api/v1/admin/instagram/autoreply/rules'),
+  createRule: (data) => api.post('/api/v1/admin/instagram/autoreply/rules', data),
+  updateRule: (id, data) => api.put(`/api/v1/admin/instagram/autoreply/rules/${id}`, data),
+  toggleRule: (id) => request(`/api/v1/admin/instagram/autoreply/rules/${id}`, { method: 'PATCH' }),
+  deleteRule: (id) => api.delete(`/api/v1/admin/instagram/autoreply/rules/${id}`),
+  listLogs: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.status) query.append('status', params.status);
+    if (params.rule_id) query.append('rule_id', params.rule_id);
+    if (params.trigger_type) query.append('trigger_type', params.trigger_type);
+    const queryString = query.toString();
+    return api.get(`/api/v1/admin/instagram/autoreply/logs${queryString ? `?${queryString}` : ''}`);
+  },
+};
+
+export const instagramLeads = {
+  list: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.search) query.append('search', params.search);
+    if (params.tag) query.append('tag', params.tag);
+    if (params.source) query.append('source', params.source);
+    const queryString = query.toString();
+    return api.get(`/api/v1/admin/instagram/leads${queryString ? `?${queryString}` : ''}`);
+  },
+  updateTags: (id, tags) => api.put(`/api/v1/admin/instagram/leads/${id}/tags`, { tags }),
+  exportCSV: async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/api/v1/admin/instagram/leads/export`, {
+      headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+    });
+    if (!response.ok) throw new Error('Erro ao exportar');
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `instagram_leads_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  },
+  stats: () => api.get('/api/v1/admin/instagram/leads/stats'),
+};
+
+export const instagramAnalytics = {
+  autoreply: (days = 30) => api.get(`/api/v1/admin/instagram/analytics/autoreply?days=${days}`),
+  engagement: () => api.get('/api/v1/admin/instagram/analytics/engagement'),
 };
 
 export const profile = {
