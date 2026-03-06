@@ -731,27 +731,7 @@
   color: #4ade80;
 }
 
-.footer-legal-links {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-}
 
-.footer-legal-links a {
-  color: #a1a1aa;
-  text-decoration: none;
-  font-size: 0.8125rem;
-  transition: color 0.2s;
-}
-
-.footer-legal-links a:hover {
-  color: #c084fc;
-}
-
-.footer-legal-links span {
-  color: rgba(255, 255, 255, 0.15);
-  font-size: 0.75rem;
-}
 
 /* Responsive - Hide ad sidebars on smaller screens */
 @media (max-width: 1200px) {
