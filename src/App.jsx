@@ -34,6 +34,7 @@ const Profile = lazy(() => import('./pages/Profile'));
 const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
 const InstagramPage = lazy(() => import('./pages/InstagramPage'));
 const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
+const Legal = lazy(() => import('./pages/Legal'));
 
 export default function App() {
   return (
@@ -51,6 +52,8 @@ export default function App() {
           <Route path="/servicos" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<PostView />} />
+          <Route path="/privacidade" element={<Legal />} />
+          <Route path="/exclusao-dados" element={<Legal />} />
 
           {/* Protected routes */}
           <Route
