@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { instagram } from '../services/api';
 import UserAvatar from './UserAvatar';
 import './AdminLayout.css';
 
@@ -93,11 +94,14 @@ const menuItems = [
 const adminItems = [
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing' },
-  { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', exact: true },
-  { path: '/admin/instagram/autoreply', icon: Icons.instagram, label: 'Auto-Resposta', exact: true },
-  { path: '/admin/instagram/leads', icon: Icons.users, label: 'Leads IG', exact: true },
-  { path: '/admin/instagram/analytics', icon: Icons.dashboard, label: 'Analytics IG', exact: true },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true },
+];
+
+const instagramSubItems = [
+  { path: '/admin/instagram', label: 'Agendamento', exact: true },
+  { path: '/admin/instagram/autoreply', label: 'Auto-Resposta', exact: true },
+  { path: '/admin/instagram/leads', label: 'Leads', exact: true },
+  { path: '/admin/instagram/analytics', label: 'Analytics', exact: true },
 ];
 
 export default function AdminLayout({ children }) {
@@ -106,8 +110,27 @@ export default function AdminLayout({ children }) {
   const { profile, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [igConnected, setIgConnected] = useState(false);
+  const [igMenuOpen, setIgMenuOpen] = useState(false);
 
   const isAdmin = profile?.role === 'admin' || profile?.role === 'superuser';
+
+  // Check if Instagram is connected
+  useEffect(() => {
+    if (!isAdmin) return;
+    instagram.getConfig()
+      .then(data => {
+        setIgConnected(!!data?.instagram_account_id);
+      })
+      .catch(() => setIgConnected(false));
+  }, [isAdmin]);
+
+  // Auto-open Instagram submenu if on an Instagram page
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin/instagram')) {
+      setIgMenuOpen(true);
+    }
+  }, [location.pathname]);
 
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
@@ -175,6 +198,45 @@ export default function AdminLayout({ children }) {
                   <span className="nav-label">{item.label}</span>
                 </Link>
               ))}
+
+              {/* Instagram — submenu when connected, direct link when not */}
+              {igConnected ? (
+                <>
+                  <button
+                    className={`nav-item nav-submenu-toggle ${location.pathname.startsWith('/admin/instagram') ? 'active' : ''}`}
+                    onClick={() => setIgMenuOpen(prev => !prev)}
+                  >
+                    <span className="nav-icon">{Icons.instagram}</span>
+                    <span className="nav-label">Instagram</span>
+                    <span className={`nav-chevron ${igMenuOpen ? 'open' : ''}`}>
+                      {Icons.chevronDown}
+                    </span>
+                  </button>
+                  {igMenuOpen && (
+                    <div className="nav-submenu">
+                      {instagramSubItems.map(item => (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`nav-item nav-subitem ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                          onClick={closeMobileMenu}
+                        >
+                          <span className="nav-label">{item.label}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <Link
+                  to="/admin/instagram"
+                  className={`nav-item ${isActive('/admin/instagram', true) ? 'active' : ''}`}
+                  onClick={closeMobileMenu}
+                >
+                  <span className="nav-icon">{Icons.instagram}</span>
+                  <span className="nav-label">Instagram</span>
+                </Link>
+              )}
             </div>
           )}
         </nav>
