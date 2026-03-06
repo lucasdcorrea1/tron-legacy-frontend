@@ -1,0 +1,49 @@
+/* Unified Instagram page wrapper */
+
+.ig-unified-page {
+  max-width: 960px;
+}
+
+.ig-unified-page .page-header {
+  margin-bottom: 2.5rem;
+}
+
+.ig-unified-page .page-header h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #f4f4f5;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ig-unified-page .page-header p {
+  color: #71717a;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.ig-unified-tabs {
+  margin-bottom: 1.75rem;
+}
+
+.ig-unified-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 3rem 0;
+  color: #a1a1aa;
+  font-size: 0.9rem;
+}
+
+/* Remove duplicate page-header from child Content components */
+.ig-unified-content .ig-page > .page-header,
+.ig-unified-content .ar-page > .page-header,
+.ig-unified-content .leads-page > .page-header,
+.ig-unified-content .analytics-page > .page-header {
+  display: none;
+}

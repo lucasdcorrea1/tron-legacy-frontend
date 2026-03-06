@@ -4,7 +4,7 @@ import { useToast } from '../components/Toast';
 import { instagramLeads } from '../services/api';
 import './InstagramLeads.css';
 
-export default function InstagramLeads() {
+export function InstagramLeadsContent() {
   const toast = useToast();
 
   const [leads, setLeads] = useState([]);
@@ -115,7 +115,6 @@ export default function InstagramLeads() {
   const allTags = [...new Set(leads.flatMap(l => l.tags || []))].sort();
 
   return (
-    <AdminLayout>
       <div className="leads-page">
         <div className="page-header">
           <h1>Leads Instagram</h1>
@@ -313,6 +312,13 @@ export default function InstagramLeads() {
           </div>
         )}
       </div>
+  );
+}
+
+export default function InstagramLeads() {
+  return (
+    <AdminLayout>
+      <InstagramLeadsContent />
     </AdminLayout>
   );
 }

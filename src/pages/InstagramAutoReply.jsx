@@ -4,7 +4,7 @@ import { useToast } from '../components/Toast';
 import { instagramAutoReply, API_URL } from '../services/api';
 import './InstagramAutoReply.css';
 
-export default function InstagramAutoReply() {
+export function InstagramAutoReplyContent() {
   const toast = useToast();
   const [tab, setTab] = useState('rules');
 
@@ -107,7 +107,6 @@ export default function InstagramAutoReply() {
   const totalPages = Math.ceil(logsTotal / logsLimit);
 
   return (
-    <AdminLayout>
       <div className="ar-page">
         <div className="page-header">
           <h1>Auto-Resposta Instagram</h1>
@@ -376,6 +375,13 @@ export default function InstagramAutoReply() {
           </div>
         )}
       </div>
+  );
+}
+
+export default function InstagramAutoReply() {
+  return (
+    <AdminLayout>
+      <InstagramAutoReplyContent />
     </AdminLayout>
   );
 }

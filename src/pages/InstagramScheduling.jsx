@@ -18,13 +18,13 @@ const STATUS_LABELS = {
   failed: 'Falhou',
 };
 
-export default function InstagramScheduling() {
+export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const toast = useToast();
   const fileInputRef = useRef(null);
 
   const [tab, setTab] = useState('agenda');
-  const [configured, setConfigured] = useState(null); // null = loading, true/false
-  const [configSource, setConfigSource] = useState(''); // "user" or "env"
+  const [configured, setConfigured] = useState(configuredProp ?? null);
+  const [configSource, setConfigSource] = useState('');
   const [configAccountIdDisplay, setConfigAccountIdDisplay] = useState('');
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -78,8 +78,10 @@ export default function InstagramScheduling() {
       setConfigured(data.configured);
       setConfigSource(data.source || '');
       setConfigAccountIdDisplay(data.account_id || '');
+      onConfigChange?.(data.configured);
     } catch {
       setConfigured(false);
+      onConfigChange?.(false);
     }
   };
 
@@ -293,7 +295,6 @@ export default function InstagramScheduling() {
   // Not configured screen — show inline config form
   if (configured === false) {
     return (
-      <AdminLayout>
         <div className="ig-page">
           <div className="page-header">
             <h1>Instagram</h1>
@@ -351,26 +352,22 @@ export default function InstagramScheduling() {
             </div>
           </div>
         </div>
-      </AdminLayout>
     );
   }
 
   // Loading config
   if (configured === null) {
     return (
-      <AdminLayout>
         <div className="ig-page">
           <div className="ig-loading">
             <span className="ig-spinner" />
             Verificando configuracao...
           </div>
         </div>
-      </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout>
       <div className="ig-page">
         <div className="page-header">
           <h1>Instagram</h1>
@@ -949,6 +946,13 @@ export default function InstagramScheduling() {
           </div>
         )}
       </div>
+  );
+}
+
+export default function InstagramScheduling() {
+  return (
+    <AdminLayout>
+      <InstagramSchedulingContent />
     </AdminLayout>
   );
 }

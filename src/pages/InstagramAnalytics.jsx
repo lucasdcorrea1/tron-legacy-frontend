@@ -4,7 +4,7 @@ import { useToast } from '../components/Toast';
 import { instagramAnalytics } from '../services/api';
 import './InstagramAnalytics.css';
 
-export default function InstagramAnalytics() {
+export function InstagramAnalyticsContent() {
   const toast = useToast();
   const [tab, setTab] = useState('autoreply');
 
@@ -51,7 +51,6 @@ export default function InstagramAnalytics() {
   };
 
   return (
-    <AdminLayout>
       <div className="analytics-page">
         <div className="page-header">
           <h1>Analytics Instagram</h1>
@@ -322,6 +321,13 @@ export default function InstagramAnalytics() {
           </>
         )}
       </div>
+  );
+}
+
+export default function InstagramAnalytics() {
+  return (
+    <AdminLayout>
+      <InstagramAnalyticsContent />
     </AdminLayout>
   );
 }
