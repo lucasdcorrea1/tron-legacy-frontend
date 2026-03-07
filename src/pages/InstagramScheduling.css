@@ -1006,6 +1006,553 @@
   opacity: 1;
 }
 
+/* Campaign toggle */
+.ig-campaign-toggle {
+  margin: 1.5rem 0 1rem;
+  padding: 1rem 1.25rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+}
+
+.ig-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.ig-toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.ig-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.ig-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  transition: background 0.2s;
+}
+
+.ig-toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #71717a;
+  top: 3px;
+  left: 3px;
+  transition: all 0.2s;
+}
+
+.ig-toggle-switch input:checked + .ig-toggle-slider {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+.ig-toggle-switch input:checked + .ig-toggle-slider::after {
+  background: #a855f7;
+  transform: translateX(20px);
+}
+
+.ig-toggle-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ig-toggle-text strong {
+  font-size: 0.85rem;
+  color: #d4d4d8;
+}
+
+.ig-toggle-text span {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+/* Campaign section (collapsible fields) */
+.ig-campaign-section {
+  margin-top: 1rem;
+  padding: 1.25rem;
+  background: rgba(168, 85, 247, 0.03);
+  border: 1px solid rgba(168, 85, 247, 0.12);
+  border-radius: 12px;
+  animation: ig-campaign-slide 0.25s ease-out;
+}
+
+@keyframes ig-campaign-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ig-campaign-section .ig-form-group select {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #fafafa;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ig-campaign-section .ig-form-group select:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.ig-campaign-section .ig-form-group input[type="text"],
+.ig-campaign-section .ig-form-group input[type="number"] {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #fafafa;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ig-campaign-section .ig-form-group input[type="text"]:focus,
+.ig-campaign-section .ig-form-group input[type="number"]:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.5);
+}
+
+.ig-campaign-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.ig-campaign-grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.ig-campaign-targeting-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Segment presets */
+.ig-presets-section {
+  margin-bottom: 1rem;
+}
+
+.ig-presets-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ig-presets-hint {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.7rem;
+  color: #52525b;
+  font-style: italic;
+}
+
+.ig-presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.ig-preset-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all 0.2s;
+  color: inherit;
+}
+
+.ig-preset-card strong {
+  font-size: 0.78rem;
+  color: #d4d4d8;
+}
+
+.ig-preset-card span {
+  font-size: 0.68rem;
+  color: #71717a;
+  line-height: 1.3;
+}
+
+.ig-preset-card:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(168, 85, 247, 0.05);
+}
+
+.ig-preset-card.active {
+  border-color: rgba(168, 85, 247, 0.5);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.ig-preset-card.active strong {
+  color: #c084fc;
+}
+
+/* Geo preset variant */
+.ig-preset-geo:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.ig-preset-geo.active {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.ig-preset-geo.active strong {
+  color: #60a5fa;
+}
+
+/* Saved presets */
+.ig-presets-saved {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.ig-preset-saved-item {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.ig-preset-saved-item.active {
+  border-color: rgba(168, 85, 247, 0.5);
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.ig-preset-saved-btn {
+  padding: 0.35rem 0.65rem;
+  background: none;
+  border: none;
+  color: #d4d4d8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.ig-preset-saved-item.active .ig-preset-saved-btn {
+  color: #c084fc;
+}
+
+.ig-preset-saved-delete {
+  padding: 0.35rem 0.5rem;
+  background: none;
+  border: none;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  color: #71717a;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.ig-preset-saved-delete:hover {
+  color: #ef4444;
+}
+
+/* Save preset button */
+.ig-save-preset-btn {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.55rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #a1a1aa;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.ig-save-preset-btn:hover {
+  border-color: rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+  background: rgba(168, 85, 247, 0.05);
+}
+
+/* Save preset inline form */
+.ig-save-preset-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.ig-save-preset-form input {
+  flex: 1;
+  padding: 0.55rem 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 10px;
+  color: #fafafa;
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.ig-save-preset-form input:focus {
+  outline: none;
+  border-color: rgba(168, 85, 247, 0.6);
+}
+
+.ig-save-preset-confirm {
+  padding: 0.55rem 1rem;
+  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.ig-save-preset-confirm:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.ig-save-preset-confirm:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ig-save-preset-cancel {
+  padding: 0.55rem 0.75rem;
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #71717a;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.ig-save-preset-cancel:hover {
+  color: #a1a1aa;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Interest search */
+.ig-interest-search-wrap {
+  position: relative;
+}
+
+.ig-interest-searching {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ig-interest-results {
+  background: #1e1e21;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 0.25rem;
+}
+
+.ig-interest-result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.ig-interest-result-item:last-child {
+  border-bottom: none;
+}
+
+.ig-interest-result-item:hover {
+  background: rgba(168, 85, 247, 0.1);
+}
+
+.ig-interest-result-name {
+  color: #d4d4d8;
+  font-size: 0.85rem;
+}
+
+.ig-interest-result-audience {
+  color: #71717a;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+.ig-interest-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+}
+
+.ig-interest-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.ig-interest-tag button {
+  background: none;
+  border: none;
+  color: #c084fc;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.ig-interest-tag button:hover {
+  opacity: 1;
+}
+
+/* Location tags */
+.ig-location-type-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #71717a;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  margin-left: 0.75rem;
+}
+
+.ig-location-tag {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+}
+
+.ig-location-tag button {
+  color: #60a5fa;
+}
+
+.ig-location-tag-type {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-right: 0.15rem;
+}
+
+/* Campaign review full-width item */
+.ig-campaign-review-full {
+  grid-column: 1 / -1;
+}
+
+/* Campaign review in step 3 */
+.ig-campaign-review {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: rgba(168, 85, 247, 0.05);
+  border: 1px solid rgba(168, 85, 247, 0.15);
+  border-radius: 12px;
+}
+
+.ig-campaign-review h4 {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #c084fc;
+}
+
+.ig-campaign-review-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.ig-campaign-review-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.ig-campaign-review-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.ig-campaign-review-value {
+  font-size: 0.85rem;
+  color: #d4d4d8;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .ig-steps {
@@ -1043,5 +1590,29 @@
 
   .ig-filter-row {
     flex-wrap: wrap;
+  }
+
+  .ig-campaign-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ig-campaign-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .ig-presets-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ig-save-preset-form {
+    flex-wrap: wrap;
+  }
+
+  .ig-save-preset-form input {
+    width: 100%;
+  }
+
+  .ig-campaign-review-grid {
+    grid-template-columns: 1fr;
   }
 }

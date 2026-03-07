@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { useToast } from '../components/Toast';
-import { instagram, API_URL } from '../services/api';
+import { instagram, integratedPublish, metaAds, API_URL } from '../services/api';
 import './InstagramScheduling.css';
 
 const STEPS = [
@@ -17,6 +17,214 @@ const STATUS_LABELS = {
   published: 'Publicado',
   failed: 'Falhou',
 };
+
+const OBJECTIVE_OPTIONS = [
+  { value: 'OUTCOME_AWARENESS', label: 'Reconhecimento' },
+  { value: 'OUTCOME_ENGAGEMENT', label: 'Engajamento' },
+  { value: 'OUTCOME_TRAFFIC', label: 'Trafego' },
+];
+
+const GENDER_LABELS = { 0: 'Todos', 1: 'Masculino', 2: 'Feminino' };
+
+// Presets de publico-alvo (so interesses + idade + genero, sem geo)
+const AUDIENCE_PRESETS = [
+  {
+    id: '_empresarios',
+    name: 'Empresarios & PMEs',
+    desc: 'Donos de negocios buscando crescer',
+    targeting: {
+      age_min: 25, age_max: 55, genders: [0],
+      interests: [
+        { id: '6003012752205', name: 'Small business' },
+        { id: '6003349442805', name: 'Entrepreneurship' },
+        { id: '6003020834693', name: 'Business software' },
+      ],
+    },
+  },
+  {
+    id: '_social_media',
+    name: 'Social Media Managers',
+    desc: 'Gestores de redes sociais e freelancers',
+    targeting: {
+      age_min: 20, age_max: 40, genders: [0],
+      interests: [
+        { id: '6003139266461', name: 'Social media marketing' },
+        { id: '6003384204254', name: 'Digital marketing' },
+        { id: '6003277229268', name: 'Social media' },
+      ],
+    },
+  },
+  {
+    id: '_agencias',
+    name: 'Agencias Digitais',
+    desc: 'Agencias de marketing e publicidade',
+    targeting: {
+      age_min: 22, age_max: 45, genders: [0],
+      interests: [
+        { id: '6003384204254', name: 'Digital marketing' },
+        { id: '6003248500266', name: 'Advertising' },
+        { id: '6003139266461', name: 'Social media marketing' },
+        { id: '6003020834693', name: 'Business software' },
+      ],
+    },
+  },
+  {
+    id: '_ecommerce',
+    name: 'Donos de E-commerce',
+    desc: 'Lojistas online que precisam escalar',
+    targeting: {
+      age_min: 22, age_max: 50, genders: [0],
+      interests: [
+        { id: '6003161475030', name: 'Online shopping' },
+        { id: '6003012752205', name: 'Small business' },
+        { id: '6003349442805', name: 'Entrepreneurship' },
+        { id: '6003384204254', name: 'Digital marketing' },
+      ],
+    },
+  },
+  {
+    id: '_startups',
+    name: 'Startups & Tech',
+    desc: 'Fundadores e profissionais de tecnologia',
+    targeting: {
+      age_min: 22, age_max: 42, genders: [0],
+      interests: [
+        { id: '6003349442805', name: 'Entrepreneurship' },
+        { id: '6003171248205', name: 'Technology' },
+        { id: '6003020834693', name: 'Business software' },
+      ],
+    },
+  },
+  {
+    id: '_profissionais_mkt',
+    name: 'Profissionais de MKT',
+    desc: 'Analistas e coordenadores de marketing',
+    targeting: {
+      age_min: 22, age_max: 40, genders: [0],
+      interests: [
+        { id: '6003384204254', name: 'Digital marketing' },
+        { id: '6003248500266', name: 'Advertising' },
+        { id: '6003139266461', name: 'Social media marketing' },
+      ],
+    },
+  },
+  {
+    id: '_gastronomia',
+    name: 'Gastronomia',
+    desc: 'Restaurantes, bares e delivery',
+    targeting: {
+      age_min: 20, age_max: 50, genders: [0],
+      interests: [
+        { id: '6003106289868', name: 'Cooking' },
+        { id: '6003020834693', name: 'Food and drink' },
+        { id: '6003384222457', name: 'Restaurants' },
+      ],
+    },
+  },
+  {
+    id: '_saude',
+    name: 'Saude & Bem-estar',
+    desc: 'Clinicas, academias, profissionais de saude',
+    targeting: {
+      age_min: 22, age_max: 50, genders: [0],
+      interests: [
+        { id: '6003384204254', name: 'Physical fitness' },
+        { id: '6003109524776', name: 'Nutrition' },
+        { id: '6003012752205', name: 'Small business' },
+      ],
+    },
+  },
+  {
+    id: '_moda_beleza',
+    name: 'Moda & Beleza',
+    desc: 'Lojas de roupa, saloes, cosmeticos',
+    targeting: {
+      age_min: 18, age_max: 45, genders: [2],
+      interests: [
+        { id: '6003384248805', name: 'Shopping and fashion' },
+        { id: '6003397241517', name: 'Beauty' },
+        { id: '6003107902433', name: 'Cosmetics' },
+      ],
+    },
+  },
+];
+
+// Presets de alcance geografico (so localizacao, sem interesses)
+const GEO_PRESETS = [
+  {
+    id: '_geo_franca',
+    name: 'Franca',
+    desc: 'Cidade de Franca/SP',
+    locations: [{ key: '2429670', name: 'Franca, SP', type: 'city' }],
+    targeting: {
+      geo_locations: { countries: ['BR'], cities: [{ key: '2429670', name: 'Franca' }] },
+    },
+  },
+  {
+    id: '_geo_regiao_franca',
+    name: 'Regiao de Franca',
+    desc: 'Franca + Patrocinio, Restinga, Cristais',
+    locations: [
+      { key: '2429670', name: 'Franca, SP', type: 'city' },
+      { key: '2513498', name: 'Patrocinio Paulista, SP', type: 'city' },
+      { key: '2515720', name: 'Restinga, SP', type: 'city' },
+      { key: '2513023', name: 'Cristais Paulista, SP', type: 'city' },
+    ],
+    targeting: {
+      geo_locations: {
+        countries: ['BR'],
+        cities: [
+          { key: '2429670', name: 'Franca' },
+          { key: '2513498', name: 'Patrocinio Paulista' },
+          { key: '2515720', name: 'Restinga' },
+          { key: '2513023', name: 'Cristais Paulista' },
+        ],
+      },
+    },
+  },
+  {
+    id: '_geo_interior_sp',
+    name: 'Interior SP',
+    desc: 'Ribeirao Preto, Franca, Araraquara, SJRP',
+    locations: [
+      { key: '2429670', name: 'Franca, SP', type: 'city' },
+      { key: '2443890', name: 'Ribeirao Preto, SP', type: 'city' },
+      { key: '2429526', name: 'Araraquara, SP', type: 'city' },
+      { key: '2429535', name: 'Sao Jose do Rio Preto, SP', type: 'city' },
+    ],
+    targeting: {
+      geo_locations: {
+        countries: ['BR'],
+        cities: [
+          { key: '2429670', name: 'Franca' },
+          { key: '2443890', name: 'Ribeirao Preto' },
+          { key: '2429526', name: 'Araraquara' },
+          { key: '2429535', name: 'Sao Jose do Rio Preto' },
+        ],
+      },
+    },
+  },
+  {
+    id: '_geo_sp_capital',
+    name: 'Sao Paulo Capital',
+    desc: 'Cidade de Sao Paulo',
+    locations: [{ key: '2430536', name: 'Sao Paulo, SP', type: 'city' }],
+    targeting: {
+      geo_locations: { countries: ['BR'], cities: [{ key: '2430536', name: 'Sao Paulo' }] },
+    },
+  },
+  {
+    id: '_geo_brasil',
+    name: 'Brasil Inteiro',
+    desc: 'Todo o territorio nacional',
+    locations: [{ key: 'BR', name: 'Brasil', type: 'country' }],
+    targeting: {
+      geo_locations: { countries: ['BR'] },
+    },
+  },
+];
+
+const ALL_PRESETS = [...AUDIENCE_PRESETS, ...GEO_PRESETS];
 
 export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const toast = useToast();
@@ -44,6 +252,34 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const [publishNow, setPublishNow] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
+  // Campaign state
+  const [campaignEnabled, setCampaignEnabled] = useState(false);
+  const [campaign, setCampaign] = useState({
+    name: '',
+    objective: 'OUTCOME_AWARENESS',
+    daily_budget: '',
+    duration_days: 7,
+    targeting: {
+      geo_locations: { countries: ['BR'] },
+      age_min: 18,
+      age_max: 65,
+      genders: [0],
+      interests: [],
+    },
+  });
+  const [interestSearch, setInterestSearch] = useState('');
+  const [interestResults, setInterestResults] = useState([]);
+  const [searchingInterests, setSearchingInterests] = useState(false);
+  const [locationSearch, setLocationSearch] = useState('');
+  const [locationResults, setLocationResults] = useState([]);
+  const [searchingLocations, setSearchingLocations] = useState(false);
+  const [locations, setLocations] = useState([{ key: 'BR', name: 'Brasil', type: 'country' }]);
+  const [savedPresets, setSavedPresets] = useState([]);
+  const [activePresetIds, setActivePresetIds] = useState([]);
+  const [showSavePreset, setShowSavePreset] = useState(false);
+  const [presetNameInput, setPresetNameInput] = useState('');
+  const [savingPreset, setSavingPreset] = useState(false);
+
   const [showConfirm, setShowConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
 
@@ -58,6 +294,294 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
       loadSchedules();
     }
   }, [tab, statusFilter, configured]);
+
+  // Load saved presets when campaign is enabled
+  useEffect(() => {
+    if (campaignEnabled) {
+      metaAds.listPresets().then(data => setSavedPresets(data || [])).catch(() => {});
+    }
+  }, [campaignEnabled]);
+
+  const applyPreset = (preset) => {
+    const isActive = activePresetIds.includes(preset.id);
+
+    if (isActive) {
+      // Deselect: remove this preset's contributions
+      setActivePresetIds(prev => prev.filter(id => id !== preset.id));
+      // Rebuild from remaining active presets
+      const remaining = ALL_PRESETS.filter(p => activePresetIds.includes(p.id) && p.id !== preset.id);
+      const savedActive = savedPresets.filter(p => activePresetIds.includes(p.id) && p.id !== preset.id);
+      rebuildFromPresets([...remaining, ...savedActive]);
+    } else {
+      // Add: merge this preset's targeting
+      setActivePresetIds(prev => [...prev, preset.id]);
+      mergePreset(preset);
+    }
+    setInterestSearch('');
+    setInterestResults([]);
+    setLocationSearch('');
+    setLocationResults([]);
+  };
+
+  const mergePreset = (preset) => {
+    const t = preset.targeting;
+    setCampaign(prev => {
+      const existingInterests = prev.targeting.interests || [];
+      const newInterests = (t.interests || []).filter(
+        ni => !existingInterests.find(ei => ei.id === ni.id)
+      );
+      // Only merge geo if preset has geo_locations
+      let geo = prev.targeting.geo_locations;
+      if (t.geo_locations) {
+        const existingCities = geo.cities || [];
+        const newCities = (t.geo_locations.cities || []).filter(
+          nc => !existingCities.find(ec => ec.key === nc.key)
+        );
+        const existingCountries = geo.countries || [];
+        const newCountries = (t.geo_locations.countries || []).filter(
+          c => !existingCountries.includes(c)
+        );
+        geo = {
+          ...geo,
+          countries: [...existingCountries, ...newCountries],
+          ...(([...existingCities, ...newCities].length > 0) && { cities: [...existingCities, ...newCities] }),
+        };
+      }
+      return {
+        ...prev,
+        targeting: {
+          ...prev.targeting,
+          geo_locations: geo,
+          age_min: t.age_min != null ? Math.min(prev.targeting.age_min, t.age_min) : prev.targeting.age_min,
+          age_max: t.age_max != null ? Math.max(prev.targeting.age_max, t.age_max) : prev.targeting.age_max,
+          genders: t.genders ? (t.genders[0] !== 0 ? t.genders : prev.targeting.genders) : prev.targeting.genders,
+          interests: [...existingInterests, ...newInterests],
+        },
+      };
+    });
+    // Merge locations
+    const presetLocs = preset.locations || [];
+    setLocations(prev => {
+      const merged = [...prev];
+      for (const loc of presetLocs) {
+        if (!merged.find(l => l.key === loc.key)) {
+          merged.push(loc);
+        }
+      }
+      return merged;
+    });
+  };
+
+  const rebuildFromPresets = (presetList) => {
+    // Reset to defaults then merge all
+    const base = {
+      geo_locations: { countries: [] },
+      age_min: 65,
+      age_max: 13,
+      genders: [0],
+      interests: [],
+    };
+    let allLocations = [];
+
+    for (const p of presetList) {
+      const t = p.targeting;
+      for (const c of (t.geo_locations?.countries || [])) {
+        if (!base.geo_locations.countries.includes(c)) base.geo_locations.countries.push(c);
+      }
+      const cities = t.geo_locations?.cities || [];
+      if (cities.length > 0) {
+        if (!base.geo_locations.cities) base.geo_locations.cities = [];
+        for (const city of cities) {
+          if (!base.geo_locations.cities.find(c => c.key === city.key)) {
+            base.geo_locations.cities.push(city);
+          }
+        }
+      }
+      base.age_min = Math.min(base.age_min, t.age_min ?? 65);
+      base.age_max = Math.max(base.age_max, t.age_max ?? 13);
+      if (t.genders && t.genders[0] !== 0) base.genders = t.genders;
+      for (const interest of (t.interests || [])) {
+        if (!base.interests.find(i => i.id === interest.id)) {
+          base.interests.push(interest);
+        }
+      }
+      for (const loc of (p.locations || [])) {
+        if (!allLocations.find(l => l.key === loc.key)) {
+          allLocations.push(loc);
+        }
+      }
+    }
+
+    if (base.geo_locations.countries.length === 0) base.geo_locations.countries = ['BR'];
+    if (base.age_min === 65) base.age_min = 18;
+    if (base.age_max === 13) base.age_max = 65;
+    if (allLocations.length === 0) allLocations = [{ key: 'BR', name: 'Brasil', type: 'country' }];
+
+    setCampaign(prev => ({ ...prev, targeting: base }));
+    setLocations(allLocations);
+  };
+
+  const handleSavePreset = async () => {
+    if (!presetNameInput.trim()) return;
+    setSavingPreset(true);
+    try {
+      await metaAds.createPreset({ name: presetNameInput.trim(), targeting: campaign.targeting });
+      const data = await metaAds.listPresets();
+      setSavedPresets(data || []);
+      toast.success('Preset salvo');
+      setPresetNameInput('');
+      setShowSavePreset(false);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao salvar preset');
+    } finally {
+      setSavingPreset(false);
+    }
+  };
+
+  const handleDeletePreset = async (id) => {
+    try {
+      await metaAds.deletePreset(id);
+      setSavedPresets(prev => prev.filter(p => p.id !== id));
+      setActivePresetIds(prev => prev.filter(pid => pid !== id));
+      toast.success('Preset removido');
+    } catch (err) {
+      toast.error(err.message || 'Erro ao remover preset');
+    }
+  };
+
+  // Debounced location search
+  useEffect(() => {
+    if (!campaignEnabled || locationSearch.length < 2) {
+      setLocationResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setSearchingLocations(true);
+      try {
+        const data = await metaAds.searchLocations(locationSearch);
+        setLocationResults(data?.data || []);
+      } catch {
+        setLocationResults([]);
+      } finally {
+        setSearchingLocations(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [locationSearch, campaignEnabled]);
+
+  const addLocation = (loc) => {
+    const locKey = loc.key || loc.country_code || loc.name;
+    if (!locations.find(l => l.key === locKey)) {
+      setLocations(prev => [...prev, { key: locKey, name: loc.name, type: loc.type }]);
+      // Sync countries to campaign targeting
+      const newCountries = loc.type === 'country'
+        ? [...new Set([...campaign.targeting.geo_locations.countries, loc.country_code || locKey])]
+        : campaign.targeting.geo_locations.countries;
+      const newCities = loc.type === 'city'
+        ? [...(campaign.targeting.geo_locations.cities || []), { key: locKey, name: loc.name }]
+        : (campaign.targeting.geo_locations.cities || []);
+      const newRegions = loc.type === 'region'
+        ? [...(campaign.targeting.geo_locations.regions || []), { key: locKey, name: loc.name }]
+        : (campaign.targeting.geo_locations.regions || []);
+      setCampaign(prev => ({
+        ...prev,
+        targeting: {
+          ...prev.targeting,
+          geo_locations: {
+            ...prev.targeting.geo_locations,
+            countries: newCountries,
+            ...(newCities.length > 0 && { cities: newCities }),
+            ...(newRegions.length > 0 && { regions: newRegions }),
+          },
+        },
+      }));
+    }
+    setLocationSearch('');
+    setLocationResults([]);
+  };
+
+  const removeLocation = (key) => {
+    const loc = locations.find(l => l.key === key);
+    setLocations(prev => prev.filter(l => l.key !== key));
+    if (loc?.type === 'country') {
+      setCampaign(prev => ({
+        ...prev,
+        targeting: {
+          ...prev.targeting,
+          geo_locations: {
+            ...prev.targeting.geo_locations,
+            countries: prev.targeting.geo_locations.countries.filter(c => c !== key),
+          },
+        },
+      }));
+    } else if (loc?.type === 'city') {
+      setCampaign(prev => ({
+        ...prev,
+        targeting: {
+          ...prev.targeting,
+          geo_locations: {
+            ...prev.targeting.geo_locations,
+            cities: (prev.targeting.geo_locations.cities || []).filter(c => c.key !== key),
+          },
+        },
+      }));
+    } else if (loc?.type === 'region') {
+      setCampaign(prev => ({
+        ...prev,
+        targeting: {
+          ...prev.targeting,
+          geo_locations: {
+            ...prev.targeting.geo_locations,
+            regions: (prev.targeting.geo_locations.regions || []).filter(r => r.key !== key),
+          },
+        },
+      }));
+    }
+  };
+
+  // Debounced interest search
+  useEffect(() => {
+    if (!campaignEnabled || interestSearch.length < 2) {
+      setInterestResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setSearchingInterests(true);
+      try {
+        const data = await metaAds.searchInterests(interestSearch);
+        setInterestResults(data?.data || []);
+      } catch {
+        setInterestResults([]);
+      } finally {
+        setSearchingInterests(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [interestSearch, campaignEnabled]);
+
+  const addInterest = (interest) => {
+    if (!campaign.targeting.interests.find(i => i.id === interest.id)) {
+      setCampaign({
+        ...campaign,
+        targeting: {
+          ...campaign.targeting,
+          interests: [...campaign.targeting.interests, { id: String(interest.id), name: interest.name }],
+        },
+      });
+    }
+    setInterestSearch('');
+    setInterestResults([]);
+  };
+
+  const removeInterest = (id) => {
+    setCampaign({
+      ...campaign,
+      targeting: {
+        ...campaign.targeting,
+        interests: campaign.targeting.interests.filter(i => i.id !== id),
+      },
+    });
+  };
 
   const checkConfig = async () => {
     try {
@@ -142,12 +666,30 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
         scheduledAt = dt.toISOString();
       }
 
-      await instagram.create({
-        caption,
-        media_type: getMediaType(),
-        image_ids: images.map(img => img.id),
-        scheduled_at: scheduledAt,
-      });
+      if (campaignEnabled) {
+        await integratedPublish.create({
+          caption,
+          media_type: getMediaType(),
+          image_ids: images.map(img => img.id),
+          scheduled_at: scheduledAt,
+          campaign: {
+            ...campaign,
+            daily_budget: Math.round(Number(campaign.daily_budget) * 100),
+            duration_days: Number(campaign.duration_days),
+            targeting: {
+              ...campaign.targeting,
+              interests: campaign.targeting.interests.map(i => ({ id: i.id, name: i.name })),
+            },
+          },
+        });
+      } else {
+        await instagram.create({
+          caption,
+          media_type: getMediaType(),
+          image_ids: images.map(img => img.id),
+          scheduled_at: scheduledAt,
+        });
+      }
 
       setShowConfirm(false);
       toast.success(publishNow ? 'Post enviado para publicacao!' : 'Post agendado com sucesso!');
@@ -193,6 +735,28 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     setScheduleDate('');
     setScheduleTime('');
     setPublishNow(false);
+    setCampaignEnabled(false);
+    setCampaign({
+      name: '',
+      objective: 'OUTCOME_AWARENESS',
+      daily_budget: '',
+      duration_days: 7,
+      targeting: {
+        geo_locations: { countries: ['BR'] },
+        age_min: 18,
+        age_max: 65,
+        genders: [0],
+        interests: [],
+      },
+    });
+    setInterestSearch('');
+    setInterestResults([]);
+    setLocationSearch('');
+    setLocationResults([]);
+    setLocations([{ key: 'BR', name: 'Brasil', type: 'country' }]);
+    setActivePresetIds([]);
+    setShowSavePreset(false);
+    setPresetNameInput('');
   };
 
   const renderCaption = (text) => {
@@ -206,7 +770,10 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     switch (step) {
       case 0: return images.length > 0 && !uploading;
       case 1: return caption.length <= 2200;
-      case 2: return publishNow || (scheduleDate && scheduleTime);
+      case 2:
+        if (!publishNow && (!scheduleDate || !scheduleTime)) return false;
+        if (campaignEnabled && (!campaign.name || !campaign.daily_budget)) return false;
+        return true;
       default: return true;
     }
   };
@@ -504,6 +1071,308 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                   </div>
                 )}
 
+                {/* Campaign toggle */}
+                <div className="ig-campaign-toggle">
+                  <label className="ig-toggle-label">
+                    <span className="ig-toggle-switch">
+                      <input
+                        type="checkbox"
+                        checked={campaignEnabled}
+                        onChange={(e) => setCampaignEnabled(e.target.checked)}
+                      />
+                      <span className="ig-toggle-slider" />
+                    </span>
+                    <span className="ig-toggle-text">
+                      <strong>Criar campanha Meta Ads</strong>
+                      <span>Promover este post automaticamente</span>
+                    </span>
+                  </label>
+                </div>
+
+                {/* Campaign fields */}
+                {campaignEnabled && (
+                  <div className="ig-campaign-section">
+                    <div className="ig-form-group">
+                      <label>Nome da campanha *</label>
+                      <input
+                        type="text"
+                        value={campaign.name}
+                        onChange={(e) => setCampaign({ ...campaign, name: e.target.value })}
+                        placeholder="Ex: Lancamento Produto X"
+                      />
+                    </div>
+
+                    <div className="ig-form-group">
+                      <label>Objetivo</label>
+                      <select
+                        value={campaign.objective}
+                        onChange={(e) => setCampaign({ ...campaign, objective: e.target.value })}
+                      >
+                        {OBJECTIVE_OPTIONS.map(o => (
+                          <option key={o.value} value={o.value}>{o.label}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="ig-campaign-grid">
+                      <div className="ig-form-group">
+                        <label>Orcamento diario (R$) *</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          min="1"
+                          value={campaign.daily_budget}
+                          onChange={(e) => setCampaign({ ...campaign, daily_budget: e.target.value })}
+                          placeholder="20.00"
+                        />
+                      </div>
+                      <div className="ig-form-group">
+                        <label>Duracao (dias)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="90"
+                          value={campaign.duration_days}
+                          onChange={(e) => setCampaign({ ...campaign, duration_days: e.target.value })}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="ig-campaign-targeting-title">Segmentacao</div>
+
+                    {/* Preset selectors */}
+                    <div className="ig-presets-section">
+                      <div className="ig-presets-label">Publico-alvo <span className="ig-presets-hint">selecione um ou mais</span></div>
+                      <div className="ig-presets-grid">
+                        {AUDIENCE_PRESETS.map(p => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            className={`ig-preset-card ${activePresetIds.includes(p.id) ? 'active' : ''}`}
+                            onClick={() => applyPreset(p)}
+                          >
+                            <strong>{p.name}</strong>
+                            <span>{p.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="ig-presets-label" style={{ marginTop: '1rem' }}>Alcance geografico <span className="ig-presets-hint">selecione um ou mais</span></div>
+                      <div className="ig-presets-grid">
+                        {GEO_PRESETS.map(p => (
+                          <button
+                            key={p.id}
+                            type="button"
+                            className={`ig-preset-card ig-preset-geo ${activePresetIds.includes(p.id) ? 'active' : ''}`}
+                            onClick={() => applyPreset(p)}
+                          >
+                            <strong>{p.name}</strong>
+                            <span>{p.desc}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      {savedPresets.length > 0 && (
+                        <>
+                          <div className="ig-presets-label" style={{ marginTop: '0.75rem' }}>Meus presets salvos</div>
+                          <div className="ig-presets-saved">
+                            {savedPresets.map(p => (
+                              <div key={p.id} className={`ig-preset-saved-item ${activePresetIds.includes(p.id) ? 'active' : ''}`}>
+                                <button
+                                  type="button"
+                                  className="ig-preset-saved-btn"
+                                  onClick={() => applyPreset(p)}
+                                >
+                                  {p.name}
+                                </button>
+                                <button
+                                  type="button"
+                                  className="ig-preset-saved-delete"
+                                  onClick={() => handleDeletePreset(p.id)}
+                                  title="Remover preset"
+                                >
+                                  &times;
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+
+                    <div className="ig-form-group">
+                      <label>Localizacoes</label>
+                      <div className="ig-interest-search-wrap">
+                        <input
+                          type="text"
+                          value={locationSearch}
+                          onChange={(e) => setLocationSearch(e.target.value)}
+                          placeholder="Buscar pais, estado ou cidade..."
+                        />
+                        {searchingLocations && (
+                          <span className="ig-interest-searching">
+                            <span className="ig-spinner" style={{ width: 14, height: 14 }} />
+                          </span>
+                        )}
+                      </div>
+                      {locationResults.length > 0 && (
+                        <div className="ig-interest-results">
+                          {locationResults.map(r => (
+                            <div
+                              key={r.key}
+                              className="ig-interest-result-item"
+                              onClick={() => addLocation(r)}
+                            >
+                              <span className="ig-interest-result-name">{r.name}</span>
+                              <span className="ig-location-type-badge">{r.type === 'country' ? 'Pais' : r.type === 'region' ? 'Estado' : r.type === 'city' ? 'Cidade' : r.type}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {locations.length > 0 && (
+                        <div className="ig-interest-tags">
+                          {locations.map(l => (
+                            <span key={l.key} className="ig-interest-tag ig-location-tag">
+                              <span className="ig-location-tag-type">{l.type === 'country' ? 'Pais' : l.type === 'region' ? 'Estado' : 'Cidade'}</span>
+                              {l.name}
+                              <button type="button" onClick={() => removeLocation(l.key)}>&times;</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="ig-campaign-grid ig-campaign-grid-3">
+                      <div className="ig-form-group">
+                        <label>Idade min</label>
+                        <input
+                          type="number"
+                          min="13"
+                          max="65"
+                          value={campaign.targeting.age_min}
+                          onChange={(e) => setCampaign({
+                            ...campaign,
+                            targeting: { ...campaign.targeting, age_min: Number(e.target.value) },
+                          })}
+                        />
+                      </div>
+                      <div className="ig-form-group">
+                        <label>Idade max</label>
+                        <input
+                          type="number"
+                          min="13"
+                          max="65"
+                          value={campaign.targeting.age_max}
+                          onChange={(e) => setCampaign({
+                            ...campaign,
+                            targeting: { ...campaign.targeting, age_max: Number(e.target.value) },
+                          })}
+                        />
+                      </div>
+                      <div className="ig-form-group">
+                        <label>Genero</label>
+                        <select
+                          value={campaign.targeting.genders?.[0] ?? 0}
+                          onChange={(e) => setCampaign({
+                            ...campaign,
+                            targeting: { ...campaign.targeting, genders: [parseInt(e.target.value)] },
+                          })}
+                        >
+                          <option value={0}>Todos</option>
+                          <option value={1}>Masculino</option>
+                          <option value={2}>Feminino</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="ig-form-group">
+                      <label>Interesses</label>
+                      <div className="ig-interest-search-wrap">
+                        <input
+                          type="text"
+                          value={interestSearch}
+                          onChange={(e) => setInterestSearch(e.target.value)}
+                          placeholder="Buscar interesses (ex: moda, fitness, tecnologia...)"
+                        />
+                        {searchingInterests && (
+                          <span className="ig-interest-searching">
+                            <span className="ig-spinner" style={{ width: 14, height: 14 }} />
+                          </span>
+                        )}
+                      </div>
+                      {interestResults.length > 0 && (
+                        <div className="ig-interest-results">
+                          {interestResults.map(r => (
+                            <div
+                              key={r.id}
+                              className="ig-interest-result-item"
+                              onClick={() => addInterest(r)}
+                            >
+                              <span className="ig-interest-result-name">{r.name}</span>
+                              {r.audience_size && (
+                                <span className="ig-interest-result-audience">
+                                  {Number(r.audience_size).toLocaleString('pt-BR')} pessoas
+                                </span>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {campaign.targeting.interests.length > 0 && (
+                        <div className="ig-interest-tags">
+                          {campaign.targeting.interests.map(i => (
+                            <span key={i.id} className="ig-interest-tag">
+                              {i.name}
+                              <button type="button" onClick={() => removeInterest(i.id)}>&times;</button>
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {!showSavePreset ? (
+                      <button
+                        type="button"
+                        className="ig-save-preset-btn"
+                        onClick={() => setShowSavePreset(true)}
+                      >
+                        Salvar segmentacao como preset
+                      </button>
+                    ) : (
+                      <div className="ig-save-preset-form">
+                        <input
+                          type="text"
+                          value={presetNameInput}
+                          onChange={(e) => setPresetNameInput(e.target.value)}
+                          placeholder="Nome do preset..."
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSavePreset();
+                            if (e.key === 'Escape') { setShowSavePreset(false); setPresetNameInput(''); }
+                          }}
+                          disabled={savingPreset}
+                        />
+                        <button
+                          type="button"
+                          className="ig-save-preset-confirm"
+                          onClick={handleSavePreset}
+                          disabled={!presetNameInput.trim() || savingPreset}
+                        >
+                          {savingPreset ? 'Salvando...' : 'Salvar'}
+                        </button>
+                        <button
+                          type="button"
+                          className="ig-save-preset-cancel"
+                          onClick={() => { setShowSavePreset(false); setPresetNameInput(''); }}
+                          disabled={savingPreset}
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div className="ig-actions">
                   <button className="ig-btn ig-btn-secondary" onClick={() => setStep(1)}>
                     Voltar
@@ -567,6 +1436,54 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                     </span>
                   )}
                 </div>
+
+                {campaignEnabled && (
+                  <div className="ig-campaign-review">
+                    <h4>Campanha Meta Ads</h4>
+                    <div className="ig-campaign-review-grid">
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Campanha</span>
+                        <span className="ig-campaign-review-value">{campaign.name}</span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Objetivo</span>
+                        <span className="ig-campaign-review-value">
+                          {OBJECTIVE_OPTIONS.find(o => o.value === campaign.objective)?.label}
+                        </span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Orcamento diario</span>
+                        <span className="ig-campaign-review-value">R$ {Number(campaign.daily_budget).toFixed(2)}</span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Duracao</span>
+                        <span className="ig-campaign-review-value">{campaign.duration_days} dias</span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Localizacoes</span>
+                        <span className="ig-campaign-review-value">{locations.map(l => l.name).join(', ')}</span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Idade</span>
+                        <span className="ig-campaign-review-value">{campaign.targeting.age_min} - {campaign.targeting.age_max}</span>
+                      </div>
+                      <div className="ig-campaign-review-item">
+                        <span className="ig-campaign-review-label">Genero</span>
+                        <span className="ig-campaign-review-value">
+                          {(campaign.targeting.genders?.[0] ?? 0) === 0 ? 'Todos' : campaign.targeting.genders?.[0] === 1 ? 'Masculino' : 'Feminino'}
+                        </span>
+                      </div>
+                      {campaign.targeting.interests.length > 0 && (
+                        <div className="ig-campaign-review-item ig-campaign-review-full">
+                          <span className="ig-campaign-review-label">Interesses</span>
+                          <span className="ig-campaign-review-value">
+                            {campaign.targeting.interests.map(i => i.name).join(', ')}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 <div className="ig-actions" style={{ justifyContent: 'center' }}>
                   <button className="ig-btn ig-btn-secondary" onClick={() => setStep(2)}>

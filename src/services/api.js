@@ -533,6 +533,20 @@ export const metaAds = {
   deleteAlert: (id) => api.delete(`/api/v1/admin/meta-ads/alerts/${id}`),
 };
 
+export const integratedPublish = {
+  list: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.status) query.append('status', params.status);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/integrated-publish${qs ? `?${qs}` : ''}`);
+  },
+  getById: (id) => api.get(`/api/v1/admin/integrated-publish/${id}`),
+  create: (data) => api.post('/api/v1/admin/integrated-publish', data),
+  delete: (id) => api.delete(`/api/v1/admin/integrated-publish/${id}`),
+};
+
 export const autoBoost = {
   // Rules
   listRules: () => api.get('/api/v1/admin/auto-boost/rules'),
