@@ -131,11 +131,11 @@ const GEO_PRESETS = [
 
 const ALL_PRESETS = [...GEO_PRESETS];
 
-export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
+export function InstagramSchedulingContent({ configuredProp, onConfigChange, initialTab }) {
   const toast = useToast();
   const fileInputRef = useRef(null);
 
-  const [tab, setTab] = useState('agenda');
+  const [tab, setTab] = useState(initialTab || 'agenda');
   const [configured, setConfigured] = useState(configuredProp ?? null);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);

@@ -174,7 +174,7 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
   return (
     <div className="ig-home-tab">
       {/* Hero CTA — Criar Post */}
-      <button className="ig-cta-hero" onClick={() => onNavigate('agendamento')}>
+      <button className="ig-cta-hero" onClick={() => onNavigate('agendamento', 'novo')}>
         <span className="ig-cta-icon">
           <Icon name="plus" size={24} />
         </span>
@@ -287,6 +287,7 @@ export default function InstagramPage() {
   const [configured, setConfigured] = useState(null); // null = loading
   const [hasAdAccount, setHasAdAccount] = useState(false);
   const [activeTab, setActiveTab] = useState('config');
+  const [schedulingInitialTab, setSchedulingInitialTab] = useState(null);
 
   useEffect(() => {
     instagram.getConfig()
@@ -362,7 +363,7 @@ export default function InstagramPage() {
                 <button
                   key={t.key}
                   className={`ig-nav-item ${activeTab === t.key ? 'active' : ''}`}
-                  onClick={() => setActiveTab(t.key)}
+                  onClick={() => { setSchedulingInitialTab(null); setActiveTab(t.key); }}
                 >
                   <Icon name={t.icon} size={16} />
                   <span>{t.label}</span>
@@ -380,13 +381,18 @@ export default function InstagramPage() {
               {activeTab === 'home' && (
                 <InstagramHomeTab
                   hasAdAccount={hasAdAccount}
-                  onNavigate={setActiveTab}
+                  onNavigate={(tab, subTab) => {
+                    if (subTab) setSchedulingInitialTab(subTab);
+                    setActiveTab(tab);
+                  }}
                 />
               )}
               {activeTab === 'agendamento' && (
                 <InstagramSchedulingContent
                   configuredProp={configured}
                   onConfigChange={handleConfigChange}
+                  initialTab={schedulingInitialTab}
+                  key={schedulingInitialTab}
                 />
               )}
               {activeTab === 'autoreply' && <InstagramAutoReplyContent />}
