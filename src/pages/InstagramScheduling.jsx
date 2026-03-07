@@ -602,7 +602,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     try {
       const [igData, ipData] = await Promise.all([
         instagram.list({ page: listPage, limit: 20, status: statusFilter || undefined }),
-        integratedPublish.list({ page: 1, limit: 50, status: statusFilter || undefined }).catch(() => ({ items: [], total: 0 })),
+        integratedPublish.list({ page: 1, limit: 50, status: statusFilter || undefined }),
       ]);
       const igItems = (igData.schedules || []).map(s => ({ ...s, _type: 'ig' }));
       const ipItems = (ipData.items || []).map(s => ({ ...s, _type: 'integrated' }));
