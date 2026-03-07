@@ -98,6 +98,19 @@ const Icon = ({ name, size = 18 }) => {
     chevronRight: (
       <polyline points="9 18 15 12 9 6" />
     ),
+    plus: (
+      <>
+        <line x1="12" y1="5" x2="12" y2="19" />
+        <line x1="5" y1="12" x2="19" y2="12" />
+      </>
+    ),
+    image: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+        <circle cx="8.5" cy="8.5" r="1.5" />
+        <polyline points="21 15 16 10 5 21" />
+      </>
+    ),
   };
 
   return (
@@ -129,7 +142,6 @@ const TABS = [
 ];
 
 const TOOL_CARDS = [
-  { key: 'agendamento', icon: 'calendar', title: 'Agendamento', desc: 'Agende posts e stories' },
   { key: 'autoreply', icon: 'chat', title: 'Auto-Resposta', desc: 'Respostas automaticas a comentarios' },
   { key: 'leads', icon: 'users', title: 'Leads', desc: 'Capture e gerencie leads' },
   { key: 'analytics', icon: 'barChart', title: 'Analytics', desc: 'Metricas detalhadas e relatorios' },
@@ -161,6 +173,20 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
 
   return (
     <div className="ig-home-tab">
+      {/* Hero CTA — Criar Post */}
+      <button className="ig-cta-hero" onClick={() => onNavigate('agendamento')}>
+        <span className="ig-cta-icon">
+          <Icon name="plus" size={24} />
+        </span>
+        <span className="ig-cta-text">
+          <strong>Criar novo post</strong>
+          <span>Agende uma publicacao para o Instagram</span>
+        </span>
+        <span className="ig-cta-arrow">
+          <Icon name="chevronRight" size={20} />
+        </span>
+      </button>
+
       {loading ? (
         <div className="ig-home-loading">
           <div className="ig-spinner" />
