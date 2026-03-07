@@ -14,7 +14,10 @@ const STEPS = [
 const STATUS_LABELS = {
   scheduled: 'Agendado',
   publishing: 'Publicando',
+  publishing_ig: 'Publicando IG',
+  publishing_ads: 'Criando Ads',
   published: 'Publicado',
+  completed: 'Concluido',
   failed: 'Falhou',
 };
 
@@ -597,9 +600,17 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const loadSchedules = async () => {
     setListLoading(true);
     try {
-      const data = await instagram.list({ page: listPage, limit: 20, status: statusFilter || undefined });
-      setSchedules(data.schedules || []);
-      setListTotal(data.total || 0);
+      const [igData, ipData] = await Promise.all([
+        instagram.list({ page: listPage, limit: 20, status: statusFilter || undefined }),
+        integratedPublish.list({ page: 1, limit: 50, status: statusFilter || undefined }).catch(() => ({ items: [], total: 0 })),
+      ]);
+      const igItems = (igData.schedules || []).map(s => ({ ...s, _type: 'ig' }));
+      const ipItems = (ipData.items || []).map(s => ({ ...s, _type: 'integrated' }));
+      const merged = [...igItems, ...ipItems].sort(
+        (a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at)
+      );
+      setSchedules(merged);
+      setListTotal((igData.total || 0) + (ipData.total || 0));
     } catch (err) {
       toast.error(err.message || 'Erro ao carregar agendamentos');
     } finally {
@@ -705,7 +716,12 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
   const handleDelete = async (id) => {
     try {
-      await instagram.delete(id);
+      const item = schedules.find(s => s.id === id);
+      if (item?._type === 'integrated') {
+        await integratedPublish.delete(id);
+      } else {
+        await instagram.delete(id);
+      }
       setShowDeleteConfirm(null);
       toast.success('Agendamento removido');
       loadSchedules();
@@ -716,6 +732,10 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
   const handleReschedule = async (schedule) => {
     try {
+      if (schedule._type === 'integrated') {
+        toast.warning('Re-agendamento de posts com campanha ainda nao suportado. Delete e crie novamente.');
+        return;
+      }
       const newDate = new Date();
       newDate.setMinutes(newDate.getMinutes() + 5);
       await instagram.update(schedule.id, {
@@ -882,6 +902,11 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                         <span className={`ig-status ig-status-${s.status}`}>
                           {STATUS_LABELS[s.status] || s.status}
                         </span>
+                        {s._type === 'integrated' && (
+                          <span className="ig-status" style={{ background: 'rgba(59,130,246,0.15)', color: '#3b82f6' }}>
+                            + Ads
+                          </span>
+                        )}
                         <span>
                           {new Date(s.scheduled_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                         </span>
