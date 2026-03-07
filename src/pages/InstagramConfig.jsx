@@ -303,7 +303,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                   </div>
                   <div className="igcfg-info-item">
                     <strong>Access Token</strong>
-                    <span><a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a> &gt; Selecione seu App &gt; Gerar token com permissoes necessarias</span>
+                    <span><a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a> &gt; Gerar token (permanente, nao expira)</span>
                   </div>
                 </div>
               )}
@@ -543,7 +543,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
               </div>
               <div className="igcfg-info-item">
                 <strong>Access Token</strong>
-                <span><a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a> &gt; Selecione seu App &gt; Gerar token com permissoes necessarias</span>
+                <span><a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a> &gt; Gerar token (permanente, nao expira)</span>
               </div>
               <div className="igcfg-info-item">
                 <strong>Ad Account ID</strong>
@@ -609,12 +609,54 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
       <div className="mads-config-section">
         <h3>Como configurar</h3>
+
+        <h4 style={{ margin: '0.75rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
+          1. Criar o App (se ainda nao tiver)
+        </h4>
         <ol className="igcfg-steps-list">
-          <li>Acesse <strong>developers.facebook.com</strong> e crie um App</li>
-          <li>Adicione o produto <strong>Instagram Graph API</strong></li>
-          <li>Conecte sua Instagram Business Account</li>
-          <li>Gere um Access Token com permissoes: <code>instagram_basic</code>, <code>instagram_content_publish</code></li>
-          <li>Para Meta Ads, adicione tambem: <code>ads_management</code>, <code>ads_read</code></li>
+          <li>Acesse <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer">developers.facebook.com/apps</a></li>
+          <li>Crie um App do tipo <strong>Business</strong></li>
+          <li>Adicione o produto <strong>API do Instagram com login do Instagram</strong></li>
+        </ol>
+
+        <h4 style={{ margin: '1rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
+          2. Gerar Token permanente (nao expira)
+        </h4>
+        <ol className="igcfg-steps-list">
+          <li>Acesse <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a></li>
+          <li>Crie um <strong>System User</strong> (tipo Admin) ou use um existente</li>
+          <li>Clique em <strong>Adicionar ativos</strong> e atribua:
+            <ul style={{ margin: '0.25rem 0', paddingLeft: '1.25rem', listStyle: 'disc' }}>
+              <li>Sua <strong>Pagina do Facebook</strong></li>
+              <li>Sua <strong>Conta do Instagram</strong></li>
+              <li>Sua <strong>Conta de anuncios</strong> (se usar Meta Ads)</li>
+              <li>Seu <strong>App</strong></li>
+            </ul>
+          </li>
+          <li>Clique em <strong>Gerar token</strong>, selecione seu App</li>
+          <li>Marque as permissoes:
+            <ul style={{ margin: '0.25rem 0', paddingLeft: '1.25rem', listStyle: 'disc' }}>
+              <li><code>instagram_basic</code></li>
+              <li><code>instagram_content_publish</code></li>
+              <li><code>instagram_manage_comments</code></li>
+              <li><code>instagram_manage_messages</code></li>
+              <li><code>pages_show_list</code></li>
+              <li><code>pages_read_engagement</code></li>
+              <li>Para Meta Ads: <code>ads_management</code>, <code>ads_read</code></li>
+            </ul>
+          </li>
+          <li>Copie o token gerado — <strong>ele nao expira</strong></li>
+        </ol>
+
+        <h4 style={{ margin: '1rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
+          3. Encontrar o Instagram Account ID
+        </h4>
+        <ol className="igcfg-steps-list">
+          <li>Acesse <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a></li>
+          <li>Cole seu token e faca a requisicao: <code>me/accounts</code></li>
+          <li>Pegue o <strong>id</strong> da sua Pagina</li>
+          <li>Faca outra requisicao: <code>{'{page_id}'}?fields=instagram_business_account</code></li>
+          <li>O <strong>id</strong> retornado e o seu Instagram Account ID</li>
         </ol>
       </div>
     </div>
