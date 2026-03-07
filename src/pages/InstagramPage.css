@@ -104,36 +104,30 @@
 
 .ig-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.25rem;
   margin-bottom: 1.75rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 14px;
   padding: 0.3rem;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.ig-nav::-webkit-scrollbar {
-  display: none;
 }
 
 .ig-nav-item {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.55rem 1rem;
+  gap: 0.4rem;
+  padding: 0.5rem 0.85rem;
   background: none;
   border: none;
   border-radius: 10px;
   color: #52525b;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   font-family: inherit;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .ig-nav-item:hover {
