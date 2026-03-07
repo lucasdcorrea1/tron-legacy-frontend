@@ -30,12 +30,36 @@
 }
 
 .leads-stat-card {
-  background: rgba(255, 255, 255, 0.02);
+  position: relative;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 1.25rem;
   text-align: center;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.leads-stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 16px 16px 0 0;
+  background: linear-gradient(90deg, #a855f7, #6366f1);
+  opacity: 0.5;
+}
+
+.leads-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.leads-stat-card.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.leads-stat-card.green::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
 
 .leads-stat-value {
   display: block;
@@ -47,7 +71,7 @@
 }
 
 .leads-stat-label {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #71717a;
   font-weight: 600;
   text-transform: uppercase;
@@ -55,11 +79,11 @@
 }
 
 .leads-stat-card.purple .leads-stat-value {
-  color: #a855f7;
+  color: #c084fc;
 }
 
 .leads-stat-card.green .leads-stat-value {
-  color: #22c55e;
+  color: #4ade80;
 }
 
 /* Toolbar */
@@ -151,15 +175,17 @@
 }
 
 .leads-card {
-  background: rgba(255, 255, 255, 0.02);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 1.25rem;
-  transition: border-color 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .leads-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(168, 85, 247, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(168, 85, 247, 0.05);
+  transform: translateY(-1px);
 }
 
 .leads-card-header {
