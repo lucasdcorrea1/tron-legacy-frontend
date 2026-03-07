@@ -669,13 +669,26 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     );
   };
 
+  const MIN_DAILY_BUDGET = 6;
+
+  const getCampaignErrors = () => {
+    const errors = [];
+    if (!campaign.name.trim()) errors.push('Nome da campanha obrigatorio');
+    if (!campaign.daily_budget || Number(campaign.daily_budget) < MIN_DAILY_BUDGET)
+      errors.push(`Orcamento minimo R$${MIN_DAILY_BUDGET}/dia`);
+    if (campaign.targeting.interests.length === 0) errors.push('Adicione pelo menos 1 interesse');
+    if (campaign.targeting.age_min >= campaign.targeting.age_max) errors.push('Idade min deve ser menor que max');
+    if (Number(campaign.duration_days) < 1) errors.push('Duracao minima 1 dia');
+    return errors;
+  };
+
   const canProceedStep = () => {
     switch (step) {
       case 0: return images.length > 0 && !uploading;
       case 1: return caption.length <= 2200;
       case 2:
         if (!publishNow && (!scheduleDate || !scheduleTime)) return false;
-        if (campaignEnabled && (!campaign.name || !campaign.daily_budget)) return false;
+        if (campaignEnabled && getCampaignErrors().length > 0) return false;
         return true;
       default: return true;
     }
@@ -1027,12 +1040,21 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                         <label>Orcamento diario (R$) *</label>
                         <input
                           type="number"
-                          step="0.01"
-                          min="1"
+                          step="1"
+                          min={MIN_DAILY_BUDGET}
                           value={campaign.daily_budget}
                           onChange={(e) => setCampaign({ ...campaign, daily_budget: e.target.value })}
-                          placeholder="20.00"
+                          placeholder={`Min R$${MIN_DAILY_BUDGET}`}
+                          className={campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET ? 'ig-input-error' : ''}
                         />
+                        {campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET && (
+                          <span className="ig-form-error">Minimo R${MIN_DAILY_BUDGET}/dia</span>
+                        )}
+                        {campaign.daily_budget && Number(campaign.daily_budget) >= MIN_DAILY_BUDGET && (
+                          <span className="ig-form-hint">
+                            Total estimado: R${(Number(campaign.daily_budget) * Number(campaign.duration_days || 1)).toFixed(2)}
+                          </span>
+                        )}
                       </div>
                       <div className="ig-form-group">
                         <label>Duracao (dias)</label>
@@ -1303,6 +1325,14 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                   </div>
                 )}
 
+                {campaignEnabled && getCampaignErrors().length > 0 && (
+                  <div className="ig-campaign-errors">
+                    {getCampaignErrors().map((err, i) => (
+                      <div key={i} className="ig-campaign-error-item">{err}</div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="ig-actions">
                   <button className="ig-btn ig-btn-secondary" onClick={() => setStep(1)}>
                     Voltar
@@ -1387,8 +1417,14 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                       </div>
                       <div className="ig-campaign-review-item">
                         <span className="ig-campaign-review-label">Duracao</span>
-                        <span className="ig-campaign-review-value">{campaign.duration_days} dias</span>
+                        <span className="ig-campaign-review-value">{campaign.duration_days} dias (total ~R${(Number(campaign.daily_budget) * Number(campaign.duration_days)).toFixed(2)})</span>
                       </div>
+                      {campaign.objective === 'OUTCOME_TRAFFIC' && (
+                        <div className="ig-campaign-review-item ig-campaign-review-full">
+                          <span className="ig-campaign-review-label">Link de destino</span>
+                          <span className="ig-campaign-review-value">{campaign.creative?.link_url || '(site principal)'}</span>
+                        </div>
+                      )}
                       <div className="ig-campaign-review-item">
                         <span className="ig-campaign-review-label">Localizacoes</span>
                         <span className="ig-campaign-review-value">{locations.map(l => l.name).join(', ')}</span>

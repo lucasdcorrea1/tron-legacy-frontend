@@ -1671,4 +1671,47 @@
   .ig-campaign-review-grid {
     grid-template-columns: 1fr;
   }
+
+  .ig-campaign-link-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form error states */
+.ig-input-error,
+.ig-campaign-section .ig-form-group input.ig-input-error {
+  border-color: rgba(239, 68, 68, 0.5) !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+.ig-form-error {
+  display: block;
+  font-size: 0.7rem;
+  color: #ef4444;
+  margin-top: 0.35rem;
+}
+
+/* Campaign validation errors */
+.ig-campaign-errors {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ig-campaign-error-item {
+  font-size: 0.78rem;
+  color: #f87171;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ig-campaign-error-item::before {
+  content: "\2022";
+  color: #ef4444;
 }
