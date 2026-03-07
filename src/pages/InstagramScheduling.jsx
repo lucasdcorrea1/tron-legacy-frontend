@@ -29,128 +29,8 @@ const OBJECTIVE_OPTIONS = [
 
 const GENDER_LABELS = { 0: 'Todos', 1: 'Masculino', 2: 'Feminino' };
 
-// Presets de publico-alvo (so interesses + idade + genero, sem geo)
-const AUDIENCE_PRESETS = [
-  {
-    id: '_empresarios',
-    name: 'Empresarios & PMEs',
-    desc: 'Donos de negocios buscando crescer',
-    targeting: {
-      age_min: 25, age_max: 55, genders: [0],
-      interests: [
-        { id: '6003012752205', name: 'Small business' },
-        { id: '6003349442805', name: 'Entrepreneurship' },
-        { id: '6003020834693', name: 'Business software' },
-      ],
-    },
-  },
-  {
-    id: '_social_media',
-    name: 'Social Media Managers',
-    desc: 'Gestores de redes sociais e freelancers',
-    targeting: {
-      age_min: 20, age_max: 40, genders: [0],
-      interests: [
-        { id: '6003139266461', name: 'Social media marketing' },
-        { id: '6003384204254', name: 'Digital marketing' },
-        { id: '6003277229268', name: 'Social media' },
-      ],
-    },
-  },
-  {
-    id: '_agencias',
-    name: 'Agencias Digitais',
-    desc: 'Agencias de marketing e publicidade',
-    targeting: {
-      age_min: 22, age_max: 45, genders: [0],
-      interests: [
-        { id: '6003384204254', name: 'Digital marketing' },
-        { id: '6003248500266', name: 'Advertising' },
-        { id: '6003139266461', name: 'Social media marketing' },
-        { id: '6003020834693', name: 'Business software' },
-      ],
-    },
-  },
-  {
-    id: '_ecommerce',
-    name: 'Donos de E-commerce',
-    desc: 'Lojistas online que precisam escalar',
-    targeting: {
-      age_min: 22, age_max: 50, genders: [0],
-      interests: [
-        { id: '6003161475030', name: 'Online shopping' },
-        { id: '6003012752205', name: 'Small business' },
-        { id: '6003349442805', name: 'Entrepreneurship' },
-        { id: '6003384204254', name: 'Digital marketing' },
-      ],
-    },
-  },
-  {
-    id: '_startups',
-    name: 'Startups & Tech',
-    desc: 'Fundadores e profissionais de tecnologia',
-    targeting: {
-      age_min: 22, age_max: 42, genders: [0],
-      interests: [
-        { id: '6003349442805', name: 'Entrepreneurship' },
-        { id: '6003171248205', name: 'Technology' },
-        { id: '6003020834693', name: 'Business software' },
-      ],
-    },
-  },
-  {
-    id: '_profissionais_mkt',
-    name: 'Profissionais de MKT',
-    desc: 'Analistas e coordenadores de marketing',
-    targeting: {
-      age_min: 22, age_max: 40, genders: [0],
-      interests: [
-        { id: '6003384204254', name: 'Digital marketing' },
-        { id: '6003248500266', name: 'Advertising' },
-        { id: '6003139266461', name: 'Social media marketing' },
-      ],
-    },
-  },
-  {
-    id: '_gastronomia',
-    name: 'Gastronomia',
-    desc: 'Restaurantes, bares e delivery',
-    targeting: {
-      age_min: 20, age_max: 50, genders: [0],
-      interests: [
-        { id: '6003106289868', name: 'Cooking' },
-        { id: '6003020834693', name: 'Food and drink' },
-        { id: '6003384222457', name: 'Restaurants' },
-      ],
-    },
-  },
-  {
-    id: '_saude',
-    name: 'Saude & Bem-estar',
-    desc: 'Clinicas, academias, profissionais de saude',
-    targeting: {
-      age_min: 22, age_max: 50, genders: [0],
-      interests: [
-        { id: '6003384204254', name: 'Physical fitness' },
-        { id: '6003109524776', name: 'Nutrition' },
-        { id: '6003012752205', name: 'Small business' },
-      ],
-    },
-  },
-  {
-    id: '_moda_beleza',
-    name: 'Moda & Beleza',
-    desc: 'Lojas de roupa, saloes, cosmeticos',
-    targeting: {
-      age_min: 18, age_max: 45, genders: [2],
-      interests: [
-        { id: '6003384248805', name: 'Shopping and fashion' },
-        { id: '6003397241517', name: 'Beauty' },
-        { id: '6003107902433', name: 'Cosmetics' },
-      ],
-    },
-  },
-];
+// Audience presets removed — interest IDs must come from Meta's search API.
+// Use the interest search field + "Meus presets salvos" for audience targeting.
 
 // Presets de alcance geografico (so localizacao, sem interesses)
 const GEO_PRESETS = [
@@ -227,7 +107,7 @@ const GEO_PRESETS = [
   },
 ];
 
-const ALL_PRESETS = [...AUDIENCE_PRESETS, ...GEO_PRESETS];
+const ALL_PRESETS = [...GEO_PRESETS];
 
 export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const toast = useToast();
@@ -1167,22 +1047,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
                     {/* Preset selectors */}
                     <div className="ig-presets-section">
-                      <div className="ig-presets-label">Publico-alvo <span className="ig-presets-hint">selecione um ou mais</span></div>
-                      <div className="ig-presets-grid">
-                        {AUDIENCE_PRESETS.map(p => (
-                          <button
-                            key={p.id}
-                            type="button"
-                            className={`ig-preset-card ${activePresetIds.includes(p.id) ? 'active' : ''}`}
-                            onClick={() => applyPreset(p)}
-                          >
-                            <strong>{p.name}</strong>
-                            <span>{p.desc}</span>
-                          </button>
-                        ))}
-                      </div>
-
-                      <div className="ig-presets-label" style={{ marginTop: '1rem' }}>Alcance geografico <span className="ig-presets-hint">selecione um ou mais</span></div>
+                      <div className="ig-presets-label">Alcance geografico <span className="ig-presets-hint">selecione um ou mais</span></div>
                       <div className="ig-presets-grid">
                         {GEO_PRESETS.map(p => (
                           <button
