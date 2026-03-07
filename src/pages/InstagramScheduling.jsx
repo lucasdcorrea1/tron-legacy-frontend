@@ -139,7 +139,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
   const [campaignEnabled, setCampaignEnabled] = useState(false);
   const [campaign, setCampaign] = useState({
     name: '',
-    objective: 'OUTCOME_AWARENESS',
+    objective: 'OUTCOME_TRAFFIC',
     daily_budget: '',
     duration_days: 7,
     targeting: {
@@ -149,6 +149,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
       genders: [0],
       interests: [],
     },
+    creative: { link_url: '', call_to_action: 'LEARN_MORE' },
   });
   const [interestSearch, setInterestSearch] = useState('');
   const [interestResults, setInterestResults] = useState([]);
@@ -571,6 +572,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
               ...campaign.targeting,
               interests: campaign.targeting.interests.map(i => ({ id: i.id, name: i.name })),
             },
+            creative: campaign.creative,
           },
         });
       } else {
@@ -638,7 +640,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
     setCampaignEnabled(false);
     setCampaign({
       name: '',
-      objective: 'OUTCOME_AWARENESS',
+      objective: 'OUTCOME_TRAFFIC',
       daily_budget: '',
       duration_days: 7,
       targeting: {
@@ -648,6 +650,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
         genders: [0],
         interests: [],
       },
+      creative: { link_url: '', call_to_action: 'LEARN_MORE' },
     });
     setInterestSearch('');
     setInterestResults([]);
@@ -1042,6 +1045,43 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                         />
                       </div>
                     </div>
+
+                    {campaign.objective === 'OUTCOME_TRAFFIC' && (
+                      <div className="ig-campaign-link-section">
+                        <div className="ig-form-group">
+                          <label>Link de destino</label>
+                          <input
+                            type="url"
+                            value={campaign.creative.link_url}
+                            onChange={(e) => setCampaign({
+                              ...campaign,
+                              creative: { ...campaign.creative, link_url: e.target.value },
+                            })}
+                            placeholder="https://www.whodo.com.br"
+                          />
+                          <span className="ig-form-hint">URL que abre quando clicam no anuncio. Vazio = site principal.</span>
+                        </div>
+                        <div className="ig-form-group">
+                          <label>Botao do anuncio</label>
+                          <select
+                            value={campaign.creative.call_to_action}
+                            onChange={(e) => setCampaign({
+                              ...campaign,
+                              creative: { ...campaign.creative, call_to_action: e.target.value },
+                            })}
+                          >
+                            <option value="LEARN_MORE">Saiba Mais</option>
+                            <option value="SHOP_NOW">Comprar Agora</option>
+                            <option value="SIGN_UP">Cadastre-se</option>
+                            <option value="CONTACT_US">Fale Conosco</option>
+                            <option value="BOOK_TRAVEL">Reservar</option>
+                            <option value="DOWNLOAD">Baixar</option>
+                            <option value="GET_QUOTE">Solicitar Orcamento</option>
+                            <option value="WATCH_MORE">Assistir Mais</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
 
                     <div className="ig-campaign-targeting-title">Segmentacao</div>
 
