@@ -807,8 +807,28 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                           {new Date(s.scheduled_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
                         </span>
                       </div>
+                      {s._type === 'integrated' && s.campaign && (
+                        <div className="ig-card-campaign-info">
+                          <span className="ig-card-campaign-name">{s.campaign.name}</span>
+                          <span className="ig-card-campaign-budget">
+                            R${(s.campaign.daily_budget / 100).toFixed(2)}/dia
+                            {s.campaign.duration_days && ` · ${s.campaign.duration_days}d`}
+                          </span>
+                          {s.meta_campaign_id && (
+                            <a
+                              className="ig-card-campaign-link"
+                              href={`https://www.facebook.com/adsmanager/manage/campaigns?act=${s.meta_campaign_id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Ver no Ads Manager
+                            </a>
+                          )}
+                        </div>
+                      )}
                       {s.error_message && (
-                        <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: '#ef4444' }}>
+                        <div className="ig-card-error">
                           {s.error_message}
                         </div>
                       )}

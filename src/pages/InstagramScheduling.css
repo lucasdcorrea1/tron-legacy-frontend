@@ -1715,3 +1715,47 @@
   content: "\2022";
   color: #ef4444;
 }
+
+/* Card campaign info */
+.ig-card-campaign-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  background: rgba(59, 130, 246, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+}
+
+.ig-card-campaign-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #93c5fd;
+}
+
+.ig-card-campaign-budget {
+  font-size: 0.7rem;
+  color: #71717a;
+}
+
+.ig-card-campaign-link {
+  font-size: 0.7rem;
+  color: #60a5fa;
+  text-decoration: none;
+  margin-left: auto;
+}
+
+.ig-card-campaign-link:hover {
+  text-decoration: underline;
+  color: #93c5fd;
+}
+
+.ig-card-error {
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  color: #f87171;
+  line-height: 1.4;
+  word-break: break-word;
+}
