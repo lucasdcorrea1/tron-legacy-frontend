@@ -108,8 +108,6 @@ const adminItems = [
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing' },
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram' },
-  { path: '/admin/meta-ads', icon: Icons.megaphone, label: 'Meta Ads' },
-  { path: '/admin/auto-boost', icon: Icons.rocket, label: 'Auto-Boost' },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true },
 ];
 

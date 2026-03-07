@@ -99,7 +99,7 @@ export default function MetaAdsCampaigns() {
         </div>
         <button
           className="mads-btn primary"
-          onClick={() => navigate('/admin/meta-ads/campaigns/new')}
+          onClick={() => navigate('/admin/instagram/campaigns/new')}
         >
           + Nova Campanha
         </button>
@@ -117,7 +117,7 @@ export default function MetaAdsCampaigns() {
           <p>Nenhuma campanha encontrada</p>
           <button
             className="mads-btn primary"
-            onClick={() => navigate('/admin/meta-ads/campaigns/new')}
+            onClick={() => navigate('/admin/instagram/campaigns/new')}
           >
             Criar primeira campanha
           </button>
@@ -174,7 +174,7 @@ export default function MetaAdsCampaigns() {
                 )}
                 <button
                   className="mads-btn-action edit"
-                  onClick={() => navigate(`/admin/meta-ads/campaigns/edit/${campaign.id}`)}
+                  onClick={() => navigate(`/admin/instagram/campaigns/edit/${campaign.id}`)}
                   title="Editar"
                 >
                   ✏️

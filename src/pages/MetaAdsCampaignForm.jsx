@@ -290,7 +290,7 @@ export default function MetaAdsCampaignForm() {
 
       await metaAds.createAd(adData);
 
-      navigate('/admin/meta-ads');
+      navigate('/admin/instagram');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -312,7 +312,7 @@ export default function MetaAdsCampaignForm() {
     <AdminLayout>
       <div className="mads-form-page">
         <div className="mads-form-header">
-          <button className="mads-back-btn" onClick={() => navigate('/admin/meta-ads')}>
+          <button className="mads-back-btn" onClick={() => navigate('/admin/instagram')}>
             ← Voltar
           </button>
           <h1>{editId ? 'Editar Campanha' : 'Nova Campanha'}</h1>

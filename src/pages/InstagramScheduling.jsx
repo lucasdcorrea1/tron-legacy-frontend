@@ -5,11 +5,33 @@ import { instagram, integratedPublish, metaAds, API_URL } from '../services/api'
 import './InstagramScheduling.css';
 
 const STEPS = [
-  { label: 'Midia' },
-  { label: 'Legenda' },
-  { label: 'Agendar' },
-  { label: 'Revisar' },
+  { label: 'Midia', desc: 'Adicione fotos', icon: 'image' },
+  { label: 'Legenda', desc: 'Escreva o texto', icon: 'edit' },
+  { label: 'Agendar', desc: 'Data e hora', icon: 'calendar' },
+  { label: 'Revisar', desc: 'Confirme tudo', icon: 'check' },
 ];
+
+const StepIcon = ({ type, completed }) => {
+  if (completed) {
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    );
+  }
+  switch (type) {
+    case 'image':
+      return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>;
+    case 'edit':
+      return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>;
+    case 'calendar':
+      return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>;
+    case 'check':
+      return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>;
+    default:
+      return null;
+  }
+};
 
 const STATUS_LABELS = {
   scheduled: 'Agendado',
@@ -862,23 +884,44 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
         {tab === 'novo' && (
           <>
             {/* Steps indicator */}
-            <div className="ig-steps">
-              {STEPS.map((s, i) => (
-                <div
-                  key={i}
-                  className={`ig-step ${i === step ? 'active' : ''} ${i < step ? 'completed' : ''}`}
-                >
-                  <span className="ig-step-number">
-                    {i < step ? '\u2713' : i + 1}
-                  </span>
-                  <span className="ig-step-label">{s.label}</span>
-                </div>
-              ))}
+            <div className="ig-stepper">
+              <div className="ig-stepper-track">
+                <div className="ig-stepper-progress" style={{ width: `${(step / (STEPS.length - 1)) * 100}%` }} />
+              </div>
+              <div className="ig-stepper-items">
+                {STEPS.map((s, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    className={`ig-stepper-item ${i === step ? 'active' : ''} ${i < step ? 'completed' : ''} ${i > step ? 'upcoming' : ''}`}
+                    onClick={() => { if (i < step) setStep(i); }}
+                    disabled={i > step}
+                  >
+                    <span className="ig-stepper-dot">
+                      <StepIcon type={s.icon} completed={i < step} />
+                    </span>
+                    <span className="ig-stepper-text">
+                      <span className="ig-stepper-label">{s.label}</span>
+                      <span className="ig-stepper-desc">{s.desc}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Step 0: Media upload */}
             {step === 0 && (
-              <div>
+              <div className="ig-step-card" style={{ animationDelay: '0.05s' }}>
+                <div className="ig-step-card-header">
+                  <div className="ig-step-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                  </div>
+                  <div>
+                    <h3 className="ig-step-card-title">Selecione as imagens</h3>
+                    <p className="ig-step-card-subtitle">Escolha uma ou mais fotos para o post. Multiplas imagens criam um carrossel.</p>
+                  </div>
+                </div>
+
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -887,29 +930,23 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                   style={{ display: 'none' }}
                   onChange={(e) => handleFileSelect(e.target.files)}
                 />
-                <div
-                  className={`ig-upload-area ${dragOver ? 'drag-over' : ''}`}
-                  onClick={() => fileInputRef.current?.click()}
-                  onDrop={handleDrop}
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                >
-                  <div className="ig-upload-icon">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
-                  </div>
-                  <p><strong>Clique</strong> ou arraste imagens aqui</p>
-                  <p className="ig-upload-hint">JPEG, PNG ou WebP. Max 10MB por imagem.</p>
-                </div>
 
-                {uploading && (
-                  <div className="ig-loading" style={{ padding: '1rem' }}>
-                    <span className="ig-spinner" />
-                    Enviando imagem...
+                {images.length === 0 ? (
+                  <div
+                    className={`ig-upload-area ${dragOver ? 'drag-over' : ''}`}
+                    onClick={() => fileInputRef.current?.click()}
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                  >
+                    <div className="ig-upload-icon">
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" /></svg>
+                    </div>
+                    <p className="ig-upload-main-text"><strong>Clique aqui</strong> ou arraste suas imagens</p>
+                    <p className="ig-upload-hint">JPEG, PNG ou WebP — Maximo 10MB por imagem</p>
                   </div>
-                )}
-
-                {images.length > 0 && (
-                  <>
+                ) : (
+                  <div className="ig-media-gallery">
                     <div className="ig-image-previews">
                       {images.map((img, i) => (
                         <div key={img.id} className="ig-image-preview">
@@ -918,29 +955,47 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                             className="ig-image-preview-remove"
                             onClick={(e) => { e.stopPropagation(); removeImage(i); }}
                           >
-                            X
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
                           </button>
                           {images.length > 1 && (
                             <span className="ig-image-preview-order">{i + 1}</span>
                           )}
                         </div>
                       ))}
+                      <button
+                        className="ig-add-more-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                        type="button"
+                      >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" /></svg>
+                        <span>Adicionar</span>
+                      </button>
                     </div>
                     {images.length > 1 && (
-                      <div className="ig-carousel-toggle">
-                        <strong>Carrossel</strong> — {images.length} imagens
+                      <div className="ig-carousel-badge">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="2" y="6" width="14" height="14" rx="2" /><path d="M18 8h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2" /></svg>
+                        Carrossel — {images.length} imagens
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
 
-                <div className="ig-actions">
+                {uploading && (
+                  <div className="ig-upload-progress">
+                    <span className="ig-spinner" />
+                    <span>Enviando imagem...</span>
+                  </div>
+                )}
+
+                <div className="ig-step-actions">
+                  <div />
                   <button
-                    className="ig-btn ig-btn-primary"
+                    className="ig-btn ig-btn-primary ig-btn-next"
                     disabled={!canProceedStep()}
                     onClick={() => setStep(1)}
                   >
                     Continuar
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                   </button>
                 </div>
               </div>
@@ -948,31 +1003,62 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
             {/* Step 1: Caption */}
             {step === 1 && (
-              <div>
-                <div className="ig-form-group">
-                  <label>
-                    Legenda <span className="ig-label-hint">(opcional, max 2200 caracteres)</span>
-                  </label>
-                  <textarea
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    placeholder="Escreva a legenda do post... Use #hashtags para alcance"
-                  />
-                  <span className={`ig-char-count ${caption.length > 2000 ? caption.length > 2200 ? 'danger' : 'warning' : ''}`}>
-                    {caption.length}/2200
-                  </span>
+              <div className="ig-step-card" style={{ animationDelay: '0.05s' }}>
+                <div className="ig-step-card-header">
+                  <div className="ig-step-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                  </div>
+                  <div>
+                    <h3 className="ig-step-card-title">Escreva a legenda</h3>
+                    <p className="ig-step-card-subtitle">A legenda e opcional. Use #hashtags para aumentar o alcance do post.</p>
+                  </div>
                 </div>
 
-                <div className="ig-actions">
-                  <button className="ig-btn ig-btn-secondary" onClick={() => setStep(0)}>
+                <div className="ig-caption-layout">
+                  <div className="ig-caption-editor">
+                    <textarea
+                      value={caption}
+                      onChange={(e) => setCaption(e.target.value)}
+                      placeholder="Escreva a legenda do post... &#10;&#10;Use #hashtags para mais alcance"
+                      autoFocus
+                    />
+                    <div className="ig-caption-footer">
+                      <span className="ig-caption-hint">Legenda opcional — max 2200 caracteres</span>
+                      <span className={`ig-char-count ${caption.length > 2000 ? caption.length > 2200 ? 'danger' : 'warning' : ''}`}>
+                        {caption.length}/2200
+                      </span>
+                    </div>
+                  </div>
+                  {images.length > 0 && (
+                    <div className="ig-caption-preview">
+                      <div className="ig-caption-preview-label">Preview</div>
+                      <div className="ig-caption-preview-img">
+                        <img src={`${API_URL}${images[0].url}`} alt="Preview" />
+                        {images.length > 1 && (
+                          <span className="ig-caption-preview-badge">{images.length} fotos</span>
+                        )}
+                      </div>
+                      {caption && (
+                        <div className="ig-caption-preview-text">
+                          {renderCaption(caption.length > 120 ? caption.slice(0, 120) + '...' : caption)}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="ig-step-actions">
+                  <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(0)}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
                     Voltar
                   </button>
                   <button
-                    className="ig-btn ig-btn-primary"
+                    className="ig-btn ig-btn-primary ig-btn-next"
                     disabled={!canProceedStep()}
                     onClick={() => setStep(2)}
                   >
                     Continuar
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                   </button>
                 </div>
               </div>
@@ -980,18 +1066,50 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
             {/* Step 2: Schedule */}
             {step === 2 && (
-              <div>
-                <label className="ig-publish-now">
-                  <input
-                    type="checkbox"
-                    checked={publishNow}
-                    onChange={(e) => setPublishNow(e.target.checked)}
-                  />
-                  Publicar agora
-                </label>
+              <div className="ig-step-card" style={{ animationDelay: '0.05s' }}>
+                <div className="ig-step-card-header">
+                  <div className="ig-step-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>
+                  </div>
+                  <div>
+                    <h3 className="ig-step-card-title">Quando publicar?</h3>
+                    <p className="ig-step-card-subtitle">Publique agora ou agende para o melhor horario.</p>
+                  </div>
+                </div>
+
+                <div className="ig-schedule-options">
+                  <button
+                    type="button"
+                    className={`ig-schedule-option ${publishNow ? 'active' : ''}`}
+                    onClick={() => setPublishNow(true)}
+                  >
+                    <div className="ig-schedule-option-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    </div>
+                    <div className="ig-schedule-option-text">
+                      <strong>Publicar agora</strong>
+                      <span>O post sera enviado imediatamente</span>
+                    </div>
+                    <div className={`ig-schedule-option-radio ${publishNow ? 'checked' : ''}`} />
+                  </button>
+                  <button
+                    type="button"
+                    className={`ig-schedule-option ${!publishNow ? 'active' : ''}`}
+                    onClick={() => setPublishNow(false)}
+                  >
+                    <div className="ig-schedule-option-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                    </div>
+                    <div className="ig-schedule-option-text">
+                      <strong>Agendar</strong>
+                      <span>Escolha data e horario</span>
+                    </div>
+                    <div className={`ig-schedule-option-radio ${!publishNow ? 'checked' : ''}`} />
+                  </button>
+                </div>
 
                 {!publishNow && (
-                  <div className="ig-schedule-row">
+                  <div className="ig-schedule-datetime">
                     <div className="ig-form-group">
                       <label>Data</label>
                       <input
@@ -1353,16 +1471,18 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                   </div>
                 )}
 
-                <div className="ig-actions">
-                  <button className="ig-btn ig-btn-secondary" onClick={() => setStep(1)}>
+                <div className="ig-step-actions">
+                  <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(1)}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
                     Voltar
                   </button>
                   <button
-                    className="ig-btn ig-btn-primary"
+                    className="ig-btn ig-btn-primary ig-btn-next"
                     disabled={!canProceedStep()}
                     onClick={() => setStep(3)}
                   >
                     Revisar
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12" /><polyline points="12 5 19 12 12 19" /></svg>
                   </button>
                 </div>
               </div>
@@ -1370,51 +1490,96 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
 
             {/* Step 3: Review */}
             {step === 3 && (
-              <div>
-                <div className="ig-preview-mockup">
-                  <div className="ig-preview-header">
-                    <div className="ig-preview-avatar">W</div>
-                    <span className="ig-preview-username">whodo</span>
+              <div className="ig-step-card" style={{ animationDelay: '0.05s' }}>
+                <div className="ig-step-card-header">
+                  <div className="ig-step-card-icon ig-step-card-icon-success">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>
                   </div>
-
-                  {images.length === 1 ? (
-                    <img
-                      className="ig-preview-image"
-                      src={`${API_URL}${images[0].url}`}
-                      alt="Preview"
-                    />
-                  ) : (
-                    <div className="ig-preview-carousel">
-                      <img
-                        src={`${API_URL}${images[0].url}`}
-                        alt="Preview"
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      <div className="ig-preview-carousel-dots">
-                        {images.map((_, i) => (
-                          <div key={i} className={`ig-preview-carousel-dot ${i === 0 ? 'active' : ''}`} />
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {caption && (
-                    <div className="ig-preview-caption">
-                      {renderCaption(caption)}
-                    </div>
-                  )}
+                  <div>
+                    <h3 className="ig-step-card-title">Tudo pronto!</h3>
+                    <p className="ig-step-card-subtitle">Revise as informacoes antes de confirmar.</p>
+                  </div>
                 </div>
 
-                <div style={{ marginTop: '1.5rem', fontSize: '0.85rem', color: '#a1a1aa', textAlign: 'center' }}>
-                  {publishNow ? (
-                    <span>Sera publicado imediatamente apos confirmar.</span>
-                  ) : (
-                    <span>
-                      Agendado para <strong style={{ color: '#fafafa' }}>
-                        {new Date(`${scheduleDate}T${scheduleTime}`).toLocaleString('pt-BR', { dateStyle: 'long', timeStyle: 'short' })}
-                      </strong>
-                    </span>
-                  )}
+                <div className="ig-review-layout">
+                  <div className="ig-review-preview">
+                    <div className="ig-preview-mockup">
+                      <div className="ig-preview-header">
+                        <div className="ig-preview-avatar">W</div>
+                        <span className="ig-preview-username">whodo</span>
+                      </div>
+
+                      {images.length === 1 ? (
+                        <img
+                          className="ig-preview-image"
+                          src={`${API_URL}${images[0].url}`}
+                          alt="Preview"
+                        />
+                      ) : (
+                        <div className="ig-preview-carousel">
+                          <img
+                            src={`${API_URL}${images[0].url}`}
+                            alt="Preview"
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
+                          <div className="ig-preview-carousel-dots">
+                            {images.map((_, i) => (
+                              <div key={i} className={`ig-preview-carousel-dot ${i === 0 ? 'active' : ''}`} />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {caption && (
+                        <div className="ig-preview-caption">
+                          {renderCaption(caption)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="ig-review-details">
+                    <div className="ig-review-info-card">
+                      <div className="ig-review-info-row">
+                        <span className="ig-review-info-label">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
+                          Midia
+                        </span>
+                        <span className="ig-review-info-value">{images.length} {images.length === 1 ? 'imagem' : 'imagens'}{images.length > 1 ? ' (carrossel)' : ''}</span>
+                      </div>
+                      <div className="ig-review-info-row">
+                        <span className="ig-review-info-label">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
+                          Legenda
+                        </span>
+                        <span className="ig-review-info-value">{caption ? `${caption.length} caracteres` : 'Sem legenda'}</span>
+                      </div>
+                      <div className="ig-review-info-row">
+                        <span className="ig-review-info-label">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                          Publicacao
+                        </span>
+                        <span className="ig-review-info-value">
+                          {publishNow ? (
+                            <span className="ig-review-badge ig-review-badge-now">Agora</span>
+                          ) : (
+                            <span>{new Date(`${scheduleDate}T${scheduleTime}`).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</span>
+                          )}
+                        </span>
+                      </div>
+                      {campaignEnabled && (
+                        <div className="ig-review-info-row">
+                          <span className="ig-review-info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 20V10" /><path d="M18 20V4" /><path d="M6 20v-4" /></svg>
+                            Campanha
+                          </span>
+                          <span className="ig-review-info-value">
+                            <span className="ig-review-badge ig-review-badge-ads">Meta Ads</span>
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {campaignEnabled && (
@@ -1471,15 +1636,17 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange }) {
                   </div>
                 )}
 
-                <div className="ig-actions" style={{ justifyContent: 'center' }}>
-                  <button className="ig-btn ig-btn-secondary" onClick={() => setStep(2)}>
+                <div className="ig-step-actions">
+                  <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(2)}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></svg>
                     Voltar
                   </button>
                   <button
-                    className="ig-btn ig-btn-primary"
+                    className="ig-btn ig-btn-primary ig-btn-submit"
                     onClick={() => setShowConfirm(true)}
                   >
                     {publishNow ? 'Publicar agora' : 'Agendar post'}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                   </button>
                 </div>
               </div>

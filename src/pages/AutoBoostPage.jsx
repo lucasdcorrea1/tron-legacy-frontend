@@ -36,7 +36,7 @@ const DEFAULT_FORM = {
   link_url: '',
 };
 
-export default function AutoBoostPage() {
+export function AutoBoostContent() {
   const toast = useToast();
   const [tab, setTab] = useState('rules');
 
@@ -199,12 +199,7 @@ export default function AutoBoostPage() {
   };
 
   return (
-    <AdminLayout>
       <div className="ab-page">
-        <div className="page-header">
-          <h1>Auto-Boost</h1>
-          <p>Impulsione automaticamente posts do Instagram que excedem seus thresholds</p>
-        </div>
 
         {/* Tabs */}
         <div className="ar-tabs">
@@ -540,6 +535,13 @@ export default function AutoBoostPage() {
           </div>
         )}
       </div>
+  );
+}
+
+export default function AutoBoostPage() {
+  return (
+    <AdminLayout>
+      <AutoBoostContent />
     </AdminLayout>
   );
 }
