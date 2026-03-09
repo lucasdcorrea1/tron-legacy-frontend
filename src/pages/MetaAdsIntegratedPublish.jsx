@@ -4,6 +4,8 @@ import './MetaAdsIntegratedPublish.css';
 
 const STATUS_COLORS = {
   scheduled: '#60a5fa',
+  publishing_ig: '#fbbf24',
+  publishing_ads: '#fbbf24',
   published: '#4ade80',
   completed: '#4ade80',
   failed: '#f87171',
@@ -12,6 +14,8 @@ const STATUS_COLORS = {
 
 const STATUS_LABEL = {
   scheduled: 'Agendado',
+  publishing_ig: 'Publicando no Instagram...',
+  publishing_ads: 'Criando campanha...',
   published: 'Publicado',
   completed: 'Concluido',
   failed: 'Falhou',
@@ -80,6 +84,10 @@ export default function MetaAdsIntegratedPublish() {
   const [searchingInterests, setSearchingInterests] = useState(false);
   const interestDebounce = useRef(null);
 
+  // Templates & Presets
+  const [templates, setTemplates] = useState([]);
+  const [presets, setPresets] = useState([]);
+
   // Load list
   const loadList = useCallback(async () => {
     setListLoading(true);
@@ -99,6 +107,17 @@ export default function MetaAdsIntegratedPublish() {
   useEffect(() => {
     if (view === 'list') loadList();
   }, [view, loadList]);
+
+  // Poll every 4s when there are items being processed
+  useEffect(() => {
+    if (view !== 'list') return;
+    const hasProcessing = items.some(i =>
+      i.status === 'publishing_ig' || i.status === 'publishing_ads' || i.status === 'scheduled'
+    );
+    if (!hasProcessing) return;
+    const interval = setInterval(loadList, 4000);
+    return () => clearInterval(interval);
+  }, [view, items, loadList]);
 
   // Interest search with debounce
   useEffect(() => {
@@ -120,6 +139,12 @@ export default function MetaAdsIntegratedPublish() {
     }, 400);
     return () => clearTimeout(interestDebounce.current);
   }, [interestQuery]);
+
+  // Load templates & presets
+  useEffect(() => {
+    metaAds.listTemplates().then(setTemplates).catch(() => {});
+    metaAds.listPresets().then(setPresets).catch(() => {});
+  }, []);
 
   // File handling
   const handleFiles = (files) => {
@@ -172,6 +197,22 @@ export default function MetaAdsIntegratedPublish() {
     try {
       await integratedPublish.delete(item._id || item.id);
       setItems(prev => prev.filter(i => (i._id || i.id) !== (item._id || item.id)));
+    } catch (err) {
+      setListError(err.message);
+    }
+  };
+
+  // Reschedule item
+  const handleReschedule = async (item) => {
+    const id = item._id || item.id;
+    try {
+      const newDate = new Date();
+      newDate.setMinutes(newDate.getMinutes() + 5);
+      await integratedPublish.update(id, {
+        scheduled_at: newDate.toISOString(),
+        status: 'scheduled',
+      });
+      loadList();
     } catch (err) {
       setListError(err.message);
     }
@@ -238,6 +279,100 @@ export default function MetaAdsIntegratedPublish() {
       setWizardError(err.message);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // Template & Preset handlers
+  const loadTemplate = (tpl) => {
+    if (tpl.name) setCampaignName(tpl.name + ' (copia)');
+    if (tpl.objective) setObjective(tpl.objective);
+    if (tpl.daily_budget) setDailyBudget(String(tpl.daily_budget / 100));
+    if (tpl.duration_days) setDurationDays(String(tpl.duration_days));
+    if (tpl.cta) setCta(tpl.cta);
+    if (tpl.link_url) setLinkUrl(tpl.link_url);
+    if (tpl.targeting) {
+      const t = tpl.targeting;
+      if (t.countries) setCountries(Array.isArray(t.countries) ? t.countries.join(', ') : t.countries);
+      if (t.age_min) setAgeMin(String(t.age_min));
+      if (t.age_max) setAgeMax(String(t.age_max));
+      if (t.genders?.length) setGender(String(t.genders[0]));
+      if (t.interests) setSelectedInterests(t.interests);
+    }
+  };
+
+  const loadPreset = (preset) => {
+    const t = preset.targeting || preset;
+    if (t.countries) setCountries(Array.isArray(t.countries) ? t.countries.join(', ') : t.countries);
+    if (t.age_min) setAgeMin(String(t.age_min));
+    if (t.age_max) setAgeMax(String(t.age_max));
+    if (t.genders?.length) setGender(String(t.genders[0]));
+    if (t.interests) setSelectedInterests(t.interests);
+  };
+
+  const handleSaveTemplate = async () => {
+    const name = window.prompt('Nome do template:');
+    if (!name) return;
+    try {
+      await metaAds.createTemplate({
+        name,
+        objective,
+        daily_budget: Math.round(Number(dailyBudget || 0) * 100),
+        duration_days: parseInt(durationDays) || 7,
+        cta,
+        link_url: linkUrl,
+        targeting: {
+          countries: countries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean),
+          age_min: parseInt(ageMin) || 18,
+          age_max: parseInt(ageMax) || 65,
+          genders: gender === '0' ? [] : [parseInt(gender)],
+          interests: selectedInterests.map(i => ({ id: i.id, name: i.name })),
+        },
+      });
+      const data = await metaAds.listTemplates();
+      setTemplates(data || []);
+    } catch (err) {
+      setWizardError(err.message);
+    }
+  };
+
+  const handleSavePreset = async () => {
+    const name = window.prompt('Nome do preset de segmentacao:');
+    if (!name) return;
+    try {
+      await metaAds.createPreset({
+        name,
+        targeting: {
+          countries: countries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean),
+          age_min: parseInt(ageMin) || 18,
+          age_max: parseInt(ageMax) || 65,
+          genders: gender === '0' ? [] : [parseInt(gender)],
+          interests: selectedInterests.map(i => ({ id: i.id, name: i.name })),
+        },
+      });
+      const data = await metaAds.listPresets();
+      setPresets(data || []);
+    } catch (err) {
+      setWizardError(err.message);
+    }
+  };
+
+  const handleDeleteTemplate = async (id) => {
+    if (!window.confirm('Excluir este template?')) return;
+    try {
+      await metaAds.deleteTemplate(id);
+      setTemplates(prev => prev.filter(t => (t._id || t.id) !== id));
+    } catch (err) {
+      setWizardError(err.message);
+    }
+  };
+
+  const handleDeletePreset = async (id) => {
+    if (!window.confirm('Excluir este preset?')) return;
+    try {
+      await metaAds.deletePreset(id);
+      setPresets(prev => prev.filter(p => (p._id || p.id) !== id));
+    } catch (err) {
+      setWizardError(err.message);
     }
   };
 
@@ -356,10 +491,22 @@ export default function MetaAdsIntegratedPublish() {
                     {item.scheduled_at && (
                       <span className="mads-ip-card-date">{formatDate(item.scheduled_at)}</span>
                     )}
-                    {item.status === 'scheduled' && (
+                    {item.status === 'failed' && (
+                      <button
+                        className="mads-action-btn mads-action-reschedule"
+                        onClick={() => handleReschedule(item)}
+                        title="Re-agendar"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/>
+                        </svg>
+                      </button>
+                    )}
+                    {(item.status === 'scheduled' || item.status === 'failed') && (
                       <button
                         className="mads-action-btn mads-action-delete"
                         onClick={() => handleDeleteItem(item)}
+                        title="Excluir"
                       >
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -470,6 +617,22 @@ export default function MetaAdsIntegratedPublish() {
         {step === 2 && (
           <div className="mads-form-section">
             <h3>Configuracao da Campanha</h3>
+            {templates.length > 0 && (
+              <div className="mads-ip-templates-bar">
+                <span className="mads-ip-tpl-label">Templates:</span>
+                {templates.map(t => (
+                  <span key={t._id || t.id} className="mads-ip-tpl-chip" onClick={() => loadTemplate(t)}>
+                    {t.name}
+                    <button
+                      className="mads-ip-tpl-chip-del"
+                      onClick={e => { e.stopPropagation(); handleDeleteTemplate(t._id || t.id); }}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="mads-ip-form-grid">
               <label className="mads-ip-label">
                 Nome da Campanha
@@ -541,6 +704,11 @@ export default function MetaAdsIntegratedPublish() {
                 </select>
               </label>
             </div>
+            <div className="mads-ip-save-row">
+              <button className="mads-action-btn" onClick={handleSaveTemplate}>
+                Salvar como Template
+              </button>
+            </div>
           </div>
         )}
 
@@ -548,6 +716,22 @@ export default function MetaAdsIntegratedPublish() {
         {step === 3 && (
           <div className="mads-form-section">
             <h3>Segmentacao</h3>
+            {presets.length > 0 && (
+              <div className="mads-ip-templates-bar">
+                <span className="mads-ip-tpl-label">Presets:</span>
+                {presets.map(p => (
+                  <span key={p._id || p.id} className="mads-ip-tpl-chip" onClick={() => loadPreset(p)}>
+                    {p.name}
+                    <button
+                      className="mads-ip-tpl-chip-del"
+                      onClick={e => { e.stopPropagation(); handleDeletePreset(p._id || p.id); }}
+                    >
+                      &times;
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="mads-ip-form-grid">
               <label className="mads-ip-label">
                 Paises (codigos separados por virgula)
@@ -652,6 +836,11 @@ export default function MetaAdsIntegratedPublish() {
                   ))}
                 </div>
               )}
+            </div>
+            <div className="mads-ip-save-row">
+              <button className="mads-action-btn" onClick={handleSavePreset}>
+                Salvar como Preset
+              </button>
             </div>
           </div>
         )}

@@ -548,6 +548,7 @@ export const integratedPublish = {
   },
   getById: (id) => api.get(`/api/v1/admin/integrated-publish/${id}`),
   create: (data) => api.post('/api/v1/admin/integrated-publish', data),
+  update: (id, data) => api.put(`/api/v1/admin/integrated-publish/${id}`, data),
   delete: (id) => api.delete(`/api/v1/admin/integrated-publish/${id}`),
 };
 

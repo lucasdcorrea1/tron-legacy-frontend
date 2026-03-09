@@ -636,15 +636,18 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
 
   const handleReschedule = async (schedule) => {
     try {
-      if (schedule._type === 'integrated') {
-        toast.warning('Re-agendamento de posts com campanha ainda nao suportado. Delete e crie novamente.');
-        return;
-      }
       const newDate = new Date();
       newDate.setMinutes(newDate.getMinutes() + 5);
-      await instagram.update(schedule.id, {
-        scheduled_at: newDate.toISOString(),
-      });
+      if (schedule._type === 'integrated') {
+        await integratedPublish.update(schedule.id, {
+          scheduled_at: newDate.toISOString(),
+          status: 'scheduled',
+        });
+      } else {
+        await instagram.update(schedule.id, {
+          scheduled_at: newDate.toISOString(),
+        });
+      }
       toast.success('Post re-agendado');
       loadSchedules();
     } catch (err) {
