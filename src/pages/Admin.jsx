@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useOrg } from '../context/OrgContext';
 import { blog } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Admin.css';
 
 export default function Admin() {
   const { profile } = useAuth();
+  const { hasOrgRole } = useOrg();
   const navigate = useNavigate();
   const isSuperuser = profile?.role === 'superuser';
+  const isOrgAdmin = hasOrgRole('owner', 'admin');
   const [stats, setStats] = useState({ posts: 0, published: 0, drafts: 0 });
   const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);

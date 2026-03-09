@@ -8,8 +8,8 @@
 }
 
 .rich-text-editor:focus-within {
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 /* Toolbar */
@@ -74,9 +74,9 @@
 }
 
 .editor-toolbar button.is-active {
-  background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
-  border-color: rgba(168, 85, 247, 0.25);
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+  border-color: rgba(37, 99, 235, 0.25);
 }
 
 .editor-toolbar button svg,
@@ -86,14 +86,14 @@
 
 /* Image upload button */
 .image-upload-btn {
-  background: rgba(168, 85, 247, 0.08) !important;
-  border-color: rgba(168, 85, 247, 0.2) !important;
-  color: #c084fc !important;
+  background: rgba(37, 99, 235, 0.08) !important;
+  border-color: rgba(37, 99, 235, 0.2) !important;
+  color: #60a5fa !important;
   padding: 0.375rem 0.625rem !important;
 }
 
 .image-upload-btn:hover {
-  background: rgba(168, 85, 247, 0.18) !important;
+  background: rgba(37, 99, 235, 0.18) !important;
   color: #d8b4fe !important;
 }
 
@@ -152,8 +152,8 @@
 }
 
 .editor-content-area .tiptap code {
-  background: rgba(168, 85, 247, 0.12);
-  color: #c084fc;
+  background: rgba(37, 99, 235, 0.12);
+  color: #60a5fa;
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   font-size: 0.875em;
@@ -178,7 +178,7 @@
 }
 
 .editor-content-area .tiptap blockquote {
-  border-left: 3px solid #a855f7;
+  border-left: 3px solid #2563eb;
   padding-left: 1rem;
   margin: 1rem 0;
   color: #a1a1aa;
@@ -212,7 +212,7 @@
 }
 
 .editor-content-area .tiptap img.inline-image.ProseMirror-selectednode {
-  outline: 2px solid #a855f7;
+  outline: 2px solid #2563eb;
   outline-offset: 2px;
 }
 

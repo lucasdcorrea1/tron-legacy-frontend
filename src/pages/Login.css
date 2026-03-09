@@ -5,7 +5,7 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background: #09090b;
+  background: #101114;
   position: relative;
   overflow: hidden;
 }
@@ -18,7 +18,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+  background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 50%);
   animation: pulse 15s ease-in-out infinite;
 }
 
@@ -30,8 +30,8 @@
   right: 0;
   bottom: 0;
   background:
-    radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 40%);
+    radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 40%);
 }
 
 @keyframes pulse {
@@ -64,7 +64,7 @@
 }
 
 .login-back:hover {
-  color: #a855f7;
+  color: #2563eb;
   text-decoration: none;
 }
 
@@ -73,7 +73,7 @@
   font-weight: 700;
   text-align: center;
   margin-bottom: 0.5rem;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -114,9 +114,9 @@
 }
 
 .auth-tab.active {
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
 }
 
 .login-form {
@@ -165,15 +165,15 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #a855f7;
+  border-color: #2563eb;
   box-shadow:
-    0 0 0 3px rgba(168, 85, 247, 0.15),
-    0 0 20px rgba(168, 85, 247, 0.1);
+    0 0 0 3px rgba(37, 99, 235, 0.15),
+    0 0 20px rgba(37, 99, 235, 0.1);
   background: rgba(255, 255, 255, 0.03);
 }
 
 .login-button {
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white;
   border: none;
   padding: 1rem;
@@ -204,8 +204,8 @@
 .login-button:hover:not(:disabled) {
   transform: translateY(-2px);
   box-shadow:
-    0 10px 30px rgba(168, 85, 247, 0.3),
-    0 0 40px rgba(99, 102, 241, 0.2);
+    0 10px 30px rgba(37, 99, 235, 0.3),
+    0 0 40px rgba(59, 130, 246, 0.2);
 }
 
 .login-button:active:not(:disabled) {
@@ -246,7 +246,7 @@
 }
 
 .forgot-password-link:hover {
-  color: #a855f7;
+  color: #2563eb;
 }
 
 .login-success {

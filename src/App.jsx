@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
+import { OrgProvider } from './context/OrgContext';
 import { ToastProvider } from './components/Toast';
 import CookieConsent from './components/CookieConsent';
 import PrivateRoute from './components/PrivateRoute';
@@ -36,11 +37,15 @@ const InstagramPage = lazy(() => import('./pages/InstagramPage'));
 const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
 const Legal = lazy(() => import('./pages/Legal'));
 const MetaAdsCampaignForm = lazy(() => import('./pages/MetaAdsCampaignForm'));
+const Plans = lazy(() => import('./pages/Plans'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const OrgSettings = lazy(() => import('./pages/OrgSettings'));
 
 export default function App() {
   return (
     <HelmetProvider>
     <AuthProvider>
+      <OrgProvider>
       <ToastProvider>
       <BrowserRouter>
         <PageTracker />
@@ -55,6 +60,10 @@ export default function App() {
           <Route path="/blog/:slug" element={<PostView />} />
           <Route path="/privacidade" element={<Legal />} />
           <Route path="/exclusao-dados" element={<Legal />} />
+          <Route path="/planos" element={<Plans />} />
+
+          {/* Onboarding (auth required, no org needed) */}
+          <Route path="/onboarding" element={<Onboarding />} />
 
           {/* Protected routes */}
           <Route
@@ -145,10 +154,19 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/admin/settings"
+            element={
+              <PrivateRoute>
+                <OrgSettings />
+              </PrivateRoute>
+            }
+          />
         </Routes>
         </Suspense>
       </BrowserRouter>
       </ToastProvider>
+      </OrgProvider>
     </AuthProvider>
     <CookieConsent />
     </HelmetProvider>

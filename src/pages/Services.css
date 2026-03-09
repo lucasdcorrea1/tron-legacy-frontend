@@ -4,7 +4,7 @@
 .svc {
   height: 100vh;
   overflow: hidden;
-  background: #09090b;
+  background: #101114;
   color: #fafafa;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   position: relative;
@@ -58,7 +58,7 @@
   left: 15%;
   width: 280px;
   height: 320px;
-  background: radial-gradient(circle at 45% 40%, rgba(168, 85, 247, 0.5) 0%, rgba(139, 92, 246, 0.1) 55%, transparent 75%);
+  background: radial-gradient(circle at 45% 40%, rgba(37, 99, 235, 0.5) 0%, rgba(29, 78, 216, 0.1) 55%, transparent 75%);
   animation: svcLava 22s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
@@ -66,7 +66,7 @@
   left: 58%;
   width: 220px;
   height: 260px;
-  background: radial-gradient(circle at 50% 40%, rgba(99, 102, 241, 0.45) 0%, rgba(79, 70, 229, 0.08) 55%, transparent 75%);
+  background: radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.45) 0%, rgba(79, 70, 229, 0.08) 55%, transparent 75%);
   animation: svcLava 28s cubic-bezier(0.4, 0, 0.2, 1) -10s infinite;
 }
 
@@ -74,7 +74,7 @@
   left: 38%;
   width: 180px;
   height: 200px;
-  background: radial-gradient(circle at 50% 45%, rgba(147, 51, 234, 0.45) 0%, rgba(168, 85, 247, 0.08) 55%, transparent 75%);
+  background: radial-gradient(circle at 50% 45%, rgba(147, 51, 234, 0.45) 0%, rgba(37, 99, 235, 0.08) 55%, transparent 75%);
   animation: svcLava 18s cubic-bezier(0.4, 0, 0.2, 1) -5s infinite;
 }
 
@@ -90,7 +90,7 @@
 }
 
 .svc .text-gradient {
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #0ea5e9 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #0ea5e9 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -134,7 +134,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  border: 2px solid rgba(168, 85, 247, 0.4);
+  border: 2px solid rgba(37, 99, 235, 0.4);
   background: transparent;
   cursor: pointer;
   padding: 0;
@@ -142,14 +142,14 @@
 }
 
 .svc-dot:hover {
-  border-color: #c084fc;
-  background: rgba(168, 85, 247, 0.3);
+  border-color: #60a5fa;
+  background: rgba(37, 99, 235, 0.3);
 }
 
 .svc-dot.active {
-  background: #a855f7;
-  border-color: #c084fc;
-  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+  background: #2563eb;
+  border-color: #60a5fa;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.5);
 }
 
 /* ============================================
@@ -201,8 +201,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(168, 85, 247, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
   -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 70%);
@@ -221,8 +221,8 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(rgba(168, 85, 247, 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(168, 85, 247, 0.35) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.35) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(circle 200px at var(--glow-x, -200px) var(--glow-y, -200px), black 0%, transparent 70%);
   -webkit-mask-image: radial-gradient(circle 200px at var(--glow-x, -200px) var(--glow-y, -200px), black 0%, transparent 70%);
@@ -245,9 +245,9 @@
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: #c084fc;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 100px;
 }
 
@@ -284,7 +284,7 @@
   font-size: 1rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -293,7 +293,7 @@
 
 .svc-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px -10px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.4);
   color: #fff;
 }
 
@@ -348,8 +348,8 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #c084fc;
-  background: rgba(168, 85, 247, 0.1);
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.1);
   border-radius: 100px;
 }
 
@@ -401,10 +401,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.12);
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.12);
   border-radius: 12px;
-  color: #c084fc;
+  color: #60a5fa;
   transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
   margin-top: 2px;
 }
@@ -415,9 +415,9 @@
 }
 
 .svc-service-row:hover .svc-service-icon {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: rgba(168, 85, 247, 0.3);
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+  background: rgba(37, 99, 235, 0.15);
+  border-color: rgba(37, 99, 235, 0.3);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
 }
 
 .svc-service-text {
@@ -478,9 +478,9 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #c084fc;
-  background: rgba(168, 85, 247, 0.1);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 100px;
 }
 
@@ -506,7 +506,7 @@
 
 .svc-process-step:hover {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(168, 85, 247, 0.15);
+  border-color: rgba(37, 99, 235, 0.15);
 }
 
 .svc-process-num {
@@ -516,8 +516,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background: rgba(168, 85, 247, 0.1);
-  color: #c084fc;
+  background: rgba(37, 99, 235, 0.1);
+  color: #60a5fa;
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -632,7 +632,7 @@
   transition: color 0.2s;
 }
 
-.svc-footer-brand:hover { color: #c084fc; }
+.svc-footer-brand:hover { color: #60a5fa; }
 
 .svc-footer-links {
   display: flex;

@@ -105,6 +105,7 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     await auth.logout();
+    localStorage.removeItem('lastOrgId');
     setUser(null);
     setProfile(null);
   };

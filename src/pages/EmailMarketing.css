@@ -1,5 +1,5 @@
 .email-marketing {
-  max-width: 900px;
+  width: 100%;
 }
 
 .email-marketing .page-header {
@@ -41,9 +41,9 @@
 }
 
 .em-step.active {
-  color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
-  border-color: rgba(168, 85, 247, 0.3);
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .em-step.completed {
@@ -66,7 +66,7 @@
 }
 
 .em-step.active .em-step-number {
-  background: rgba(168, 85, 247, 0.2);
+  background: rgba(37, 99, 235, 0.2);
 }
 
 .em-step.completed .em-step-number {
@@ -91,22 +91,22 @@
 }
 
 .em-template-card:hover {
-  border-color: rgba(168, 85, 247, 0.3);
-  background: rgba(168, 85, 247, 0.05);
+  border-color: rgba(37, 99, 235, 0.3);
+  background: rgba(37, 99, 235, 0.05);
   transform: translateY(-2px);
 }
 
 .em-template-card.selected {
-  border-color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
-  box-shadow: 0 0 20px rgba(168, 85, 247, 0.15);
+  border-color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.15);
 }
 
 .em-template-category {
   display: inline-block;
   padding: 3px 10px;
-  background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
   font-size: 0.7rem;
   font-weight: 600;
   border-radius: 20px;
@@ -167,7 +167,7 @@
 .em-form-group input:focus,
 .em-form-group textarea:focus {
   outline: none;
-  border-color: rgba(168, 85, 247, 0.5);
+  border-color: rgba(37, 99, 235, 0.5);
 }
 
 .em-form-group textarea {
@@ -268,8 +268,8 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: rgba(168, 85, 247, 0.08);
-  border: 1px solid rgba(168, 85, 247, 0.15);
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.15);
   border-radius: 10px;
   margin-bottom: 1.5rem;
   font-size: 0.85rem;
@@ -277,7 +277,7 @@
 }
 
 .em-audience-bar .audience-icon {
-  color: #a855f7;
+  color: #2563eb;
   font-size: 1.1rem;
 }
 
@@ -304,13 +304,13 @@
 }
 
 .em-btn-primary {
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: #fff;
 }
 
 .em-btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
 .em-btn-primary:disabled {
@@ -353,7 +353,7 @@
 }
 
 .em-confirm-dialog {
-  background: #18181b;
+  background: #1a1d23;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 2rem;
@@ -394,8 +394,8 @@
 .em-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(168, 85, 247, 0.2);
-  border-top-color: #a855f7;
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
   border-radius: 50%;
   animation: em-spin 0.6s linear infinite;
 }
@@ -435,14 +435,14 @@
 }
 
 .em-tab.active {
-  color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
 }
 
 .em-tab-count {
   font-size: 0.7rem;
-  background: rgba(168, 85, 247, 0.2);
-  color: #c084fc;
+  background: rgba(37, 99, 235, 0.2);
+  color: #60a5fa;
   padding: 0.125rem 0.5rem;
   border-radius: 10px;
   font-weight: 700;
@@ -475,7 +475,7 @@
 
 .em-subs-search:focus {
   outline: none;
-  border-color: rgba(168, 85, 247, 0.5);
+  border-color: rgba(37, 99, 235, 0.5);
 }
 
 .em-subs-search::placeholder {

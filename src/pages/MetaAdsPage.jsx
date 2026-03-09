@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { instagram } from '../services/api';
 import MetaAdsCampaigns from './MetaAdsCampaigns';
+import MetaAdsIntegratedPublish from './MetaAdsIntegratedPublish';
 import MetaAdsInsights from './MetaAdsInsights';
+import MetaAdsFinanceiro from './MetaAdsFinanceiro';
 import './MetaAdsPage.css';
 
 const TABS = [
   { key: 'campanhas', label: 'Campanhas' },
+  { key: 'publicar', label: 'Publicar + Anunciar' },
   { key: 'insights', label: 'Insights' },
+  { key: 'financeiro', label: 'Financeiro' },
 ];
 
 export default function MetaAdsPage() {
@@ -64,7 +68,9 @@ export default function MetaAdsPage() {
 
             <div className="mads-content">
               {activeTab === 'campanhas' && <MetaAdsCampaigns />}
+              {activeTab === 'publicar' && <MetaAdsIntegratedPublish />}
               {activeTab === 'insights' && <MetaAdsInsights />}
+              {activeTab === 'financeiro' && <MetaAdsFinanceiro />}
             </div>
           </>
         )}

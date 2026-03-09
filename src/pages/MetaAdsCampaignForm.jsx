@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import AdminLayout from '../components/AdminLayout';
-import { metaAds } from '../services/api';
+import { metaAds, blog, integratedPublish } from '../services/api';
 import './MetaAdsCampaignForm.css';
 
 const OBJECTIVES = [
@@ -46,7 +46,7 @@ const CTA_TYPES = [
   'DOWNLOAD', 'GET_OFFER', 'GET_QUOTE', 'SUBSCRIBE', 'WATCH_MORE',
 ];
 
-const STEPS = ['Campanha', 'Conjunto', 'Anuncio', 'Revisao'];
+const STEPS = ['Campanha', 'Conjunto', 'Anuncio', 'Posts', 'Revisao'];
 
 export default function MetaAdsCampaignForm() {
   const navigate = useNavigate();
@@ -97,20 +97,103 @@ export default function MetaAdsCampaignForm() {
   const [imageHash, setImageHash] = useState('');
   const [uploading, setUploading] = useState(false);
 
+  // Edit mode IDs
+  const [editAdSetId, setEditAdSetId] = useState(null);
+  const [editAdId, setEditAdId] = useState(null);
+
+  // Step 4: Posts
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [linkedPostIds, setLinkedPostIds] = useState([]);
+  const [existingLinks, setExistingLinks] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+
   useEffect(() => {
     metaAds.listTemplates().then(setTemplates).catch(() => {});
     metaAds.listPresets().then(setPresets).catch(() => {});
   }, []);
 
   useEffect(() => {
-    if (editId) {
-      metaAds.getCampaign(editId).then(data => {
-        setCampaignName(data.name || '');
-        setObjective(data.objective || 'OUTCOME_TRAFFIC');
-        setSpecialCategories(data.special_ad_categories || []);
-        setBidStrategy(data.bid_strategy || 'LOWEST_COST_WITHOUT_CAP');
-      }).catch(err => setError(err.message));
-    }
+    if (!editId) return;
+
+    const loadEditData = async () => {
+      try {
+        // Load campaign
+        const campaign = await metaAds.getCampaign(editId);
+        setCampaignName(campaign.name || '');
+        setObjective(campaign.objective || 'OUTCOME_TRAFFIC');
+        setSpecialCategories(campaign.special_ad_categories || []);
+        setBidStrategy(campaign.bid_strategy || 'LOWEST_COST_WITHOUT_CAP');
+
+        // Load ad sets for this campaign
+        const adSets = await metaAds.listAdSets({ campaign_id: editId });
+        const adSetList = adSets?.data || adSets || [];
+        if (adSetList.length > 0) {
+          const adSet = adSetList[0];
+          setEditAdSetId(adSet.id);
+          setAdsetName(adSet.name || '');
+
+          if (adSet.daily_budget) {
+            setBudgetType('daily');
+            setBudget(String(parseFloat(adSet.daily_budget) / 100));
+          } else if (adSet.lifetime_budget) {
+            setBudgetType('lifetime');
+            setBudget(String(parseFloat(adSet.lifetime_budget) / 100));
+          }
+
+          setBillingEvent(adSet.billing_event || 'IMPRESSIONS');
+          setOptimizationGoal(adSet.optimization_goal || 'LINK_CLICKS');
+
+          if (adSet.start_time) {
+            setStartDate(new Date(adSet.start_time).toISOString().slice(0, 16));
+          }
+          if (adSet.end_time) {
+            setEndDate(new Date(adSet.end_time).toISOString().slice(0, 16));
+          }
+
+          // Targeting
+          const t = adSet.targeting || {};
+          if (t.geo_locations?.countries) setCountries(t.geo_locations.countries);
+          if (t.age_min) setAgeMin(t.age_min);
+          if (t.age_max) setAgeMax(t.age_max);
+          if (t.genders) setGenders(t.genders);
+          if (t.interests) setInterests(t.interests);
+
+          // Load ads for this ad set
+          const ads = await metaAds.listAds({ adset_id: adSet.id });
+          const adList = ads?.data || ads || [];
+          if (adList.length > 0) {
+            const ad = adList[0];
+            setEditAdId(ad.id);
+            setAdName(ad.name || '');
+
+            const creative = ad.creative || {};
+            setAdFormat(creative.format || 'image');
+            setAdText(creative.body || creative.message || '');
+            setAdHeadline(creative.title || '');
+            setAdDescription(creative.description || '');
+            setAdLinkUrl(creative.link_url || '');
+            setAdCta(creative.call_to_action || 'LEARN_MORE');
+            if (creative.image_url) setImagePreview(creative.image_url);
+            if (creative.image_hash) setImageHash(creative.image_hash);
+          }
+        }
+
+        // Load linked posts
+        try {
+          const links = await integratedPublish.list();
+          const linkList = links?.data || links || [];
+          const campaignLinks = linkList.filter(l => String(l.meta_campaign_id) === String(editId));
+          setExistingLinks(campaignLinks);
+          setLinkedPostIds(campaignLinks.map(l => l.post_id || l.blog_post_id).filter(Boolean));
+        } catch {
+          // integratedPublish might not have data yet
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+
+    loadEditData();
   }, [editId]);
 
   // Debounced interest search
@@ -242,7 +325,6 @@ export default function MetaAdsCampaignForm() {
     setError('');
 
     try {
-      // 1. Create campaign
       const budgetCents = Math.round(parseFloat(budget || 0) * 100);
       const campaignData = {
         name: campaignName,
@@ -253,10 +335,19 @@ export default function MetaAdsCampaignForm() {
         ...(budgetType === 'daily' ? { daily_budget: budgetCents } : { lifetime_budget: budgetCents }),
       };
 
-      const campaignResult = await metaAds.createCampaign(campaignData);
-      const campaignId = campaignResult.id;
+      let campaignId;
 
-      // 2. Create ad set
+      if (editId) {
+        // Update existing campaign
+        await metaAds.updateCampaign(editId, campaignData);
+        campaignId = editId;
+      } else {
+        // Create new campaign
+        const campaignResult = await metaAds.createCampaign(campaignData);
+        campaignId = campaignResult.id;
+      }
+
+      // Ad Set
       const adsetData = {
         campaign_id: campaignId,
         name: adsetName || campaignName + ' - Conjunto',
@@ -269,10 +360,17 @@ export default function MetaAdsCampaignForm() {
         ...(endDate && { end_time: new Date(endDate).toISOString() }),
       };
 
-      const adsetResult = await metaAds.createAdSet(adsetData);
-      const adsetId = adsetResult.id;
+      let adsetId;
 
-      // 3. Create ad
+      if (editId && editAdSetId) {
+        await metaAds.updateAdSet(editAdSetId, adsetData);
+        adsetId = editAdSetId;
+      } else {
+        const adsetResult = await metaAds.createAdSet(adsetData);
+        adsetId = adsetResult.id;
+      }
+
+      // Ad
       const adData = {
         adset_id: adsetId,
         name: adName || campaignName + ' - Anuncio',
@@ -288,7 +386,34 @@ export default function MetaAdsCampaignForm() {
         },
       };
 
-      await metaAds.createAd(adData);
+      if (editId && editAdId) {
+        await metaAds.updateAd(editAdId, adData);
+      } else {
+        await metaAds.createAd(adData);
+      }
+
+      // Handle post links
+      if (linkedPostIds.length > 0 || existingLinks.length > 0) {
+        const existingPostIds = existingLinks.map(l => l.post_id || l.blog_post_id).filter(Boolean);
+
+        // Remove unlinked posts
+        for (const link of existingLinks) {
+          const linkPostId = link.post_id || link.blog_post_id;
+          if (linkPostId && !linkedPostIds.includes(linkPostId)) {
+            await integratedPublish.delete(link.id);
+          }
+        }
+
+        // Add newly linked posts
+        for (const postId of linkedPostIds) {
+          if (!existingPostIds.includes(postId)) {
+            await integratedPublish.create({
+              blog_post_id: postId,
+              meta_campaign_id: campaignId,
+            });
+          }
+        }
+      }
 
       navigate('/admin/instagram');
     } catch (err) {
@@ -303,9 +428,31 @@ export default function MetaAdsCampaignForm() {
       case 0: return !!campaignName && !!objective;
       case 1: return !!budget && parseFloat(budget) > 0;
       case 2: return !!adText && !!adLinkUrl;
-      case 3: return true;
+      case 3: return true; // Posts step is optional
+      case 4: return true;
       default: return false;
     }
+  };
+
+  const loadBlogPosts = async () => {
+    if (blogPosts.length > 0) return;
+    setLoadingPosts(true);
+    try {
+      const result = await blog.myPosts({ page: 1, limit: 50 });
+      setBlogPosts(result?.data || result?.posts || []);
+    } catch {
+      setBlogPosts([]);
+    } finally {
+      setLoadingPosts(false);
+    }
+  };
+
+  const togglePostLink = (postId) => {
+    setLinkedPostIds(prev =>
+      prev.includes(postId)
+        ? prev.filter(id => id !== postId)
+        : [...prev, postId]
+    );
   };
 
   return (
@@ -660,8 +807,65 @@ export default function MetaAdsCampaignForm() {
           </div>
         )}
 
-        {/* Step 3: Review */}
+        {/* Step 3: Posts */}
         {step === 3 && (
+          <div className="mads-form-section" ref={el => { if (el && blogPosts.length === 0 && !loadingPosts) loadBlogPosts(); }}>
+            <h3 className="mads-section-title">Vincular Posts do Blog</h3>
+            <p className="mads-posts-hint">Selecione posts do blog para vincular a esta campanha (opcional)</p>
+
+            {loadingPosts ? (
+              <div className="mads-loading">
+                <span className="ig-spinner" />
+                Carregando posts...
+              </div>
+            ) : blogPosts.length === 0 ? (
+              <div className="mads-empty">
+                <p>Nenhum post encontrado</p>
+              </div>
+            ) : (
+              <div className="mads-posts-list">
+                {blogPosts.map(post => {
+                  const postId = post.id || post._id;
+                  const isLinked = linkedPostIds.includes(postId);
+                  return (
+                    <label key={postId} className={`mads-post-item ${isLinked ? 'selected' : ''}`}>
+                      <input
+                        type="checkbox"
+                        checked={isLinked}
+                        onChange={() => togglePostLink(postId)}
+                      />
+                      <div className="mads-post-info">
+                        {post.cover_image && (
+                          <img src={post.cover_image} alt="" className="mads-post-thumb" />
+                        )}
+                        <div className="mads-post-details">
+                          <span className="mads-post-title">{post.title}</span>
+                          <div className="mads-post-meta">
+                            <span className={`mads-post-status ${post.status === 'published' ? 'pub' : ''}`}>
+                              {post.status === 'published' ? 'Publicado' : 'Rascunho'}
+                            </span>
+                            {post.created_at && (
+                              <span>{new Date(post.created_at).toLocaleDateString('pt-BR')}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+
+            {linkedPostIds.length > 0 && (
+              <div className="mads-posts-count">
+                {linkedPostIds.length} post(s) vinculado(s)
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Step 4: Review */}
+        {step === 4 && (
           <div className="mads-form-section">
             <h3 className="mads-section-title">Resumo da Campanha</h3>
 
@@ -694,11 +898,29 @@ export default function MetaAdsCampaignForm() {
                 <div className="mads-review-row"><span>CTA:</span><strong>{adCta.replace(/_/g, ' ')}</strong></div>
                 <div className="mads-review-row"><span>URL:</span><strong>{adLinkUrl}</strong></div>
               </div>
+
+              {linkedPostIds.length > 0 && (
+                <div className="mads-review-card">
+                  <h4>Posts Vinculados</h4>
+                  {linkedPostIds.map(postId => {
+                    const post = blogPosts.find(p => (p.id || p._id) === postId);
+                    return (
+                      <div key={postId} className="mads-review-row">
+                        <span>Post:</span>
+                        <strong>{post?.title || `ID ${postId}`}</strong>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="mads-review-note">
-              A campanha sera criada com status <strong>PAUSED</strong> por seguranca.
-              Ative-a manualmente depois de verificar no Meta Ads Manager.
+              {editId
+                ? <>As alteracoes serao salvas na campanha existente.</>
+                : <>A campanha sera criada com status <strong>PAUSED</strong> por seguranca.
+                   Ative-a manualmente depois de verificar no Meta Ads Manager.</>
+              }
             </div>
 
             <button className="mads-btn secondary" onClick={handleSaveTemplate}>
@@ -715,7 +937,7 @@ export default function MetaAdsCampaignForm() {
             </button>
           )}
           <div className="mads-form-nav-spacer" />
-          {step < 3 ? (
+          {step < 4 ? (
             <button
               className="mads-btn primary"
               onClick={() => setStep(step + 1)}
@@ -729,7 +951,10 @@ export default function MetaAdsCampaignForm() {
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting ? 'Criando...' : 'Criar Campanha (PAUSED)'}
+              {submitting
+                ? (editId ? 'Salvando...' : 'Criando...')
+                : (editId ? 'Salvar Alteracoes' : 'Criar Campanha (PAUSED)')
+              }
             </button>
           )}
         </div>

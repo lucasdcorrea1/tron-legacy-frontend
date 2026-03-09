@@ -13,7 +13,7 @@
   transform: translateX(-50%);
   z-index: 1000;
   width: 300px;
-  background: #18181b;
+  background: #1a1d23;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   overflow: hidden;
@@ -33,7 +33,7 @@
 .ahc-cover-img { width: 100%; height: 100%; object-fit: cover; }
 .ahc-cover-placeholder {
   width: 100%; height: 100%;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #162044 0%, #1e3a5f 30%, #1d4ed8 60%, #162044 100%);
 }
 
 .ahc-body { padding: 0 16px 16px; position: relative; }
@@ -42,13 +42,13 @@
 
 .ahc-avatar {
   width: 48px; height: 48px; border-radius: 50%;
-  object-fit: cover; border: 3px solid #18181b;
+  object-fit: cover; border: 3px solid #1a1d23;
 }
 .ahc-avatar-placeholder {
   width: 48px; height: 48px; border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white; display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; font-weight: 600; border: 3px solid #18181b;
+  font-size: 1.2rem; font-weight: 600; border: 3px solid #1a1d23;
 }
 
 .ahc-name { color: #fafafa; font-size: 0.95rem; font-weight: 600; margin: 0 0 4px; }
@@ -105,13 +105,13 @@
 /* Modal card */
 .ahc-modal {
   position: relative; width: 100%; max-width: 440px;
-  background: #141416;
+  background: #161a20;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 24px; overflow: hidden;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.04),
     0 24px 80px rgba(0, 0, 0, 0.6),
-    0 0 120px -20px rgba(139, 92, 246, 0.15);
+    0 0 120px -20px rgba(29, 78, 216, 0.15);
   animation: ahcModalIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 .ahc-modal--out {
@@ -152,7 +152,7 @@
 }
 .ahc-modal-cover-fade {
   position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
-  background: linear-gradient(to top, #141416, transparent);
+  background: linear-gradient(to top, #161a20, transparent);
   pointer-events: none;
 }
 
@@ -178,25 +178,25 @@
   position: relative;
   padding: 4px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%);
   box-shadow:
-    0 0 24px rgba(139, 92, 246, 0.4),
-    0 0 60px rgba(139, 92, 246, 0.15);
+    0 0 24px rgba(29, 78, 216, 0.4),
+    0 0 60px rgba(29, 78, 216, 0.15);
 }
 
 .ahc-modal-avatar {
   display: block;
   width: 108px; height: 108px;
   border-radius: 50%; object-fit: cover;
-  border: 4px solid #141416;
+  border: 4px solid #161a20;
 }
 
 .ahc-modal-avatar-placeholder {
   width: 108px; height: 108px; border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white; display: flex; align-items: center; justify-content: center;
   font-size: 2.8rem; font-weight: 700;
-  border: 4px solid #141416;
+  border: 4px solid #161a20;
 }
 
 /* ── Info ── */

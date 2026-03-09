@@ -1,5 +1,5 @@
 .mads-page {
-  max-width: 960px;
+  max-width: 100%;
 }
 
 .mads-page .page-header {
@@ -41,8 +41,8 @@
 .mads-not-configured {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: #1a1d23;
+  border: 1px solid #2d3139;
   border-radius: 12px;
 }
 

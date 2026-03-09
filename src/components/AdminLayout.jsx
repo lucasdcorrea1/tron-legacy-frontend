@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useOrg } from '../context/OrgContext';
 import UserAvatar from './UserAvatar';
+import OrgSwitcher from './OrgSwitcher';
 import './AdminLayout.css';
 
 // SVG Icons
@@ -98,6 +100,20 @@ const Icons = {
   ),
 };
 
+const Icons_settings = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
+
+const Icons_lock = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+  </svg>
+);
+
 const menuItems = [
   { path: '/admin', icon: Icons.dashboard, label: 'Dashboard', exact: true },
   { path: '/admin/posts', icon: Icons.posts, label: 'Posts' },
@@ -106,19 +122,24 @@ const menuItems = [
 
 const adminItems = [
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
-  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing' },
-  { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram' },
-  { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true },
+  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro' },
+  { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
+  { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter' },
+  { path: '/admin/settings', icon: Icons_settings, label: 'Configurações' },
 ];
+
+const PLAN_RANK = { free: 0, starter: 1, pro: 2, enterprise: 3 };
 
 export default function AdminLayout({ children }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, logout } = useAuth();
+  const { currentOrg, subscription, hasOrgRole } = useOrg();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const isAdmin = profile?.role === 'admin' || profile?.role === 'superuser';
+  const currentPlan = subscription?.plan_id || 'free';
+  const isAdmin = hasOrgRole('owner', 'admin');
 
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
@@ -156,6 +177,10 @@ export default function AdminLayout({ children }) {
           </button>
         </div>
 
+        <div className="sidebar-org">
+          <OrgSwitcher onClose={closeMobileMenu} />
+        </div>
+
         <nav className="sidebar-nav">
           <div className="nav-section">
             <span className="nav-section-title">Menu</span>
@@ -175,17 +200,21 @@ export default function AdminLayout({ children }) {
           {isAdmin && (
             <div className="nav-section">
               <span className="nav-section-title">Admin</span>
-              {adminItems.map(item => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
-                  onClick={closeMobileMenu}
-                >
-                  <span className="nav-icon">{item.icon}</span>
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              ))}
+              {adminItems.map(item => {
+                const locked = item.minPlan && (PLAN_RANK[currentPlan] ?? 0) < (PLAN_RANK[item.minPlan] ?? 0);
+                return (
+                  <Link
+                    key={item.path}
+                    to={locked ? '/admin/settings' : item.path}
+                    className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''} ${locked ? 'nav-locked' : ''}`}
+                    onClick={closeMobileMenu}
+                  >
+                    <span className="nav-icon">{locked ? Icons_lock : item.icon}</span>
+                    <span className="nav-label">{item.label}</span>
+                    {locked && <span className="nav-badge">{item.minPlan === 'pro' ? 'PRO' : 'STARTER'}</span>}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </nav>
@@ -202,7 +231,7 @@ export default function AdminLayout({ children }) {
               <UserAvatar profile={profile} size="md" />
               <div className="mobile-user-details">
                 <span className="mobile-user-name">{profile?.name}</span>
-                <span className="mobile-user-role">{profile?.role}</span>
+                <span className="mobile-user-role">{currentOrg?.my_role || profile?.role}</span>
               </div>
             </div>
             <button className="mobile-logout-btn" onClick={handleLogout}>

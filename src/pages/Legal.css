@@ -1,7 +1,7 @@
 /* Legal Pages (Privacy / Data Deletion) */
 .legal-page {
   min-height: 100vh;
-  background: #09090b;
+  background: #101114;
   color: #fafafa;
   overflow-x: hidden;
 }
@@ -18,7 +18,7 @@
   letter-spacing: -0.03em;
   line-height: 1.15;
   margin-bottom: 0.75rem;
-  background: linear-gradient(135deg, #a855f7 0%, #818cf8 50%, #c084fc 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #93c5fd 50%, #60a5fa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -66,22 +66,22 @@
   content: "—";
   position: absolute;
   left: 0;
-  color: #a855f7;
+  color: #2563eb;
 }
 
 .legal-section a {
-  color: #c084fc;
+  color: #60a5fa;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .legal-section a:hover {
-  color: #a855f7;
+  color: #2563eb;
 }
 
 /* Footer (reuses blog-footer pattern) */
 .legal-footer {
-  background: #09090b;
+  background: #101114;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding: 2rem 0;
 }
@@ -113,7 +113,7 @@
 }
 
 .legal-footer .footer-brand-link:hover {
-  color: #c084fc;
+  color: #60a5fa;
 }
 
 .legal-footer .footer-whatsapp {
@@ -142,7 +142,7 @@
 }
 
 .legal-footer .footer-links a:hover {
-  color: #c084fc;
+  color: #60a5fa;
 }
 
 .legal-footer .footer-links span {

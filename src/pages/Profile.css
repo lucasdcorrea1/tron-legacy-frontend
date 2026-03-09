@@ -1,6 +1,6 @@
 /* Profile Page - Matching Home Design */
 .profile-page {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -61,14 +61,14 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid rgba(168, 85, 247, 0.3);
+  border: 3px solid rgba(37, 99, 235, 0.3);
 }
 
 .avatar-placeholder {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white;
   display: flex;
   align-items: center;
@@ -97,7 +97,7 @@
 
 .user-role {
   font-size: 0.75rem;
-  color: #a855f7;
+  color: #2563eb;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 1rem;
@@ -144,8 +144,8 @@
 }
 
 .profile-tab.active {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
 }
 
 /* Messages */
@@ -190,6 +190,7 @@
 .form-group input,
 .form-group textarea,
 .form-group select {
+  width: 100%;
   padding: 0.75rem 1rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -208,8 +209,8 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .form-group input:disabled,
@@ -289,7 +290,7 @@
 /* Buttons */
 .btn-primary {
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -302,7 +303,7 @@
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:disabled {
@@ -313,8 +314,8 @@
 .btn-secondary {
   flex: 1;
   padding: 0.625rem 1rem;
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
   border: none;
   border-radius: 8px;
   font-size: 0.8125rem;
@@ -324,7 +325,7 @@
 }
 
 .btn-secondary:hover {
-  background: rgba(168, 85, 247, 0.25);
+  background: rgba(37, 99, 235, 0.25);
 }
 
 .btn-danger {
@@ -361,7 +362,7 @@
 .cover-image-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 30%, #4c1d95 60%, #1e1b4b 100%);
+  background: linear-gradient(135deg, #162044 0%, #1e3a5f 30%, #1d4ed8 60%, #162044 100%);
 }
 
 .cover-upload-btn {

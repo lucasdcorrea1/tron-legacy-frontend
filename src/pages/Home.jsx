@@ -358,7 +358,7 @@ export default function Home() {
                     to={`/blog/${post.slug}`}
                     key={post._id || post.id}
                     className="blog-card animate-card"
-                    style={{ transitionDelay: `${0.2 + index * 0.15}s` }}
+                    style={{ transitionDelay: `${index * 0.07}s` }}
                   >
                     <div className="blog-card-image">
                       {(post.cover_images && post.cover_images.length > 0) || post.cover_image ? (
@@ -397,7 +397,7 @@ export default function Home() {
               </div>
             )}
 
-            <div className="section-cta animate-item" style={{ transitionDelay: '0.5s' }}>
+            <div className="section-cta animate-item" style={{ transitionDelay: '0.25s' }}>
               <Link to="/blog" className="btn-outline">Ver todos os posts</Link>
             </div>
           </div>
@@ -407,53 +407,59 @@ export default function Home() {
         <section className="section-snap section-cta-footer" ref={setSectionRef(2)}>
           <div className="cta-footer-content">
             <div className="cta-inner">
-              <span className="audit-badge animate-item">Auditoria gratuita</span>
+              <span className="audit-badge animate-item">Planos</span>
               <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
-                Descubra onde seu negócio<br />
-                está <span className="text-gradient">perdendo dinheiro</span>
+                Escale seu negócio com o<br />
+                plano <span className="text-gradient">ideal pra você</span>
               </h2>
               <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Analisamos sua operação de graça e mostramos exatamente o que está travando seu crescimento.
+                Comece grátis e faça upgrade quando precisar. Sem fidelidade.
               </p>
 
-              <div className="audit-benefits animate-item" style={{ transitionDelay: '0.2s' }}>
-                <div className="audit-benefit">
-                  <span className="audit-benefit-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  </span>
-                  <span className="audit-benefit-text">Processos que consomem tempo</span>
+              <div className="home-plans animate-item" style={{ transitionDelay: '0.2s' }}>
+                <div className="home-plan-card">
+                  <h3>Free</h3>
+                  <div className="home-plan-price"><span>R$0</span>/mês</div>
+                  <ul>
+                    <li>1 membro</li>
+                    <li>10 posts agendados</li>
+                    <li>3 regras auto-resposta</li>
+                    <li>Blog ilimitado</li>
+                  </ul>
+                  <Link to="/login" className="home-plan-btn">Começar grátis</Link>
                 </div>
-                <div className="audit-benefit">
-                  <span className="audit-benefit-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                  </span>
-                  <span className="audit-benefit-text">Gargalos que custam dinheiro</span>
+
+                <div className="home-plan-card popular">
+                  <span className="home-plan-badge">Popular</span>
+                  <h3>Pro</h3>
+                  <div className="home-plan-price"><span>R$149</span>/mês</div>
+                  <ul>
+                    <li>10 membros</li>
+                    <li>Tudo ilimitado</li>
+                    <li>Instagram + Meta Ads</li>
+                    <li>Email Marketing</li>
+                  </ul>
+                  <Link to="/planos" className="home-plan-btn primary">Assinar Pro</Link>
                 </div>
-                <div className="audit-benefit">
-                  <span className="audit-benefit-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                  </span>
-                  <span className="audit-benefit-text">Ações práticas de melhoria</span>
-                </div>
-                <div className="audit-benefit">
-                  <span className="audit-benefit-icon">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                  </span>
-                  <span className="audit-benefit-text">Relatório personalizado</span>
+
+                <div className="home-plan-card">
+                  <h3>Enterprise</h3>
+                  <div className="home-plan-price"><span>R$399</span>/mês</div>
+                  <ul>
+                    <li>Membros ilimitados</li>
+                    <li>Tudo ilimitado</li>
+                    <li>Suporte prioritário</li>
+                    <li>SLA dedicado</li>
+                  </ul>
+                  <Link to="/planos" className="home-plan-btn">Falar com vendas</Link>
                 </div>
               </div>
 
               <div className="audit-cta-wrapper animate-item" style={{ transitionDelay: '0.3s' }}>
-                <a
-                  href="https://wa.me/5516999493490?text=Oi!%20Quero%20a%20auditoria%20gratuita"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="audit-cta-btn"
-                >
-                  Quero minha auditoria gratuita
+                <Link to="/planos" className="audit-cta-btn">
+                  Ver todos os planos
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </a>
-                <p className="audit-reassurance">Sem compromisso. Sem custo. Leva 15 minutos.</p>
+                </Link>
               </div>
             </div>
           </div>

@@ -1,7 +1,6 @@
 /* Dashboard - Matching Home Design */
 .dashboard {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .dashboard-header {
@@ -26,7 +25,7 @@
 /* Buttons */
 .btn-primary {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -38,14 +37,14 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
 
 .btn-link {
   padding: 0;
   background: transparent;
   border: none;
-  color: #a855f7;
+  color: #2563eb;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -53,7 +52,7 @@
 }
 
 .btn-link:hover {
-  color: #c084fc;
+  color: #60a5fa;
 }
 
 /* Stats Grid */
@@ -91,8 +90,8 @@
 }
 
 .stat-icon.blue {
-  background: rgba(168, 85, 247, 0.15);
-  color: #a855f7;
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
 }
 
 .stat-icon.green {
@@ -161,14 +160,14 @@
 }
 
 .action-card:hover {
-  background: rgba(168, 85, 247, 0.1);
-  border-color: rgba(168, 85, 247, 0.3);
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(37, 99, 235, 0.3);
   transform: translateY(-2px);
 }
 
 .action-icon {
   font-size: 1.5rem;
-  color: #a855f7;
+  color: #2563eb;
 }
 
 .action-label {

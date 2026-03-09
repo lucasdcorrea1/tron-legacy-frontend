@@ -392,7 +392,7 @@ function HourlyGrid({ data }) {
     if (count === 0) return 'rgba(255,255,255,0.02)';
     const intensity = count / maxCount;
     const alpha = 0.15 + intensity * 0.5;
-    return `rgba(168, 85, 247, ${alpha})`;
+    return `rgba(37, 99, 235, ${alpha})`;
   };
 
   return (

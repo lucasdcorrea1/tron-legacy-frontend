@@ -1,6 +1,6 @@
 /* Post Form - Matching Home Design */
 .postform-page {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -89,8 +89,8 @@
 .postform-editor input:focus,
 .postform-editor textarea:focus {
   outline: none;
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .postform-editor textarea {
@@ -163,8 +163,8 @@
 .sidebar-section input:focus,
 .sidebar-section textarea:focus {
   outline: none;
-  border-color: #a855f7;
-  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.15);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 .sidebar-section textarea {
@@ -185,7 +185,7 @@
 }
 
 .file-input:hover {
-  border-color: rgba(168, 85, 247, 0.3);
+  border-color: rgba(37, 99, 235, 0.3);
 }
 
 .file-input:disabled {
@@ -197,7 +197,7 @@
   display: block;
   margin-top: 0.5rem;
   font-size: 0.75rem;
-  color: #a855f7;
+  color: #2563eb;
 }
 
 /* Multi-image preview grid */
@@ -286,7 +286,7 @@
 }
 
 .seo-toggle:hover {
-  color: #a855f7;
+  color: #2563eb;
 }
 
 .seo-fields {
@@ -314,8 +314,8 @@
 }
 
 .draft-button:hover:not(:disabled) {
-  border-color: rgba(168, 85, 247, 0.3);
-  color: #a855f7;
+  border-color: rgba(37, 99, 235, 0.3);
+  color: #2563eb;
 }
 
 .draft-button:disabled {

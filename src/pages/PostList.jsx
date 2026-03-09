@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useOrg } from '../context/OrgContext';
 import { blog } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './PostList.css';
@@ -8,7 +9,9 @@ import './PostList.css';
 export default function PostList() {
   const navigate = useNavigate();
   const { profile } = useAuth();
+  const { hasOrgRole } = useOrg();
   const isSuperuser = profile?.role === 'superuser';
+  const isOrgAdmin = hasOrgRole('owner', 'admin');
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

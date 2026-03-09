@@ -1,7 +1,7 @@
 /* Instagram Analytics page — prefixed with analytics- */
 
 .analytics-page {
-  max-width: 1000px;
+  max-width: 100%;
 }
 
 .analytics-page .page-header {
@@ -49,8 +49,8 @@
 }
 
 .analytics-tab.active {
-  color: #a855f7;
-  background: rgba(168, 85, 247, 0.1);
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
 }
 
 /* Toolbar */
@@ -75,7 +75,7 @@
 }
 
 .analytics-select option {
-  background: #18181b;
+  background: #1a1d23;
   color: #fafafa;
 }
 
@@ -91,13 +91,13 @@
 }
 
 .analytics-btn-primary {
-  background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   color: #fff;
 }
 
 .analytics-btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 .analytics-btn-primary:disabled {
@@ -142,7 +142,7 @@
   right: 0;
   height: 2px;
   border-radius: 16px 16px 0 0;
-  background: linear-gradient(90deg, #a855f7, #6366f1);
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
   opacity: 0.5;
 }
 
@@ -155,7 +155,7 @@
 .analytics-stat-card.green::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
 .analytics-stat-card.red::before { background: linear-gradient(90deg, #ef4444, #f87171); }
 .analytics-stat-card.yellow::before { background: linear-gradient(90deg, #eab308, #facc15); }
-.analytics-stat-card.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.analytics-stat-card.purple::before { background: linear-gradient(90deg, #2563eb, #60a5fa); }
 .analytics-stat-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
 
 .analytics-stat-value {
@@ -178,7 +178,7 @@
 .analytics-stat-card.green .analytics-stat-value { color: #22c55e; }
 .analytics-stat-card.red .analytics-stat-value { color: #ef4444; }
 .analytics-stat-card.yellow .analytics-stat-value { color: #facc15; }
-.analytics-stat-card.purple .analytics-stat-value { color: #a855f7; }
+.analytics-stat-card.purple .analytics-stat-value { color: #2563eb; }
 .analytics-stat-card.blue .analytics-stat-value { color: #60a5fa; }
 
 /* Section titles */
@@ -207,7 +207,7 @@
   flex: 1;
   min-width: 0;
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(180deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(180deg, #2563eb 0%, #3b82f6 100%);
   position: relative;
   transition: height 0.3s;
   cursor: default;
@@ -223,7 +223,7 @@
   bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  background: #27272a;
+  background: #2d3139;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fafafa;
   padding: 0.25rem 0.5rem;
@@ -352,7 +352,7 @@
 .analytics-ranking-bar-fill {
   height: 100%;
   border-radius: 5px;
-  background: linear-gradient(90deg, #a855f7 0%, #6366f1 100%);
+  background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
   transition: width 0.3s;
 }
 
@@ -411,8 +411,8 @@
 }
 
 .analytics-post-card:hover {
-  border-color: rgba(168, 85, 247, 0.15);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(168, 85, 247, 0.05);
+  border-color: rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(37, 99, 235, 0.05);
   transform: translateY(-1px);
 }
 
@@ -500,8 +500,8 @@
 .analytics-spinner {
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(168, 85, 247, 0.2);
-  border-top-color: #a855f7;
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-top-color: #2563eb;
   border-radius: 50%;
   animation: analytics-spin 0.6s linear infinite;
 }
@@ -534,8 +534,8 @@
 }
 
 .analytics-card:hover {
-  border-color: rgba(168, 85, 247, 0.15);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(168, 85, 247, 0.05);
+  border-color: rgba(37, 99, 235, 0.15);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(37, 99, 235, 0.05);
 }
 
 .analytics-card-title {

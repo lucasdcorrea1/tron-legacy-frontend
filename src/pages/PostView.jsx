@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useOrg } from '../context/OrgContext';
 import { blog, API_URL, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
@@ -59,6 +60,7 @@ export default function PostView() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated, profile } = useAuth();
+  const { hasOrgRole } = useOrg();
   const viewRecorded = useRef(false);
 
   const [post, setPost] = useState(null);
@@ -281,7 +283,7 @@ export default function PostView() {
       profile.id === commentUserId ||
       profile._id === postAuthorId ||
       profile.id === postAuthorId ||
-      profile.role === 'admin' ||
+      hasOrgRole('owner', 'admin') ||
       profile.role === 'superuser'
     );
   };

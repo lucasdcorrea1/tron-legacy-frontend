@@ -5,6 +5,85 @@ import './InstagramScheduling.css';
 import './MetaAdsConfig.css';
 import './InstagramConfig.css';
 
+/* ── SVG Icons ── */
+const IconCheck = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+const IconEdit = () => (
+  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+);
+
+const IconWifi = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M5 12.55a11 11 0 0114 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/>
+  </svg>
+);
+
+const IconGrid = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+  </svg>
+);
+
+const IconTrash = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+  </svg>
+);
+
+const IconBell = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>
+  </svg>
+);
+
+const IconPlus = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const IconChevron = ({ open }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
+  >
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
+
+const IconKey = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+  </svg>
+);
+
+const IconShield = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+);
+
+const IconLink = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
+  </svg>
+);
+
+const IconToggle = ({ active }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    {active
+      ? <><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="16" cy="12" r="3" fill="currentColor"/></>
+      : <><rect x="1" y="5" width="22" height="14" rx="7"/><circle cx="8" cy="12" r="3" fill="currentColor"/></>
+    }
+  </svg>
+);
+
 export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const toast = useToast();
 
@@ -81,7 +160,6 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     setSavingConfig(true);
     try {
       const payload = {};
-      // Only send fields that changed from current values
       if (configAccountId.trim() && configAccountId.trim() !== configAccountIdDisplay)
         payload.instagram_account_id = configAccountId.trim();
       if (configAccessToken.trim())
@@ -210,153 +288,175 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     );
   }
 
-  // ─── Configured: card com status + editar inline ───
+  /* ── Info box (shared) ── */
+  const renderInfoBox = () => (
+    <>
+      <button
+        type="button"
+        className="igcfg-info-toggle"
+        onClick={() => setShowInfo(!showInfo)}
+      >
+        <IconChevron open={showInfo} /> Onde encontrar cada ID?
+      </button>
+
+      {showInfo && (
+        <div className="igcfg-info-box">
+          <div className="igcfg-info-item">
+            <strong>Instagram Account ID</strong>
+            <span><a href="https://business.facebook.com/settings/instagram-account" target="_blank" rel="noopener noreferrer">Business Settings &gt; Instagram Accounts <IconLink /></a> &mdash; ID numerico da conta</span>
+          </div>
+          <div className="igcfg-info-item">
+            <strong>Access Token</strong>
+            <span><a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users <IconLink /></a> &mdash; Token permanente</span>
+          </div>
+          <div className="igcfg-info-item">
+            <strong>Ad Account ID</strong>
+            <span><a href="https://adsmanager.facebook.com" target="_blank" rel="noopener noreferrer">Ads Manager <IconLink /></a> &mdash; ID abaixo do nome (ex: <code>act_123456789</code>)</span>
+          </div>
+          <div className="igcfg-info-item">
+            <strong>Business ID</strong>
+            <span><a href="https://business.facebook.com/settings/info" target="_blank" rel="noopener noreferrer">Business Settings &gt; Business Info <IconLink /></a> &mdash; ID exibido na pagina</span>
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  // ─── CONFIGURED STATE ───
   if (configured) {
     return (
       <div className="igcfg">
-        <div className="mads-config-section">
-          <div className="igcfg-card-header">
-            <h3>Configuracao</h3>
+        {/* Status + Credentials Card */}
+        <div className="igcfg-section">
+          <div className="igcfg-section-header">
+            <div className="igcfg-section-icon igcfg-section-icon--green">
+              <IconShield />
+            </div>
+            <div>
+              <h3 className="igcfg-section-title">Credenciais</h3>
+              <p className="igcfg-section-sub">Conexao com Instagram e Meta Ads</p>
+            </div>
             {!editing && (
-              <button className="mads-btn secondary small" onClick={() => {
+              <button className="igcfg-header-btn" onClick={() => {
                 setAdAccountId(adAccountIdDisplay);
                 setBusinessId(businessIdDisplay);
                 setConfigAccountId(configAccountIdDisplay);
                 setConfigAccessToken('');
                 setEditing(true);
               }}>
-                Editar
+                <IconEdit /> Editar
               </button>
             )}
           </div>
 
-          {/* Status rows */}
           {!editing ? (
-            <div className="igcfg-status-info">
-              <div className="igcfg-badge igcfg-badge-ok">Configurado</div>
-              <div className="igcfg-detail-row">
-                <span className="igcfg-detail-label">Instagram Account ID:</span>
-                <span className="igcfg-detail-value">{configAccountIdDisplay}</span>
-              </div>
-              <div className="igcfg-detail-row">
-                <span className="igcfg-detail-label">Fonte:</span>
-                <span className="igcfg-detail-value">
+            <>
+              {/* Status badge */}
+              <div className="igcfg-status-strip">
+                <span className="igcfg-connected-badge">
+                  <span className="igcfg-connected-dot" /> Conectado
+                </span>
+                <span className="igcfg-source-badge">
                   {configSource === 'user' ? 'Banco de dados' : 'Variaveis de ambiente'}
                 </span>
               </div>
-              <div className="igcfg-detail-row">
-                <span className="igcfg-detail-label">Ad Account ID:</span>
-                <span className="igcfg-detail-value" style={!adAccountIdDisplay ? { color: '#71717a' } : undefined}>
-                  {adAccountIdDisplay || 'Nao configurado'}
-                </span>
-              </div>
-              {businessIdDisplay && (
-                <div className="igcfg-detail-row">
-                  <span className="igcfg-detail-label">Business ID:</span>
-                  <span className="igcfg-detail-value">{businessIdDisplay}</span>
-                </div>
-              )}
 
-              <div className="mads-config-actions" style={{ marginTop: '0.75rem' }}>
-                <button className="mads-btn primary small" onClick={handleTestConnection} disabled={testLoading}>
-                  {testLoading ? 'Testando...' : 'Testar conexao'}
+              {/* Detail grid */}
+              <div className="igcfg-detail-grid">
+                <div className="igcfg-detail-card">
+                  <span className="igcfg-detail-label">Instagram Account ID</span>
+                  <span className="igcfg-detail-value">{configAccountIdDisplay}</span>
+                </div>
+                <div className="igcfg-detail-card">
+                  <span className="igcfg-detail-label">Ad Account ID</span>
+                  <span className="igcfg-detail-value" style={!adAccountIdDisplay ? { color: '#52525b' } : undefined}>
+                    {adAccountIdDisplay || 'Nao configurado'}
+                  </span>
+                </div>
+                {businessIdDisplay && (
+                  <div className="igcfg-detail-card">
+                    <span className="igcfg-detail-label">Business ID</span>
+                    <span className="igcfg-detail-value">{businessIdDisplay}</span>
+                  </div>
+                )}
+                <div className="igcfg-detail-card">
+                  <span className="igcfg-detail-label">Access Token</span>
+                  <span className="igcfg-detail-value igcfg-detail-masked">{'*'.repeat(24)}</span>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="igcfg-actions-row">
+                <button className="igcfg-action-btn igcfg-action-btn--primary" onClick={handleTestConnection} disabled={testLoading}>
+                  <IconWifi /> {testLoading ? 'Testando...' : 'Testar conexao'}
                 </button>
-                <button className="mads-btn secondary small" onClick={handleLoadFeed} disabled={feedLoading}>
-                  {feedLoading ? 'Carregando...' : 'Ver feed'}
+                <button className="igcfg-action-btn igcfg-action-btn--secondary" onClick={handleLoadFeed} disabled={feedLoading}>
+                  <IconGrid /> {feedLoading ? 'Carregando...' : 'Ver feed'}
                 </button>
                 {configSource === 'user' && (
-                  <button className="mads-btn-text danger" onClick={handleDeleteConfig}>
-                    Remover
+                  <button className="igcfg-action-btn igcfg-action-btn--danger" onClick={handleDeleteConfig}>
+                    <IconTrash /> Remover
                   </button>
                 )}
               </div>
-            </div>
+            </>
           ) : (
-            /* ─── Edit mode inline ─── */
+            /* ─── Edit mode ─── */
             <div className="igcfg-edit-form">
-              <p className="mads-config-hint" style={{ margin: '0 0 1rem' }}>
+              <p className="igcfg-edit-hint">
                 Altere os campos desejados. O Access Token so e atualizado se preenchido.
               </p>
 
-              <button
-                type="button"
-                className="igcfg-info-toggle"
-                onClick={() => setShowInfo(!showInfo)}
-              >
-                {showInfo ? '▾' : '▸'} Onde encontrar cada ID?
-              </button>
+              {renderInfoBox()}
 
-              {showInfo && (
-                <div className="igcfg-info-box">
-                  <div className="igcfg-info-item">
-                    <strong>Ad Account ID</strong>
-                    <span>Abra o <a href="https://adsmanager.facebook.com" target="_blank" rel="noopener noreferrer">Ads Manager</a> &gt; Dropdown no topo &gt; ID abaixo do nome (ex: <code>act_123456789</code>)</span>
-                    <span>Ou: <a href="https://business.facebook.com/settings/ad-accounts" target="_blank" rel="noopener noreferrer">Business Settings &gt; Ad Accounts</a></span>
-                  </div>
-                  <div className="igcfg-info-item">
-                    <strong>Business ID</strong>
-                    <span><a href="https://business.facebook.com/settings/info" target="_blank" rel="noopener noreferrer">Business Settings &gt; Business Info</a> &gt; ID exibido na pagina</span>
-                  </div>
-                  <div className="igcfg-info-item">
-                    <strong>Instagram Account ID</strong>
-                    <span><a href="https://business.facebook.com/settings/instagram-account" target="_blank" rel="noopener noreferrer">Business Settings &gt; Instagram Accounts</a> &gt; ID numerico da conta</span>
-                  </div>
-                  <div className="igcfg-info-item">
-                    <strong>Access Token</strong>
-                    <span><a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a> &gt; Gerar token (permanente, nao expira)</span>
-                  </div>
+              <div className="igcfg-form-grid">
+                <div className="igcfg-field">
+                  <label>Ad Account ID</label>
+                  <input
+                    type="text"
+                    value={adAccountId}
+                    onChange={(e) => setAdAccountId(e.target.value)}
+                    placeholder={adAccountIdDisplay || 'Ex: 123456789 ou act_123456789'}
+                  />
                 </div>
-              )}
-
-              <div className="mads-field">
-                <label>Ad Account ID</label>
-                <input
-                  type="text"
-                  value={adAccountId}
-                  onChange={(e) => setAdAccountId(e.target.value)}
-                  placeholder={adAccountIdDisplay || 'Ex: 123456789 ou act_123456789'}
-                />
-              </div>
-              <div className="mads-field">
-                <label>Business ID</label>
-                <input
-                  type="text"
-                  value={businessId}
-                  onChange={(e) => setBusinessId(e.target.value)}
-                  placeholder={businessIdDisplay || 'ID da pagina do Facebook (opcional)'}
-                />
-              </div>
-
-              <div className="igcfg-edit-divider" />
-
-              <div className="mads-field">
-                <label>Instagram Account ID</label>
-                <input
-                  type="text"
-                  value={configAccountId}
-                  onChange={(e) => setConfigAccountId(e.target.value)}
-                  placeholder="Ex: 17841473285320059"
-                />
-              </div>
-              <div className="mads-field">
-                <label>Access Token</label>
-                <input
-                  type="password"
-                  value={configAccessToken}
-                  onChange={(e) => setConfigAccessToken(e.target.value)}
-                  placeholder="Deixe vazio para manter o atual"
-                />
+                <div className="igcfg-field">
+                  <label>Business ID</label>
+                  <input
+                    type="text"
+                    value={businessId}
+                    onChange={(e) => setBusinessId(e.target.value)}
+                    placeholder={businessIdDisplay || 'ID da pagina do Facebook (opcional)'}
+                  />
+                </div>
+                <div className="igcfg-field">
+                  <label>Instagram Account ID</label>
+                  <input
+                    type="text"
+                    value={configAccountId}
+                    onChange={(e) => setConfigAccountId(e.target.value)}
+                    placeholder="Ex: 17841473285320059"
+                  />
+                </div>
+                <div className="igcfg-field">
+                  <label>Access Token</label>
+                  <input
+                    type="password"
+                    value={configAccessToken}
+                    onChange={(e) => setConfigAccessToken(e.target.value)}
+                    placeholder="Deixe vazio para manter o atual"
+                  />
+                </div>
               </div>
 
-              <div className="mads-config-actions" style={{ marginTop: '0.5rem' }}>
+              <div className="igcfg-actions-row">
                 <button
-                  className="mads-btn primary"
+                  className="igcfg-action-btn igcfg-action-btn--primary"
                   onClick={handleSaveConfig}
                   disabled={savingConfig}
                 >
-                  {savingConfig ? 'Salvando...' : 'Salvar'}
+                  <IconCheck /> {savingConfig ? 'Salvando...' : 'Salvar'}
                 </button>
-                <button className="mads-btn secondary" onClick={handleCancelEdit} disabled={savingConfig}>
+                <button className="igcfg-action-btn igcfg-action-btn--secondary" onClick={handleCancelEdit} disabled={savingConfig}>
                   Cancelar
                 </button>
               </div>
@@ -366,7 +466,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
         {/* Test result */}
         {testResult && (
-          <div className={`mads-test-result ${testResult.success ? 'success' : 'error'}`}>
+          <div className={`igcfg-test-result ${testResult.success ? 'igcfg-test-result--ok' : 'igcfg-test-result--err'}`}>
             {testResult.success ? (
               <>
                 <div className="ig-test-profile">
@@ -383,9 +483,9 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                   </div>
                 </div>
                 {testResult.ads_account && (
-                  <div className="igcfg-ads-test">
-                    <strong>Meta Ads OK</strong>
-                    <div className="mads-test-details">
+                  <div className="igcfg-test-ads">
+                    <div className="igcfg-test-ads-badge">Meta Ads OK</div>
+                    <div className="igcfg-test-ads-details">
                       <span>Conta: {testResult.ads_account.name}</span>
                       <span>Moeda: {testResult.ads_account.currency}</span>
                       <span>Timezone: {testResult.ads_account.timezone_name}</span>
@@ -394,9 +494,9 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                   </div>
                 )}
                 {testResult.ads_account_error && (
-                  <div className="igcfg-ads-test error">
-                    <strong>Meta Ads: erro</strong>
-                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.8rem' }}>
+                  <div className="igcfg-test-ads igcfg-test-ads--err">
+                    <div className="igcfg-test-ads-badge igcfg-test-ads-badge--err">Meta Ads: erro</div>
+                    <p className="igcfg-test-ads-error">
                       {typeof testResult.ads_account_error === 'string'
                         ? testResult.ads_account_error
                         : JSON.stringify(testResult.ads_account_error)}
@@ -407,7 +507,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
             ) : (
               <div>
                 <strong>Falha na conexao</strong>
-                <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', opacity: 0.8 }}>
+                <p className="igcfg-test-ads-error">
                   {typeof testResult.error === 'string' ? testResult.error : JSON.stringify(testResult.error)}
                 </p>
               </div>
@@ -417,8 +517,16 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
         {/* Feed */}
         {feed.length > 0 && (
-          <div className="mads-config-section">
-            <h3>Feed recente ({feed.length} posts)</h3>
+          <div className="igcfg-section">
+            <div className="igcfg-section-header">
+              <div className="igcfg-section-icon igcfg-section-icon--purple">
+                <IconGrid />
+              </div>
+              <div>
+                <h3 className="igcfg-section-title">Feed recente</h3>
+                <p className="igcfg-section-sub">{feed.length} posts</p>
+              </div>
+            </div>
             <div className="ig-feed-grid">
               {feed.map((post) => (
                 <a
@@ -454,55 +562,73 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
         {/* Budget Alerts */}
         {adAccountIdDisplay && (
-          <div className="mads-config-section">
-            <h3>Alertas de Orcamento</h3>
-            <form onSubmit={handleAddAlert} className="mads-alert-form">
-              <select value={alertType} onChange={e => setAlertType(e.target.value)}>
-                <option value="daily_spend">Gasto Diario</option>
-                <option value="total_spend">Gasto Total (30d)</option>
-              </select>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={alertThreshold}
-                onChange={e => setAlertThreshold(e.target.value)}
-                placeholder="Limite (R$)"
-              />
-              <input
-                type="text"
-                value={alertCampaignId}
-                onChange={e => setAlertCampaignId(e.target.value)}
-                placeholder="Campaign ID (vazio = conta)"
-              />
-              <button type="submit" className="mads-btn primary small">Adicionar</button>
+          <div className="igcfg-section">
+            <div className="igcfg-section-header">
+              <div className="igcfg-section-icon igcfg-section-icon--yellow">
+                <IconBell />
+              </div>
+              <div>
+                <h3 className="igcfg-section-title">Alertas de Orcamento</h3>
+                <p className="igcfg-section-sub">Receba avisos quando o gasto atingir o limite</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleAddAlert} className="igcfg-alert-form">
+              <div className="igcfg-alert-form-fields">
+                <select value={alertType} onChange={e => setAlertType(e.target.value)} className="igcfg-select">
+                  <option value="daily_spend">Gasto Diario</option>
+                  <option value="total_spend">Gasto Total (30d)</option>
+                </select>
+                <div className="igcfg-field-inline">
+                  <span className="igcfg-field-prefix">R$</span>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={alertThreshold}
+                    onChange={e => setAlertThreshold(e.target.value)}
+                    placeholder="Limite"
+                  />
+                </div>
+                <input
+                  type="text"
+                  value={alertCampaignId}
+                  onChange={e => setAlertCampaignId(e.target.value)}
+                  placeholder="Campaign ID (vazio = conta)"
+                  className="igcfg-alert-campaign-input"
+                />
+              </div>
+              <button type="submit" className="igcfg-action-btn igcfg-action-btn--primary igcfg-action-btn--sm">
+                <IconPlus /> Adicionar
+              </button>
             </form>
 
             {alerts.length > 0 && (
-              <div className="mads-alerts-list">
+              <div className="igcfg-alerts-list">
                 {alerts.map(a => (
-                  <div key={a.id} className={`mads-alert-item ${a.active ? '' : 'inactive'}`}>
-                    <div className="mads-alert-info">
-                      <span className="mads-alert-type">
+                  <div key={a.id} className={`igcfg-alert-item ${a.active ? '' : 'igcfg-alert-item--off'}`}>
+                    <div className="igcfg-alert-info">
+                      <span className="igcfg-alert-type-badge">
                         {a.alert_type === 'daily_spend' ? 'Diario' : 'Total 30d'}
                       </span>
-                      <span className="mads-alert-threshold">R$ {a.threshold.toFixed(2)}</span>
-                      {a.campaign_id && <span className="mads-alert-campaign">Camp: {a.campaign_id}</span>}
+                      <span className="igcfg-alert-threshold">R$ {a.threshold.toFixed(2)}</span>
+                      {a.campaign_id && <span className="igcfg-alert-campaign">Camp: {a.campaign_id}</span>}
                       {a.last_triggered && (
-                        <span className="mads-alert-triggered">
+                        <span className="igcfg-alert-triggered">
                           Disparado: {new Date(a.last_triggered).toLocaleDateString('pt-BR')}
                         </span>
                       )}
                     </div>
-                    <div className="mads-alert-actions">
+                    <div className="igcfg-alert-actions">
                       <button
-                        className={`mads-btn-text ${a.active ? '' : 'success'}`}
+                        className={`igcfg-alert-toggle-btn ${a.active ? 'igcfg-alert-toggle-btn--on' : 'igcfg-alert-toggle-btn--off'}`}
                         onClick={() => handleToggleAlert(a)}
+                        title={a.active ? 'Desativar' : 'Ativar'}
                       >
-                        {a.active ? 'Desativar' : 'Ativar'}
+                        <IconToggle active={a.active} />
                       </button>
-                      <button className="mads-btn-text danger" onClick={() => handleDeleteAlert(a.id)}>
-                        Excluir
+                      <button className="igcfg-alert-delete-btn" onClick={() => handleDeleteAlert(a.id)} title="Excluir">
+                        <IconTrash />
                       </button>
                     </div>
                   </div>
@@ -515,149 +641,149 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     );
   }
 
-  // ─── Not configured: full setup form ───
+  // ─── NOT CONFIGURED STATE ───
   return (
     <div className="igcfg">
-      <div className="mads-config-section">
-        <h3>Configurar credenciais</h3>
-        <p className="mads-config-hint">
-          Necessario: <code>instagram_basic</code>, <code>instagram_content_publish</code>.
-          Para Meta Ads, tambem: <code>ads_management</code>, <code>ads_read</code>.
-          Use o mesmo token do Meta Business Suite para ambos.
-        </p>
+      {/* Setup form */}
+      <div className="igcfg-section">
+        <div className="igcfg-section-header">
+          <div className="igcfg-section-icon igcfg-section-icon--purple">
+            <IconKey />
+          </div>
+          <div>
+            <h3 className="igcfg-section-title">Configurar credenciais</h3>
+            <p className="igcfg-section-sub">
+              Necessario: <code>instagram_basic</code>, <code>instagram_content_publish</code>.
+              Para Meta Ads: <code>ads_management</code>, <code>ads_read</code>.
+            </p>
+          </div>
+        </div>
 
-        <div className="mads-config-form">
-          <button
-            type="button"
-            className="igcfg-info-toggle"
-            onClick={() => setShowInfo(!showInfo)}
-          >
-            {showInfo ? '▾' : '▸'} Onde encontrar cada ID?
-          </button>
+        <div className="igcfg-edit-form">
+          {renderInfoBox()}
 
-          {showInfo && (
-            <div className="igcfg-info-box">
-              <div className="igcfg-info-item">
-                <strong>Instagram Account ID</strong>
-                <span><a href="https://business.facebook.com/settings/instagram-account" target="_blank" rel="noopener noreferrer">Business Settings &gt; Instagram Accounts</a> &gt; ID numerico da conta</span>
-              </div>
-              <div className="igcfg-info-item">
-                <strong>Access Token</strong>
-                <span><a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a> &gt; Gerar token (permanente, nao expira)</span>
-              </div>
-              <div className="igcfg-info-item">
-                <strong>Ad Account ID</strong>
-                <span>Abra o <a href="https://adsmanager.facebook.com" target="_blank" rel="noopener noreferrer">Ads Manager</a> &gt; Dropdown no topo &gt; ID abaixo do nome (ex: <code>act_123456789</code>)</span>
-                <span>Ou: <a href="https://business.facebook.com/settings/ad-accounts" target="_blank" rel="noopener noreferrer">Business Settings &gt; Ad Accounts</a></span>
-              </div>
-              <div className="igcfg-info-item">
-                <strong>Business ID</strong>
-                <span><a href="https://business.facebook.com/settings/info" target="_blank" rel="noopener noreferrer">Business Settings &gt; Business Info</a> &gt; ID exibido na pagina</span>
-              </div>
+          <div className="igcfg-form-grid">
+            <div className="igcfg-field">
+              <label>Instagram Account ID</label>
+              <input
+                type="text"
+                value={configAccountId}
+                onChange={(e) => setConfigAccountId(e.target.value)}
+                placeholder="Ex: 17841473285320059"
+              />
             </div>
-          )}
-
-          <div className="mads-field">
-            <label>Instagram Account ID</label>
-            <input
-              type="text"
-              value={configAccountId}
-              onChange={(e) => setConfigAccountId(e.target.value)}
-              placeholder="Ex: 17841473285320059"
-            />
-          </div>
-          <div className="mads-field">
-            <label>Access Token</label>
-            <input
-              type="password"
-              value={configAccessToken}
-              onChange={(e) => setConfigAccessToken(e.target.value)}
-              placeholder="Token do Meta Business Suite"
-            />
-          </div>
-
-          <div className="igcfg-edit-divider" />
-
-          <div className="mads-field">
-            <label>Ad Account ID (opcional)</label>
-            <input
-              type="text"
-              value={adAccountId}
-              onChange={(e) => setAdAccountId(e.target.value)}
-              placeholder="Ex: 123456789 ou act_123456789"
-            />
-          </div>
-          <div className="mads-field">
-            <label>Business ID (opcional)</label>
-            <input
-              type="text"
-              value={businessId}
-              onChange={(e) => setBusinessId(e.target.value)}
-              placeholder="ID da pagina do Facebook"
-            />
+            <div className="igcfg-field">
+              <label>Access Token</label>
+              <input
+                type="password"
+                value={configAccessToken}
+                onChange={(e) => setConfigAccessToken(e.target.value)}
+                placeholder="Token do Meta Business Suite"
+              />
+            </div>
+            <div className="igcfg-field">
+              <label>Ad Account ID (opcional)</label>
+              <input
+                type="text"
+                value={adAccountId}
+                onChange={(e) => setAdAccountId(e.target.value)}
+                placeholder="Ex: 123456789 ou act_123456789"
+              />
+            </div>
+            <div className="igcfg-field">
+              <label>Business ID (opcional)</label>
+              <input
+                type="text"
+                value={businessId}
+                onChange={(e) => setBusinessId(e.target.value)}
+                placeholder="ID da pagina do Facebook"
+              />
+            </div>
           </div>
 
           <button
-            className="mads-btn primary"
+            className="igcfg-action-btn igcfg-action-btn--primary"
             onClick={handleSaveConfig}
             disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
           >
-            {savingConfig ? 'Salvando...' : 'Salvar configuracao'}
+            <IconCheck /> {savingConfig ? 'Salvando...' : 'Salvar configuracao'}
           </button>
         </div>
       </div>
 
-      <div className="mads-config-section">
-        <h3>Como configurar</h3>
+      {/* How-to guide */}
+      <div className="igcfg-section">
+        <div className="igcfg-section-header">
+          <div className="igcfg-section-icon igcfg-section-icon--blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </div>
+          <div>
+            <h3 className="igcfg-section-title">Como configurar</h3>
+            <p className="igcfg-section-sub">Passo a passo para conectar sua conta</p>
+          </div>
+        </div>
 
-        <h4 style={{ margin: '0.75rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
-          1. Criar o App (se ainda nao tiver)
-        </h4>
-        <ol className="igcfg-steps-list">
-          <li>Acesse <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer">developers.facebook.com/apps</a></li>
-          <li>Crie um App do tipo <strong>Business</strong></li>
-          <li>Adicione o produto <strong>API do Instagram com login do Instagram</strong></li>
-        </ol>
+        <div className="igcfg-guide">
+          <div className="igcfg-guide-step">
+            <div className="igcfg-guide-step-num">1</div>
+            <div className="igcfg-guide-step-content">
+              <h4>Criar o App (se ainda nao tiver)</h4>
+              <ol className="igcfg-steps-list">
+                <li>Acesse <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer">developers.facebook.com/apps</a></li>
+                <li>Crie um App do tipo <strong>Business</strong></li>
+                <li>Adicione o produto <strong>API do Instagram com login do Instagram</strong></li>
+              </ol>
+            </div>
+          </div>
 
-        <h4 style={{ margin: '1rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
-          2. Gerar Token permanente (nao expira)
-        </h4>
-        <ol className="igcfg-steps-list">
-          <li>Acesse <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a></li>
-          <li>Crie um <strong>System User</strong> (tipo Admin) ou use um existente</li>
-          <li>Clique em <strong>Adicionar ativos</strong> e atribua:
-            <ul style={{ margin: '0.25rem 0', paddingLeft: '1.25rem', listStyle: 'disc' }}>
-              <li>Sua <strong>Pagina do Facebook</strong></li>
-              <li>Sua <strong>Conta do Instagram</strong></li>
-              <li>Sua <strong>Conta de anuncios</strong> (se usar Meta Ads)</li>
-              <li>Seu <strong>App</strong></li>
-            </ul>
-          </li>
-          <li>Clique em <strong>Gerar token</strong>, selecione seu App</li>
-          <li>Marque as permissoes:
-            <ul style={{ margin: '0.25rem 0', paddingLeft: '1.25rem', listStyle: 'disc' }}>
-              <li><code>instagram_basic</code></li>
-              <li><code>instagram_content_publish</code></li>
-              <li><code>instagram_manage_comments</code></li>
-              <li><code>instagram_manage_messages</code></li>
-              <li><code>pages_show_list</code></li>
-              <li><code>pages_read_engagement</code></li>
-              <li>Para Meta Ads: <code>ads_management</code>, <code>ads_read</code></li>
-            </ul>
-          </li>
-          <li>Copie o token gerado — <strong>ele nao expira</strong></li>
-        </ol>
+          <div className="igcfg-guide-step">
+            <div className="igcfg-guide-step-num">2</div>
+            <div className="igcfg-guide-step-content">
+              <h4>Gerar Token permanente (nao expira)</h4>
+              <ol className="igcfg-steps-list">
+                <li>Acesse <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a></li>
+                <li>Crie um <strong>System User</strong> (tipo Admin) ou use um existente</li>
+                <li>Clique em <strong>Adicionar ativos</strong> e atribua:
+                  <ul className="igcfg-steps-sublist">
+                    <li>Sua <strong>Pagina do Facebook</strong></li>
+                    <li>Sua <strong>Conta do Instagram</strong></li>
+                    <li>Sua <strong>Conta de anuncios</strong> (se usar Meta Ads)</li>
+                    <li>Seu <strong>App</strong></li>
+                  </ul>
+                </li>
+                <li>Clique em <strong>Gerar token</strong>, selecione seu App</li>
+                <li>Marque as permissoes:
+                  <ul className="igcfg-steps-sublist">
+                    <li><code>instagram_basic</code></li>
+                    <li><code>instagram_content_publish</code></li>
+                    <li><code>instagram_manage_comments</code></li>
+                    <li><code>instagram_manage_messages</code></li>
+                    <li><code>pages_show_list</code></li>
+                    <li><code>pages_read_engagement</code></li>
+                    <li>Para Meta Ads: <code>ads_management</code>, <code>ads_read</code></li>
+                  </ul>
+                </li>
+                <li>Copie o token gerado &mdash; <strong>ele nao expira</strong></li>
+              </ol>
+            </div>
+          </div>
 
-        <h4 style={{ margin: '1rem 0 0.5rem', fontSize: '0.9rem', color: '#a1a1aa' }}>
-          3. Encontrar o Instagram Account ID
-        </h4>
-        <ol className="igcfg-steps-list">
-          <li>Acesse <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a></li>
-          <li>Cole seu token e faca a requisicao: <code>me/accounts</code></li>
-          <li>Pegue o <strong>id</strong> da sua Pagina</li>
-          <li>Faca outra requisicao: <code>{'{page_id}'}?fields=instagram_business_account</code></li>
-          <li>O <strong>id</strong> retornado e o seu Instagram Account ID</li>
-        </ol>
+          <div className="igcfg-guide-step">
+            <div className="igcfg-guide-step-num">3</div>
+            <div className="igcfg-guide-step-content">
+              <h4>Encontrar o Instagram Account ID</h4>
+              <ol className="igcfg-steps-list">
+                <li>Acesse <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a></li>
+                <li>Cole seu token e faca a requisicao: <code>me/accounts</code></li>
+                <li>Pegue o <strong>id</strong> da sua Pagina</li>
+                <li>Faca outra requisicao: <code>{'{page_id}'}?fields=instagram_business_account</code></li>
+                <li>O <strong>id</strong> retornado e o seu Instagram Account ID</li>
+              </ol>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

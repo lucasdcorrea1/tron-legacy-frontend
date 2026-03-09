@@ -18,7 +18,7 @@
   min-width: 320px;
   max-width: 420px;
   padding: 1rem;
-  background: #18181b;
+  background: #1a1d23;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow:
@@ -161,15 +161,15 @@
 }
 
 .toast-info {
-  border-left: 3px solid #a855f7;
+  border-left: 3px solid #2563eb;
 }
 
 .toast-info .toast-icon {
-  color: #a855f7;
+  color: #2563eb;
 }
 
 .toast-info .toast-progress {
-  background: linear-gradient(90deg, #a855f7, #6366f1);
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
 }
 
 /* Hover pause animation */

@@ -43,7 +43,7 @@ export default function Profile() {
   const [currency, setCurrency] = useState('BRL');
   const [themeMode, setThemeMode] = useState('light');
   const [primaryColor, setPrimaryColor] = useState('#0ea5e9');
-  const [accentColor, setAccentColor] = useState('#6366f1');
+  const [accentColor, setAccentColor] = useState('#3b82f6');
 
   useEffect(() => {
     fetchProfile();
@@ -84,7 +84,7 @@ export default function Profile() {
         if (data.settings.theme) {
           setThemeMode(data.settings.theme.mode || 'light');
           setPrimaryColor(data.settings.theme.primary_color || '#0ea5e9');
-          setAccentColor(data.settings.theme.accent_color || '#6366f1');
+          setAccentColor(data.settings.theme.accent_color || '#3b82f6');
         }
       }
     } catch (err) {

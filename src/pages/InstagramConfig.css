@@ -1,3 +1,5 @@
+/* Instagram Config — Premium Dark UI */
+
 .igcfg {
   display: flex;
   flex-direction: column;
@@ -9,81 +11,319 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  padding: 3rem 1rem;
-  color: #a1a1aa;
+  padding: 4rem 1rem;
+  color: #71717a;
   font-size: 0.9rem;
 }
 
-.igcfg-status-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* ── Sections ── */
+.igcfg-section {
+  position: relative;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.igcfg-badge {
+.igcfg-section:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.igcfg-section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.igcfg-section-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.igcfg-section-icon--green {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+}
+
+.igcfg-section-icon--purple {
+  background: rgba(37, 99, 235, 0.1);
+  color: #60a5fa;
+}
+
+.igcfg-section-icon--yellow {
+  background: rgba(250, 204, 21, 0.1);
+  color: #facc15;
+}
+
+.igcfg-section-icon--blue {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+}
+
+.igcfg-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f4f4f5;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.igcfg-section-sub {
+  color: #71717a;
+  font-size: 0.8rem;
+  margin: 0.15rem 0 0;
+  line-height: 1.5;
+}
+
+.igcfg-section-sub code {
+  background: rgba(167, 139, 250, 0.1);
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #a78bfa;
+}
+
+.igcfg-header-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
+  padding: 0.45rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+  color: #a1a1aa;
   font-size: 0.78rem;
   font-weight: 600;
-  width: fit-content;
-  letter-spacing: 0.01em;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
-.igcfg-badge-ok {
+.igcfg-header-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.25);
+  color: #93c5fd;
+}
+
+/* ── Status Strip ── */
+.igcfg-status-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.igcfg-connected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
   background: rgba(34, 197, 94, 0.1);
   color: #4ade80;
   border: 1px solid rgba(34, 197, 94, 0.15);
+  letter-spacing: 0.02em;
 }
 
-.igcfg-badge-off {
-  background: rgba(239, 68, 68, 0.1);
+.igcfg-connected-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+  animation: igcfg-pulse 2s ease-in-out infinite;
+}
+
+@keyframes igcfg-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.igcfg-source-badge {
+  font-size: 0.72rem;
+  color: #52525b;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.25rem 0.65rem;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ── Detail Grid ── */
+.igcfg-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.igcfg-detail-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.igcfg-detail-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #52525b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.igcfg-detail-value {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  word-break: break-all;
+}
+
+.igcfg-detail-masked {
+  color: #3f3f46;
+  letter-spacing: 0.15em;
+}
+
+/* ── Actions Row ── */
+.igcfg-actions-row {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.igcfg-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.55rem 1.1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.igcfg-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.igcfg-action-btn--primary {
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
+.igcfg-action-btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+}
+
+.igcfg-action-btn--secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #d4d4d8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.igcfg-action-btn--secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.igcfg-action-btn--danger {
+  background: rgba(239, 68, 68, 0.06);
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.12);
 }
 
-.igcfg-detail-row {
+.igcfg-action-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+
+.igcfg-action-btn--sm {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.78rem;
+}
+
+.igcfg-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Edit Form ── */
+.igcfg-edit-form {
   display: flex;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.igcfg-detail-label {
+.igcfg-edit-hint {
   color: #71717a;
-  font-weight: 600;
+  font-size: 0.82rem;
+  margin: 0;
+  line-height: 1.5;
 }
 
-.igcfg-detail-value {
-  color: #e4e4e7;
+.igcfg-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
 }
 
-.igcfg-meta-ads-section {
-  margin-top: 0.5rem;
-  padding-top: 1rem;
-  border-top: 1px solid #27272a;
+.igcfg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.igcfg-meta-ads-section h4 {
-  font-size: 0.95rem;
+.igcfg-field label {
+  font-size: 0.78rem;
   font-weight: 700;
-  color: #e4e4e7;
-  margin: 0 0 0.5rem;
+  color: #a1a1aa;
+  letter-spacing: 0.01em;
 }
 
-.igcfg-ads-test {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid rgba(255,255,255,0.1);
+.igcfg-field input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #f4f4f5;
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
-.igcfg-ads-test.error {
-  color: #fca5a5;
+.igcfg-field input:focus {
+  border-color: rgba(37, 99, 235, 0.5);
 }
 
-/* Info toggle & box */
+.igcfg-field input::placeholder {
+  color: #3f3f46;
+}
+
+/* ── Info Box ── */
 .igcfg-info-toggle {
   background: none;
   border: none;
@@ -91,11 +331,13 @@
   font-size: 0.82rem;
   cursor: pointer;
   padding: 0;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
   transition: color 0.2s;
+  font-family: inherit;
+  font-weight: 600;
 }
 
 .igcfg-info-toggle:hover {
@@ -103,15 +345,21 @@
 }
 
 .igcfg-info-box {
-  background: rgba(168, 85, 247, 0.03);
-  border: 1px solid rgba(168, 85, 247, 0.08);
+  background: rgba(37, 99, 235, 0.03);
+  border: 1px solid rgba(37, 99, 235, 0.08);
   border-left: 3px solid #a78bfa;
   border-radius: 12px;
-  padding: 0.85rem 1.1rem;
-  margin-bottom: 1rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.5rem;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
+  animation: igcfg-slide-down 0.2s ease-out;
+}
+
+@keyframes igcfg-slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .igcfg-info-item {
@@ -136,6 +384,9 @@
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .igcfg-info-item a:hover {
@@ -144,28 +395,425 @@
 }
 
 .igcfg-info-item code {
-  background: #27272a;
+  background: rgba(167, 139, 250, 0.1);
   padding: 0.1em 0.4em;
   border-radius: 4px;
   font-size: 0.75rem;
   color: #a78bfa;
+  display: inline;
+}
+
+/* ── Test Result ── */
+.igcfg-test-result {
+  border-radius: 14px;
+  padding: 1.25rem;
+  font-size: 0.85rem;
+  border: 1px solid;
+}
+
+.igcfg-test-result--ok {
+  background: rgba(34, 197, 94, 0.05);
+  border-color: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.igcfg-test-result--err {
+  background: rgba(239, 68, 68, 0.05);
+  border-color: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.igcfg-test-ads {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.igcfg-test-ads--err {
+  border-top-color: rgba(239, 68, 68, 0.15);
+}
+
+.igcfg-test-ads-badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  margin-bottom: 0.5rem;
+}
+
+.igcfg-test-ads-badge--err {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+.igcfg-test-ads-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  font-size: 0.82rem;
+}
+
+.igcfg-test-ads-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* ── Alerts ── */
+.igcfg-alert-form {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.igcfg-alert-form-fields {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.igcfg-select {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #d4d4d8;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  min-width: 140px;
+}
+
+.igcfg-select option {
+  background: #20242b;
+  color: #fafafa;
+}
+
+.igcfg-field-inline {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.igcfg-field-inline:focus-within {
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
+.igcfg-field-prefix {
+  padding: 0 0 0 0.75rem;
+  color: #52525b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.igcfg-field-inline input {
+  width: 100px;
+  padding: 0.5rem 0.75rem 0.5rem 0.35rem;
+  background: transparent;
+  border: none;
+  color: #f4f4f5;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.igcfg-alert-campaign-input {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #f4f4f5;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.igcfg-alert-campaign-input:focus {
+  border-color: rgba(37, 99, 235, 0.5);
+}
+
+.igcfg-alert-campaign-input::placeholder {
+  color: #3f3f46;
+}
+
+.igcfg-alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.igcfg-alert-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  transition: all 0.2s;
+}
+
+.igcfg-alert-item:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.igcfg-alert-item--off {
+  opacity: 0.4;
+}
+
+.igcfg-alert-info {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: #a1a1aa;
+}
+
+.igcfg-alert-type-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.15rem 0.55rem;
+  border-radius: 5px;
+  background: rgba(37, 99, 235, 0.1);
+  color: #60a5fa;
+}
+
+.igcfg-alert-threshold {
+  color: #fbbf24;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.igcfg-alert-campaign {
+  font-size: 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  color: #71717a;
+}
+
+.igcfg-alert-triggered {
+  font-size: 0.72rem;
+  color: #52525b;
+}
+
+.igcfg-alert-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.igcfg-alert-toggle-btn,
+.igcfg-alert-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.igcfg-alert-toggle-btn--on {
+  color: #4ade80;
+}
+
+.igcfg-alert-toggle-btn--on:hover {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.25);
+  color: #fbbf24;
+}
+
+.igcfg-alert-toggle-btn--off {
+  color: #52525b;
+}
+
+.igcfg-alert-toggle-btn--off:hover {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.25);
+  color: #4ade80;
+}
+
+.igcfg-alert-delete-btn {
+  color: #52525b;
+}
+
+.igcfg-alert-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+/* ── Guide ── */
+.igcfg-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.igcfg-guide-step {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.igcfg-guide-step:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.igcfg-guide-step:first-child {
+  padding-top: 0;
+}
+
+.igcfg-guide-step-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+  color: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.igcfg-guide-step-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.igcfg-guide-step-content h4 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e4e4e7;
+  margin: 0.15rem 0 0.6rem;
 }
 
 .igcfg-steps-list {
   padding-left: 1.25rem;
   color: #a1a1aa;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   line-height: 1.8;
+  margin: 0;
 }
 
 .igcfg-steps-list code {
-  background: #27272a;
+  background: rgba(167, 139, 250, 0.1);
   padding: 0.1em 0.4em;
   border-radius: 4px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #a78bfa;
 }
 
 .igcfg-steps-list strong {
   color: #e4e4e7;
+}
+
+.igcfg-steps-list a {
+  color: #a78bfa;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.igcfg-steps-list a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+.igcfg-steps-sublist {
+  margin: 0.25rem 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .igcfg-section {
+    padding: 1.25rem;
+  }
+
+  .igcfg-section-header {
+    flex-wrap: wrap;
+  }
+
+  .igcfg-header-btn {
+    margin-left: 0;
+  }
+
+  .igcfg-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .igcfg-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .igcfg-actions-row {
+    flex-direction: column;
+  }
+
+  .igcfg-action-btn {
+    justify-content: center;
+  }
+
+  .igcfg-alert-form {
+    flex-direction: column;
+  }
+
+  .igcfg-alert-form-fields {
+    flex-direction: column;
+  }
+
+  .igcfg-select {
+    width: 100%;
+  }
+
+  .igcfg-alert-campaign-input {
+    width: 100%;
+  }
+
+  .igcfg-alert-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .igcfg-guide-step {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }

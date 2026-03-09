@@ -279,6 +279,10 @@ export const users = {
   updateRole: (id, role) => api.put(`/api/v1/users/${id}/role`, { role }),
 };
 
+export const platform = {
+  orgsWithMembers: () => api.get('/api/v1/platform/orgs-with-members'),
+};
+
 export const auth = {
   login: (credentials) => api.post('/api/v1/auth/login', credentials),
   register: (data) => api.post('/api/v1/auth/register', data),
@@ -568,6 +572,37 @@ export const autoBoost = {
     const qs = query.toString();
     return api.get(`/api/v1/admin/auto-boost/logs${qs ? `?${qs}` : ''}`);
   },
+};
+
+// ── Organizations ──────────────────────────────────────────────────
+export const orgs = {
+  create: (data) => api.post('/api/v1/orgs', data),
+  list: () => api.get('/api/v1/orgs'),
+  getCurrent: () => api.get('/api/v1/orgs/current'),
+  update: (data) => api.put('/api/v1/orgs/current', data),
+  delete: () => api.delete('/api/v1/orgs/current'),
+  switch: async (orgId) => {
+    const data = await api.post(`/api/v1/orgs/switch/${orgId}`);
+    // Switch returns a new JWT with the org_id embedded
+    if (data.token) localStorage.setItem('token', data.token);
+    if (data.refresh_token) localStorage.setItem('refreshToken', data.refresh_token);
+    return data;
+  },
+
+  // Members
+  listMembers: () => api.get('/api/v1/orgs/current/members'),
+  inviteMember: (data) => api.post('/api/v1/orgs/current/invitations', data),
+  updateMemberRole: (uid, role) => api.put(`/api/v1/orgs/current/members/${uid}/role`, { org_role: role }),
+  removeMember: (uid) => api.delete(`/api/v1/orgs/current/members/${uid}`),
+  acceptInvitation: (token) => api.post(`/api/v1/invitations/${token}/accept`),
+};
+
+// ── Subscription ───────────────────────────────────────────────────
+export const subscription = {
+  get: () => api.get('/api/v1/orgs/current/subscription'),
+  getUsage: () => api.get('/api/v1/orgs/current/usage'),
+  checkout: (data) => api.post('/api/v1/orgs/current/subscription/checkout', data),
+  cancel: () => api.post('/api/v1/orgs/current/subscription/cancel'),
 };
 
 export const profile = {

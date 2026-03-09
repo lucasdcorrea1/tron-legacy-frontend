@@ -1,5 +1,5 @@
 .cta-analytics {
-  max-width: 960px;
+  width: 100%;
 }
 
 .cta-analytics-header {
@@ -42,14 +42,14 @@
 }
 
 .cta-filter-btn:hover {
-  border-color: rgba(99, 102, 241, 0.3);
+  border-color: rgba(59, 130, 246, 0.3);
   color: #e4e4e7;
 }
 
 .cta-filter-btn.active {
-  background: rgba(99, 102, 241, 0.15);
-  border-color: rgba(99, 102, 241, 0.4);
-  color: #818cf8;
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.4);
+  color: #93c5fd;
 }
 
 .cta-loading {
@@ -92,7 +92,7 @@
 }
 
 .cta-kpi-highlight {
-  color: #818cf8;
+  color: #93c5fd;
 }
 
 /* Sections */
@@ -147,12 +147,12 @@
   max-width: 32px;
   min-height: 2px;
   border-radius: 3px 3px 0 0;
-  background: linear-gradient(180deg, #818cf8 0%, #6366f1 100%);
+  background: linear-gradient(180deg, #93c5fd 0%, #3b82f6 100%);
   transition: height 0.3s ease;
 }
 
 .cta-chart-col:hover .cta-chart-bar {
-  background: linear-gradient(180deg, #a5b4fc 0%, #818cf8 100%);
+  background: linear-gradient(180deg, #a5b4fc 0%, #93c5fd 100%);
 }
 
 .cta-chart-label {
@@ -205,23 +205,23 @@
 }
 
 .cta-table-title a:hover {
-  color: #818cf8;
+  color: #93c5fd;
 }
 
 .cta-table-clicks {
   font-weight: 700;
-  color: #818cf8;
+  color: #93c5fd;
 }
 
 .cta-rate-badge {
   display: inline-block;
   padding: 0.125rem 0.5rem;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   border-radius: 100px;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #818cf8;
+  color: #93c5fd;
 }
 
 /* Recent Clicks List */
@@ -250,7 +250,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #6366f1;
+  background: #3b82f6;
   flex-shrink: 0;
 }
 
@@ -265,7 +265,7 @@
 .cta-recent-cta {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #818cf8;
+  color: #93c5fd;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }

@@ -1,7 +1,7 @@
 /* Instagram Page — Premium Commercial UI */
 
 .ig-unified-page {
-  max-width: 960px;
+  max-width: 100%;
 }
 
 /* ── Premium Header ── */
@@ -137,8 +137,8 @@
 
 .ig-nav-item.active {
   color: #e9d5ff;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.18) 0%, rgba(99, 102, 241, 0.12) 100%);
-  box-shadow: 0 1px 4px rgba(168, 85, 247, 0.15);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.18) 0%, rgba(59, 130, 246, 0.12) 100%);
+  box-shadow: 0 1px 4px rgba(37, 99, 235, 0.15);
 }
 
 .ig-nav-item svg {
@@ -186,8 +186,8 @@
   width: 100%;
   padding: 1.15rem 1.35rem;
   margin-bottom: 1.75rem;
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(99, 102, 241, 0.07) 100%);
-  border: 1px solid rgba(168, 85, 247, 0.2);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(59, 130, 246, 0.07) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.2);
   border-radius: 16px;
   cursor: pointer;
   font-family: inherit;
@@ -205,34 +205,34 @@
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #a855f7, #6366f1, #a855f7);
+  background: linear-gradient(90deg, #2563eb, #3b82f6, #2563eb);
   opacity: 0.8;
 }
 
 .ig-cta-hero:hover {
-  background: linear-gradient(135deg, rgba(168, 85, 247, 0.16) 0%, rgba(99, 102, 241, 0.1) 100%);
-  border-color: rgba(168, 85, 247, 0.35);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16) 0%, rgba(59, 130, 246, 0.1) 100%);
+  border-color: rgba(37, 99, 235, 0.35);
   transform: translateY(-1px);
-  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.15), 0 0 0 1px rgba(168, 85, 247, 0.08);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.15), 0 0 0 1px rgba(37, 99, 235, 0.08);
 }
 
 .ig-cta-icon {
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #a855f7 0%, #7c3aed 50%, #6366f1 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 50%, #3b82f6 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .ig-cta-hero:hover .ig-cta-icon {
   transform: scale(1.06);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.4);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
 }
 
 .ig-cta-text {
@@ -261,7 +261,7 @@
 }
 
 .ig-cta-hero:hover .ig-cta-arrow {
-  color: #c084fc;
+  color: #60a5fa;
   transform: translateX(3px);
 }
 
@@ -315,7 +315,7 @@
 /* Stat color variants — border top */
 
 .ig-home-stat.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
-.ig-home-stat.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+.ig-home-stat.purple::before { background: linear-gradient(90deg, #2563eb, #60a5fa); }
 .ig-home-stat.pink::before { background: linear-gradient(90deg, #ec4899, #f472b6); }
 .ig-home-stat.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
 .ig-home-stat.green::before { background: linear-gradient(90deg, #22c55e, #4ade80); }
@@ -323,7 +323,7 @@
 /* Stat color variants — icon */
 
 .ig-home-stat.blue .ig-home-stat-icon { color: #60a5fa; background: rgba(59, 130, 246, 0.1); }
-.ig-home-stat.purple .ig-home-stat-icon { color: #c084fc; background: rgba(168, 85, 247, 0.1); }
+.ig-home-stat.purple .ig-home-stat-icon { color: #60a5fa; background: rgba(37, 99, 235, 0.1); }
 .ig-home-stat.pink .ig-home-stat-icon { color: #f472b6; background: rgba(236, 72, 153, 0.1); }
 .ig-home-stat.amber .ig-home-stat-icon { color: #fbbf24; background: rgba(245, 158, 11, 0.1); }
 .ig-home-stat.green .ig-home-stat-icon { color: #4ade80; background: rgba(34, 197, 94, 0.1); }
@@ -331,7 +331,7 @@
 /* Stat color variants — value */
 
 .ig-home-stat.blue .ig-home-stat-value { color: #60a5fa; }
-.ig-home-stat.purple .ig-home-stat-value { color: #c084fc; }
+.ig-home-stat.purple .ig-home-stat-value { color: #60a5fa; }
 .ig-home-stat.pink .ig-home-stat-value { color: #f472b6; }
 .ig-home-stat.amber .ig-home-stat-value { color: #fbbf24; }
 .ig-home-stat.green .ig-home-stat-value { color: #4ade80; }
@@ -384,8 +384,8 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: rgba(168, 85, 247, 0.1);
-  color: #a855f7;
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -440,7 +440,7 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.3), transparent);
+  background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.3), transparent);
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -451,9 +451,9 @@
 
 .ig-home-tool-card:hover {
   background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(168, 85, 247, 0.2);
+  border-color: rgba(37, 99, 235, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(168, 85, 247, 0.05);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(37, 99, 235, 0.05);
 }
 
 .ig-home-tool-icon {
@@ -470,11 +470,11 @@
 /* Tool icon color variants */
 
 .ig-home-tool-icon.agendamento { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
-.ig-home-tool-icon.autoreply { background: rgba(168, 85, 247, 0.1); color: #c084fc; }
+.ig-home-tool-icon.autoreply { background: rgba(37, 99, 235, 0.1); color: #60a5fa; }
 .ig-home-tool-icon.leads { background: rgba(34, 197, 94, 0.1); color: #4ade80; }
 .ig-home-tool-icon.analytics { background: rgba(245, 158, 11, 0.1); color: #fbbf24; }
 .ig-home-tool-icon.campanhas { background: rgba(236, 72, 153, 0.1); color: #f472b6; }
-.ig-home-tool-icon.insights { background: rgba(99, 102, 241, 0.1); color: #818cf8; }
+.ig-home-tool-icon.insights { background: rgba(59, 130, 246, 0.1); color: #93c5fd; }
 .ig-home-tool-icon.autoboost { background: rgba(239, 68, 68, 0.1); color: #f87171; }
 
 .ig-home-tool-card:hover .ig-home-tool-icon {

@@ -1,5 +1,6 @@
 .mads-form-page {
-  max-width: 800px;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .mads-form-header {
@@ -32,7 +33,7 @@
 
 .mads-back-btn:hover {
   color: #f4f4f5;
-  background: #27272a;
+  background: #2d3139;
 }
 
 /* Steps */
@@ -50,8 +51,8 @@
   border-radius: 8px;
   font-size: 0.82rem;
   color: #71717a;
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: #1a1d23;
+  border: 1px solid #2d3139;
   cursor: default;
   flex: 1;
   justify-content: center;
@@ -59,8 +60,8 @@
 
 .mads-step.active {
   color: #f4f4f5;
-  border-color: #6366f1;
-  background: #1e1b4b;
+  border-color: #3b82f6;
+  background: #162044;
 }
 
 .mads-step.done {
@@ -78,12 +79,12 @@
   justify-content: center;
   font-weight: 700;
   font-size: 0.72rem;
-  background: #27272a;
+  background: #2d3139;
   flex-shrink: 0;
 }
 
 .mads-step.active .mads-step-num {
-  background: #6366f1;
+  background: #3b82f6;
   color: white;
 }
 
@@ -104,8 +105,8 @@
 
 /* Form sections */
 .mads-form-section {
-  background: #18181b;
-  border: 1px solid #27272a;
+  background: #1a1d23;
+  border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.5rem;
 }
@@ -119,7 +120,7 @@
 
 .mads-divider {
   border: none;
-  border-top: 1px solid #27272a;
+  border-top: 1px solid #2d3139;
   margin: 1.5rem 0;
 }
 
@@ -140,7 +141,7 @@
 .mads-field textarea {
   width: 100%;
   padding: 0.6rem 0.75rem;
-  background: #09090b;
+  background: #101114;
   border: 1px solid #3f3f46;
   border-radius: 8px;
   color: #f4f4f5;
@@ -154,7 +155,7 @@
 .mads-field input:focus,
 .mads-field select:focus,
 .mads-field textarea:focus {
-  border-color: #6366f1;
+  border-color: #3b82f6;
 }
 
 .mads-field-row {
@@ -177,8 +178,8 @@
 
 .mads-objective-card {
   padding: 0.75rem;
-  background: #09090b;
-  border: 2px solid #27272a;
+  background: #101114;
+  border: 2px solid #2d3139;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.15s;
@@ -189,8 +190,8 @@
 }
 
 .mads-objective-card.selected {
-  border-color: #6366f1;
-  background: #1e1b4b;
+  border-color: #3b82f6;
+  background: #162044;
 }
 
 .mads-objective-card strong {
@@ -223,7 +224,7 @@
 
 .mads-checkbox input {
   width: auto;
-  accent-color: #6366f1;
+  accent-color: #3b82f6;
 }
 
 /* Templates bar */
@@ -239,7 +240,7 @@
 
 .mads-chip {
   padding: 0.25rem 0.65rem;
-  background: #27272a;
+  background: #2d3139;
   border: 1px solid #3f3f46;
   border-radius: 20px;
   color: #e4e4e7;
@@ -264,7 +265,7 @@
   overflow-y: auto;
   border: 1px solid #3f3f46;
   border-radius: 8px;
-  background: #09090b;
+  background: #101114;
   margin-top: 0.25rem;
 }
 
@@ -280,7 +281,7 @@
 }
 
 .mads-search-item:hover {
-  background: #27272a;
+  background: #2d3139;
 }
 
 .mads-audience-size {
@@ -300,8 +301,8 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.2rem 0.5rem;
-  background: #1e1b4b;
-  border: 1px solid #4338ca;
+  background: #162044;
+  border: 1px solid #2563eb;
   border-radius: 20px;
   font-size: 0.78rem;
   color: #c7d2fe;
@@ -325,8 +326,8 @@
 
 .mads-format-btn {
   padding: 0.5rem 1rem;
-  background: #09090b;
-  border: 2px solid #27272a;
+  background: #101114;
+  border: 2px solid #2d3139;
   border-radius: 8px;
   color: #a1a1aa;
   font-size: 0.85rem;
@@ -335,9 +336,9 @@
 }
 
 .mads-format-btn.active {
-  border-color: #6366f1;
+  border-color: #3b82f6;
   color: #f4f4f5;
-  background: #1e1b4b;
+  background: #162044;
 }
 
 /* Dropzone */
@@ -352,7 +353,7 @@
 }
 
 .mads-dropzone:hover {
-  border-color: #6366f1;
+  border-color: #3b82f6;
 }
 
 .mads-image-preview {
@@ -377,8 +378,8 @@
 }
 
 .mads-review-card {
-  background: #09090b;
-  border: 1px solid #27272a;
+  background: #101114;
+  border: 1px solid #2d3139;
   border-radius: 10px;
   padding: 1rem;
 }
@@ -433,7 +434,7 @@
   gap: 0.75rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #27272a;
+  border-top: 1px solid #2d3139;
 }
 
 .mads-form-nav-spacer {
@@ -457,16 +458,16 @@
 }
 
 .mads-btn.primary {
-  background: #6366f1;
+  background: #3b82f6;
   color: white;
 }
 
 .mads-btn.primary:hover:not(:disabled) {
-  background: #4f46e5;
+  background: #1d4ed8;
 }
 
 .mads-btn.secondary {
-  background: #27272a;
+  background: #2d3139;
   color: #e4e4e7;
   border: 1px solid #3f3f46;
 }
@@ -490,6 +491,105 @@
   margin-bottom: 1rem;
 }
 
+/* Posts step */
+.mads-posts-hint {
+  font-size: 0.82rem;
+  color: #71717a;
+  margin: 0 0 1rem;
+}
+
+.mads-posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.mads-post-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #101114;
+  border: 2px solid #2d3139;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.mads-post-item:hover {
+  border-color: #3f3f46;
+}
+
+.mads-post-item.selected {
+  border-color: #3b82f6;
+  background: #162044;
+}
+
+.mads-post-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #3b82f6;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.mads-post-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.mads-post-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.mads-post-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.mads-post-title {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mads-post-meta {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.72rem;
+  color: #52525b;
+  margin-top: 0.2rem;
+}
+
+.mads-post-status {
+  font-weight: 600;
+  color: #71717a;
+}
+
+.mads-post-status.pub {
+  color: #4ade80;
+}
+
+.mads-posts-count {
+  margin-top: 0.75rem;
+  font-size: 0.82rem;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
 @media (max-width: 640px) {
   .mads-field-row {
     flex-direction: column;
@@ -502,5 +602,9 @@
 
   .mads-objectives-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mads-posts-list {
+    max-height: 300px;
   }
 }
