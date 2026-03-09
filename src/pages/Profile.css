@@ -409,6 +409,46 @@
   width: 100%;
 }
 
+/* AI Config */
+.ai-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  font-size: 0.8125rem;
+  color: #a1a1aa;
+  margin-bottom: 1rem;
+}
+
+.ai-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #52525b;
+  flex-shrink: 0;
+}
+
+.ai-status-dot.active {
+  background: #4ade80;
+  box-shadow: 0 0 6px rgba(74, 222, 128, 0.4);
+}
+
+.ai-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.settings-hint {
+  font-size: 0.8125rem;
+  color: #71717a;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .profile-layout {

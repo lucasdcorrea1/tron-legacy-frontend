@@ -552,6 +552,13 @@ export const integratedPublish = {
   delete: (id) => api.delete(`/api/v1/admin/integrated-publish/${id}`),
 };
 
+export const ai = {
+  getConfig: () => api.get('/api/v1/admin/ai/config'),
+  saveConfig: (data) => api.put('/api/v1/admin/ai/config', data),
+  deleteConfig: () => api.delete('/api/v1/admin/ai/config'),
+  generate: (data) => api.post('/api/v1/admin/ai/generate', data),
+};
+
 export const autoBoost = {
   // Rules
   listRules: () => api.get('/api/v1/admin/auto-boost/rules'),

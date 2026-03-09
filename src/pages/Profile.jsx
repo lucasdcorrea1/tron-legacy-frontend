@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import { profile as profileApi, API_URL } from '../services/api';
+import { profile as profileApi, ai as aiApi, API_URL } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Profile.css';
 
@@ -36,6 +36,13 @@ export default function Profile() {
   const [linkedin, setLinkedin] = useState('');
   const [github, setGithub] = useState('');
   const [website, setWebsite] = useState('');
+
+  // AI Config
+  const [aiConfigured, setAiConfigured] = useState(false);
+  const [aiKeyPrefix, setAiKeyPrefix] = useState('');
+  const [aiModel, setAiModel] = useState('claude-sonnet-4-5-20250929');
+  const [aiApiKey, setAiApiKey] = useState('');
+  const [savingAi, setSavingAi] = useState(false);
 
   // Settings
   const [language, setLanguage] = useState('pt-BR');
@@ -86,6 +93,16 @@ export default function Profile() {
           setPrimaryColor(data.settings.theme.primary_color || '#0ea5e9');
           setAccentColor(data.settings.theme.accent_color || '#3b82f6');
         }
+      }
+
+      // Load AI config
+      try {
+        const aiData = await aiApi.getConfig();
+        setAiConfigured(aiData.configured || false);
+        setAiKeyPrefix(aiData.key_prefix || '');
+        if (aiData.model) setAiModel(aiData.model);
+      } catch {
+        // AI config not available, ignore
       }
     } catch (err) {
       toast.error(err.message || 'Erro ao carregar perfil');
@@ -188,6 +205,41 @@ export default function Profile() {
     }
   };
 
+  const handleSaveAIConfig = async (e) => {
+    e.preventDefault();
+    if (!aiApiKey && !aiConfigured) {
+      toast.error('Informe a API key');
+      return;
+    }
+    setSavingAi(true);
+    try {
+      const payload = { model: aiModel };
+      if (aiApiKey) payload.api_key = aiApiKey;
+      const res = await aiApi.saveConfig(payload);
+      setAiConfigured(true);
+      setAiKeyPrefix(res.key_prefix || '');
+      setAiApiKey('');
+      toast.success('Configuracao de IA salva!', 'IA');
+    } catch (err) {
+      toast.error(err.message || 'Erro ao salvar configuracao de IA');
+    } finally {
+      setSavingAi(false);
+    }
+  };
+
+  const handleDeleteAIConfig = async () => {
+    if (!window.confirm('Remover configuracao de IA?')) return;
+    try {
+      await aiApi.deleteConfig();
+      setAiConfigured(false);
+      setAiKeyPrefix('');
+      setAiApiKey('');
+      toast.success('Configuracao de IA removida', 'IA');
+    } catch (err) {
+      toast.error(err.message || 'Erro ao remover configuracao de IA');
+    }
+  };
+
   if (loading) {
     return (
       <AdminLayout>
@@ -278,6 +330,12 @@ export default function Profile() {
                 onClick={() => setActiveTab('settings')}
               >
                 Preferências
+              </button>
+              <button
+                className={`profile-tab ${activeTab === 'ai' ? 'active' : ''}`}
+                onClick={() => setActiveTab('ai')}
+              >
+                IA
               </button>
             </div>
 
@@ -478,6 +536,65 @@ export default function Profile() {
                 <button type="submit" className="btn-primary" disabled={saving}>
                   {saving ? 'Salvando...' : 'Salvar Preferências'}
                 </button>
+              </form>
+            )}
+
+            {/* AI Tab */}
+            {activeTab === 'ai' && (
+              <form onSubmit={handleSaveAIConfig} className="profile-form">
+                <div className="settings-section">
+                  <h4>Inteligencia Artificial (Claude)</h4>
+                  <p className="settings-hint">
+                    Configure sua API key da Anthropic para usar funcionalidades de IA no wizard de publicacao.
+                  </p>
+
+                  <div className="ai-status-badge">
+                    <span className={`ai-status-dot ${aiConfigured ? 'active' : ''}`} />
+                    {aiConfigured ? (
+                      <span>Configurado &middot; {aiKeyPrefix}</span>
+                    ) : (
+                      <span>Nao configurado</span>
+                    )}
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="aiApiKey">API Key</label>
+                    <input
+                      type="password"
+                      id="aiApiKey"
+                      value={aiApiKey}
+                      onChange={(e) => setAiApiKey(e.target.value)}
+                      placeholder={aiConfigured ? 'Deixe vazio para manter a atual' : 'sk-ant-...'}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label htmlFor="aiModel">Modelo</label>
+                    <select
+                      id="aiModel"
+                      value={aiModel}
+                      onChange={(e) => setAiModel(e.target.value)}
+                    >
+                      <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (recomendado)</option>
+                      <option value="claude-haiku-4-5-20251001">Haiku 4.5 (mais rapido)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="ai-actions">
+                  <button type="submit" className="btn-primary" disabled={savingAi}>
+                    {savingAi ? 'Salvando...' : 'Salvar Configuracao'}
+                  </button>
+                  {aiConfigured && (
+                    <button
+                      type="button"
+                      className="btn-danger"
+                      onClick={handleDeleteAIConfig}
+                    >
+                      Remover
+                    </button>
+                  )}
+                </div>
               </form>
             )}
           </div>

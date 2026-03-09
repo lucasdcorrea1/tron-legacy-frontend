@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { integratedPublish, instagram, metaAds, API_URL } from '../services/api';
+import { integratedPublish, instagram, metaAds, ai as aiApi, API_URL } from '../services/api';
 import './MetaAdsIntegratedPublish.css';
 
 const STATUS_COLORS = {
@@ -64,6 +64,9 @@ export default function MetaAdsIntegratedPublish() {
 
   // Step 2: Caption
   const [caption, setCaption] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiContext, setAiContext] = useState('');
+  const [showAiContext, setShowAiContext] = useState(false);
 
   // Step 3: Campaign
   const [campaignName, setCampaignName] = useState('');
@@ -376,6 +379,37 @@ export default function MetaAdsIntegratedPublish() {
     }
   };
 
+  const handleAIGenerate = async (type) => {
+    setAiGenerating(true);
+    setWizardError('');
+    try {
+      const res = await aiApi.generate({
+        type,
+        context: aiContext || undefined,
+        media_count: mediaFiles.length,
+        media_type: mediaFiles.length > 1 ? 'carousel' : 'image',
+        language: 'pt-BR',
+      });
+      if (type === 'caption') {
+        setCaption(res.text || '');
+        if (res.campaign_name && !campaignName) {
+          setCampaignName(res.campaign_name);
+        }
+      } else if (type === 'campaign_name') {
+        setCampaignName(res.text || '');
+      }
+    } catch (err) {
+      const msg = err.message || 'Erro ao gerar conteudo com IA';
+      if (msg.includes('nao configurada') || msg.includes('Perfil')) {
+        setWizardError('IA nao configurada. Acesse Perfil > IA para configurar sua API key.');
+      } else {
+        setWizardError(msg);
+      }
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
   const resetWizard = () => {
     setStep(0);
     setMediaFiles([]);
@@ -394,6 +428,8 @@ export default function MetaAdsIntegratedPublish() {
     setInterestResults([]);
     setSelectedInterests([]);
     setWizardError('');
+    setAiContext('');
+    setShowAiContext(false);
   };
 
   const startWizard = () => {
@@ -599,7 +635,39 @@ export default function MetaAdsIntegratedPublish() {
         {/* Step 2: Caption */}
         {step === 1 && (
           <div className="mads-form-section">
-            <h3>Legenda do Post</h3>
+            <div className="mads-ip-caption-header">
+              <h3>Legenda do Post</h3>
+              <button
+                type="button"
+                className="mads-btn-ai"
+                disabled={aiGenerating || mediaFiles.length === 0}
+                onClick={() => handleAIGenerate('caption')}
+              >
+                {aiGenerating ? (
+                  <><span className="mads-spinner" style={{ width: 14, height: 14 }} /> Gerando...</>
+                ) : (
+                  'Preencher com IA'
+                )}
+              </button>
+            </div>
+            <label className="mads-ip-ai-context-toggle">
+              <input
+                type="checkbox"
+                checked={showAiContext}
+                onChange={e => setShowAiContext(e.target.checked)}
+              />
+              Adicionar contexto para a IA
+            </label>
+            {showAiContext && (
+              <input
+                className="mads-field"
+                type="text"
+                placeholder="Ex: promocao de verao, lancamento de produto..."
+                value={aiContext}
+                onChange={e => setAiContext(e.target.value)}
+                style={{ marginBottom: '0.75rem' }}
+              />
+            )}
             <textarea
               className="mads-field mads-ip-textarea"
               placeholder="Escreva a legenda do seu post no Instagram..."
@@ -636,13 +704,24 @@ export default function MetaAdsIntegratedPublish() {
             <div className="mads-ip-form-grid">
               <label className="mads-ip-label">
                 Nome da Campanha
-                <input
-                  className="mads-field"
-                  type="text"
-                  placeholder="Ex: Lancamento Verao 2026"
-                  value={campaignName}
-                  onChange={e => setCampaignName(e.target.value)}
-                />
+                <div className="mads-ip-field-with-ai">
+                  <input
+                    className="mads-field"
+                    type="text"
+                    placeholder="Ex: Lancamento Verao 2026"
+                    value={campaignName}
+                    onChange={e => setCampaignName(e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className="mads-btn-ai-small"
+                    disabled={aiGenerating}
+                    onClick={() => handleAIGenerate('campaign_name')}
+                    title="Sugerir nome com IA"
+                  >
+                    {aiGenerating ? '...' : 'IA'}
+                  </button>
+                </div>
               </label>
               <label className="mads-ip-label">
                 Objetivo
