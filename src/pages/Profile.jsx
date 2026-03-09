@@ -544,9 +544,6 @@ export default function Profile() {
               <form onSubmit={handleSaveAIConfig} className="profile-form">
                 <div className="settings-section">
                   <h4>Inteligencia Artificial (Claude)</h4>
-                  <p className="settings-hint">
-                    Configure sua API key da Anthropic para usar funcionalidades de IA no wizard de publicacao.
-                  </p>
 
                   <div className="ai-status-badge">
                     <span className={`ai-status-dot ${aiConfigured ? 'active' : ''}`} />
@@ -557,6 +554,41 @@ export default function Profile() {
                     )}
                   </div>
 
+                  {!aiConfigured && (
+                    <div className="ai-setup-guide">
+                      <p className="ai-setup-title">Como obter sua API Key:</p>
+                      <ol className="ai-setup-steps">
+                        <li>
+                          Acesse o console da Anthropic{' '}
+                          <a
+                            href="https://console.anthropic.com/settings/keys"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="ai-setup-link"
+                          >
+                            console.anthropic.com/settings/keys
+                          </a>
+                        </li>
+                        <li>Crie uma conta ou faca login</li>
+                        <li>Clique em <strong>"Create Key"</strong></li>
+                        <li>Copie a chave gerada e cole abaixo</li>
+                      </ol>
+                      <a
+                        href="https://console.anthropic.com/settings/keys"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ai-get-key-btn"
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
+                          <polyline points="15 3 21 3 21 9" />
+                          <line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        Criar API Key na Anthropic
+                      </a>
+                    </div>
+                  )}
+
                   <div className="form-group">
                     <label htmlFor="aiApiKey">API Key</label>
                     <input
@@ -564,7 +596,7 @@ export default function Profile() {
                       id="aiApiKey"
                       value={aiApiKey}
                       onChange={(e) => setAiApiKey(e.target.value)}
-                      placeholder={aiConfigured ? 'Deixe vazio para manter a atual' : 'sk-ant-...'}
+                      placeholder={aiConfigured ? 'Deixe vazio para manter a atual' : 'Cole sua key aqui: sk-ant-...'}
                     />
                   </div>
 
@@ -578,6 +610,9 @@ export default function Profile() {
                       <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (recomendado)</option>
                       <option value="claude-haiku-4-5-20251001">Haiku 4.5 (mais rapido)</option>
                     </select>
+                    <span className="settings-hint">
+                      Sonnet: melhor qualidade. Haiku: mais rapido e economico.
+                    </span>
                   </div>
                 </div>
 
