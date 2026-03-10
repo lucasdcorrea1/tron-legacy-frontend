@@ -96,6 +96,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const { currentOrg } = useOrg();
 
   const [configured, setConfigured] = useState(configuredProp ?? null);
+  const [hasToken, setHasToken] = useState(false);
   const [configSource, setConfigSource] = useState('');
   const [configAccountIdDisplay, setConfigAccountIdDisplay] = useState('');
   const [adAccountIdDisplay, setAdAccountIdDisplay] = useState('');
@@ -138,10 +139,16 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     if (configured) loadAlerts();
   }, [configured]);
 
+  // Auto-open manual setup when token exists but account ID is missing
+  useEffect(() => {
+    if (hasToken && !configured) setShowManualSetup(true);
+  }, [hasToken, configured]);
+
   const checkConfig = async () => {
     try {
       const data = await instagram.getConfig();
       setConfigured(data.configured);
+      setHasToken(data.has_token || false);
       setConfigSource(data.source || '');
       setConfigAccountIdDisplay(data.account_id || '');
       setAdAccountIdDisplay(data.ad_account_id || '');
@@ -149,13 +156,18 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
       onConfigChange?.(data.configured);
     } catch {
       setConfigured(false);
+      setHasToken(false);
       onConfigChange?.(false);
     }
   };
 
   const handleSaveConfig = async () => {
-    if (!configured && (!configAccountId.trim() || !configAccessToken.trim())) {
+    if (!configured && !hasToken && (!configAccountId.trim() || !configAccessToken.trim())) {
       toast.warning('Preencha Account ID e Access Token');
+      return;
+    }
+    if (!configured && hasToken && !configAccountId.trim()) {
+      toast.warning('Preencha o Instagram Account ID');
       return;
     }
     if (configured) {
@@ -315,7 +327,12 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const handleOAuthMessage = useCallback((event) => {
     if (event.data?.type !== 'META_OAUTH_RESULT') return;
     if (event.data.success) {
-      toast.success('Conta Meta conectada com sucesso!');
+      if (event.data.needs_manual_config) {
+        toast.warning('Token salvo! Configure o Instagram Account ID manualmente abaixo.');
+        setShowManualSetup(true);
+      } else {
+        toast.success('Conta Meta conectada com sucesso!');
+      }
       checkConfig();
     } else {
       toast.error(event.data.error || 'Falha na conexao com Facebook');
@@ -708,17 +725,24 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
         </div>
 
         <div className="igcfg-oauth-area">
-          <p className="igcfg-oauth-desc">
-            Ao conectar, buscaremos automaticamente sua conta Instagram Business,
-            conta de anuncios e token de acesso. Sem precisar copiar nada manualmente.
-          </p>
+          {hasToken ? (
+            <p className="igcfg-oauth-desc" style={{ color: '#facc15' }}>
+              Token ja salvo! Nao foi possivel detectar a conta Instagram automaticamente.
+              Preencha o Instagram Account ID manualmente abaixo, ou reconecte com outra conta.
+            </p>
+          ) : (
+            <p className="igcfg-oauth-desc">
+              Ao conectar, buscaremos automaticamente sua conta Instagram Business,
+              conta de anuncios e token de acesso. Sem precisar copiar nada manualmente.
+            </p>
+          )}
           <button
             className="igcfg-facebook-btn"
             onClick={handleConnectFacebook}
             disabled={oauthLoading}
           >
             <IconFacebook />
-            {oauthLoading ? 'Abrindo...' : 'Conectar com Facebook'}
+            {oauthLoading ? 'Abrindo...' : hasToken ? 'Reconectar com Facebook' : 'Conectar com Facebook'}
           </button>
         </div>
 
@@ -778,7 +802,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
               <button
                 className="igcfg-action-btn igcfg-action-btn--primary"
                 onClick={handleSaveConfig}
-                disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
+                disabled={savingConfig || !configAccountId.trim() || (!hasToken && !configAccessToken.trim())}
               >
                 <IconCheck /> {savingConfig ? 'Salvando...' : 'Salvar configuracao'}
               </button>
