@@ -9,6 +9,7 @@ import { InstagramLeadsContent } from './InstagramLeads';
 import { InstagramAnalyticsContent } from './InstagramAnalytics';
 import MetaAdsCampaigns from './MetaAdsCampaigns';
 import MetaAdsInsights from './MetaAdsInsights';
+import MetaAdsFinanceiro from './MetaAdsFinanceiro';
 import { AutoBoostContent } from './AutoBoostPage';
 import './InstagramPage.css';
 
@@ -68,6 +69,12 @@ const Icon = ({ name, size = 18 }) => {
     ),
     zap: (
       <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+    ),
+    dollarSign: (
+      <>
+        <line x1="12" y1="1" x2="12" y2="23" />
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      </>
     ),
     heart: (
       <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
@@ -138,6 +145,7 @@ const TABS = [
   { key: 'analytics', label: 'Analytics', icon: 'barChart' },
   { key: 'campanhas', label: 'Campanhas', icon: 'volume', requiresAdAccount: true },
   { key: 'insights', label: 'Insights', icon: 'search', requiresAdAccount: true },
+  { key: 'financeiro', label: 'Financeiro', icon: 'dollarSign', requiresAdAccount: true },
   { key: 'autoboost', label: 'Auto-Boost', icon: 'zap', requiresAdAccount: true },
 ];
 
@@ -508,6 +516,7 @@ export default function InstagramPage() {
               {activeTab === 'analytics' && <InstagramAnalyticsContent />}
               {activeTab === 'campanhas' && <MetaAdsCampaigns />}
               {activeTab === 'insights' && <MetaAdsInsights />}
+              {activeTab === 'financeiro' && <MetaAdsFinanceiro />}
               {activeTab === 'autoboost' && <AutoBoostContent />}
             </div>
           </>
