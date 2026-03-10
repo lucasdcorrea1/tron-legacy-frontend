@@ -121,10 +121,10 @@ const menuItems = [
 ];
 
 const adminItems = [
-  { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
-  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro' },
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
+  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro' },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter' },
+  { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
 ];
 
 const PLAN_RANK = { free: 0, starter: 1, pro: 2, enterprise: 3 };

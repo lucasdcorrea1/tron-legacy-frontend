@@ -6,10 +6,8 @@ import AdminLayout from '../components/AdminLayout';
 import RichTextEditor from '../components/RichTextEditor';
 import './PostForm.css';
 
-export default function PostForm() {
-  const { id } = useParams();
-  const isEditing = !!id;
-  const navigate = useNavigate();
+export function PostFormContent({ slug, onSuccess }) {
+  const isEditing = !!slug;
   const toast = useToast();
   const fileInputRef = useRef(null);
 
@@ -33,11 +31,11 @@ export default function PostForm() {
     if (isEditing) {
       fetchPost();
     }
-  }, [id]);
+  }, [slug]);
 
   const fetchPost = async () => {
     try {
-      const data = await blog.getBySlug(id);
+      const data = await blog.getBySlug(slug);
       const post = data.post || data;
       setTitle(post.title || '');
       setContent(post.content || '');
@@ -132,13 +130,13 @@ export default function PostForm() {
 
     try {
       if (isEditing) {
-        await blog.update(id, postData);
+        await blog.update(slug, postData);
         toast.success('Post atualizado com sucesso!', 'Salvo');
       } else {
         await blog.create(postData);
         toast.success('Post criado com sucesso!', status === 'published' ? 'Publicado' : 'Rascunho');
       }
-      navigate('/admin/posts');
+      onSuccess();
     } catch (err) {
       toast.error(err.message || 'Erro ao salvar post');
     } finally {
@@ -152,9 +150,9 @@ export default function PostForm() {
 
     setLoading(true);
     try {
-      await blog.delete(id);
+      await blog.delete(slug);
       toast.success('Post excluido com sucesso!', 'Removido');
-      navigate('/admin/posts');
+      onSuccess();
     } catch (err) {
       toast.error(err.message || 'Erro ao excluir post');
       setLoading(false);
@@ -166,15 +164,10 @@ export default function PostForm() {
   const hasLegacyOnly = !hasNewImages && !!coverImage;
 
   if (loadingPost) {
-    return (
-      <AdminLayout>
-        <div className="postform-loading">Carregando...</div>
-      </AdminLayout>
-    );
+    return <div className="postform-loading">Carregando...</div>;
   }
 
   return (
-    <AdminLayout>
       <div className="postform-page">
         <div className="page-header">
           <h1>{isEditing ? 'Editar Post' : 'Novo Post'}</h1>
@@ -365,6 +358,16 @@ export default function PostForm() {
           </div>
         </div>
       </div>
+  );
+}
+
+export default function PostForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  return (
+    <AdminLayout>
+      <PostFormContent slug={id} onSuccess={() => navigate('/admin/posts')} />
     </AdminLayout>
   );
 }

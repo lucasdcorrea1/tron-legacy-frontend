@@ -260,7 +260,7 @@ export default function MetaAdsFinanceiro() {
     return sum;
   }, 0);
 
-  const balance = totalBudget - totalSpend;
+  const dailyAvgSpend = period > 0 ? totalSpend / period : 0;
   const costPerClick = totalClicks > 0 ? totalSpend / totalClicks : 0;
   const costPerReach = totalReach > 0 ? (totalSpend / totalReach) * 1000 : 0;
 
@@ -343,11 +343,7 @@ export default function MetaAdsFinanceiro() {
               <h3 className="mads-section-title">Pontuacao de Oportunidade</h3>
               {recommendations.length > 0 ? (
                 <p className="mads-opp-desc">
-                  Aplicar {recommendations.length} recomendacao(oes) pode aumentar
-                  sua pontuacao em ate{' '}
-                  <strong>
-                    {recommendations.reduce((sum, r) => sum + (r.opportunity_score_lift || 0), 0)} pontos
-                  </strong>
+                  {recommendations.length} recomendacao(oes) disponivel(is) para melhorar seus resultados
                 </p>
               ) : (
                 <p className="mads-opp-desc">Nenhuma recomendacao disponivel no momento</p>
@@ -358,38 +354,32 @@ export default function MetaAdsFinanceiro() {
           {recommendations.length > 0 && (
             <div className="mads-recs-list">
               <h4 className="mads-recs-title">Recomendacoes</h4>
-              {recommendations.map((rec, i) => (
-                <div
-                  key={i}
-                  className={`mads-rec-card ${expandedRec === i ? 'expanded' : ''}`}
-                  onClick={() => setExpandedRec(expandedRec === i ? null : i)}
-                >
-                  <div className="mads-rec-row">
-                    <span className="mads-rec-badge">+{rec.opportunity_score_lift || 0} pts</span>
-                    <span className="mads-rec-type">{(rec.type || '').replace(/_/g, ' ')}</span>
-                    <span className="mads-rec-expand">{expandedRec === i ? '−' : '+'}</span>
-                  </div>
-                  {expandedRec === i && (
-                    <div className="mads-rec-details">
-                      {rec.body && <p className="mads-rec-body">{rec.body}</p>}
-                      {rec.lift_estimate && (
-                        <p className="mads-rec-lift">Resultado esperado: {rec.lift_estimate}</p>
-                      )}
-                      {rec.url && (
-                        <a
-                          href={rec.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mads-rec-link"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          Ver no Ads Manager →
-                        </a>
-                      )}
+              {recommendations.map((rec, i) => {
+                const importance = (rec.importance || '').toUpperCase();
+                const importanceLabel = importance === 'HIGH' ? 'Alta' : importance === 'MEDIUM' ? 'Media' : 'Baixa';
+                const importanceClass = importance === 'HIGH' ? 'high' : importance === 'MEDIUM' ? 'medium' : 'low';
+                return (
+                  <div
+                    key={i}
+                    className={`mads-rec-card ${expandedRec === i ? 'expanded' : ''}`}
+                    onClick={() => setExpandedRec(expandedRec === i ? null : i)}
+                  >
+                    <div className="mads-rec-row">
+                      <span className={`mads-rec-badge ${importanceClass}`}>{importanceLabel}</span>
+                      <span className="mads-rec-type">{rec.title || rec.optimization_goal || 'Recomendacao'}</span>
+                      <span className="mads-rec-expand">{expandedRec === i ? '−' : '+'}</span>
                     </div>
-                  )}
-                </div>
-              ))}
+                    {expandedRec === i && (
+                      <div className="mads-rec-details">
+                        {rec.message && <p className="mads-rec-body">{rec.message}</p>}
+                        {rec.blame_field && (
+                          <p className="mads-rec-lift">Campo: {rec.blame_field.replace(/_/g, ' ')}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -477,9 +467,9 @@ export default function MetaAdsFinanceiro() {
           <span className="mads-fin-card-sub">{campaigns.length} campanha(s)</span>
         </div>
         <div className="mads-fin-card balance">
-          <span className="mads-fin-card-label">Saldo Restante</span>
-          <span className="mads-fin-card-value">{formatCurrency(balance)}</span>
-          <span className="mads-fin-card-sub">{totalBudget > 0 ? Math.round((balance / totalBudget) * 100) : 0}% disponivel</span>
+          <span className="mads-fin-card-label">Media Diaria</span>
+          <span className="mads-fin-card-value">{formatCurrency(dailyAvgSpend)}</span>
+          <span className="mads-fin-card-sub">por dia no periodo</span>
         </div>
         <div className="mads-fin-card roi">
           <span className="mads-fin-card-label">Custo por Clique</span>

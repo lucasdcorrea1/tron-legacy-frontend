@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { blog } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import PostFormModal from '../components/PostFormModal';
 import './PostList.css';
 
 export default function PostList() {
-  const navigate = useNavigate();
   const { profile } = useAuth();
   const { hasOrgRole } = useOrg();
   const isSuperuser = profile?.role === 'superuser';
@@ -17,7 +16,14 @@ export default function PostList() {
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editSlug, setEditSlug] = useState(null);
   const limit = 10;
+
+  const openModal = (slug = null) => {
+    setEditSlug(slug);
+    setModalOpen(true);
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -66,7 +72,7 @@ export default function PostList() {
           </div>
           <button
             className="btn-primary"
-            onClick={() => navigate('/admin/posts/new')}
+            onClick={() => openModal()}
           >
             + Novo Post
           </button>
@@ -83,7 +89,7 @@ export default function PostList() {
             <p>Comece criando seu primeiro post</p>
             <button
               className="btn-primary"
-              onClick={() => navigate('/admin/posts/new')}
+              onClick={() => openModal()}
             >
               Criar primeiro post
             </button>
@@ -105,7 +111,7 @@ export default function PostList() {
                   <div key={postId} className="table-row">
                     <span
                       className="col-title clickable"
-                      onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
+                      onClick={() => openModal(post.slug)}
                     >
                       {post.title}
                     </span>
@@ -128,7 +134,7 @@ export default function PostList() {
                     <span className="col-actions">
                       <button
                         className="btn-icon edit"
-                        onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
+                        onClick={() => openModal(post.slug)}
                         title="Editar"
                       >
                         ✎
@@ -154,7 +160,7 @@ export default function PostList() {
                   <div
                     key={postId}
                     className="post-card"
-                    onClick={() => navigate(`/admin/posts/edit/${post.slug}`)}
+                    onClick={() => openModal(post.slug)}
                   >
                     <div className="post-card-header">
                       <h3>{post.title}</h3>
@@ -208,6 +214,13 @@ export default function PostList() {
           </>
         )}
       </div>
+
+      <PostFormModal
+        isOpen={modalOpen}
+        slug={editSlug}
+        onClose={() => setModalOpen(false)}
+        onSaved={fetchPosts}
+      />
     </AdminLayout>
   );
 }
