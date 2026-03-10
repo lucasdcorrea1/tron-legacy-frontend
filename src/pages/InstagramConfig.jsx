@@ -97,6 +97,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
   const [configured, setConfigured] = useState(configuredProp ?? null);
   const [hasToken, setHasToken] = useState(false);
+  const [igReason, setIgReason] = useState(''); // "no_pages" | "no_ig_linked" | ""
   const [configSource, setConfigSource] = useState('');
   const [configAccountIdDisplay, setConfigAccountIdDisplay] = useState('');
   const [adAccountIdDisplay, setAdAccountIdDisplay] = useState('');
@@ -328,7 +329,14 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     if (event.data?.type !== 'META_OAUTH_RESULT') return;
     if (event.data.success) {
       if (event.data.needs_manual_config) {
-        toast.warning('Conectado! Vincule o Instagram a sua Pagina do Facebook e reconecte, ou preencha o Account ID abaixo.');
+        setIgReason(event.data.ig_reason || '');
+        if (event.data.ig_reason === 'no_pages') {
+          toast.warning('Conectado! Voce nao possui uma Pagina do Facebook. Crie uma e vincule ao Instagram.');
+        } else if (event.data.ig_reason === 'no_ig_linked') {
+          toast.warning('Conectado! Suas Paginas do Facebook nao tem Instagram Business vinculado.');
+        } else {
+          toast.warning('Conectado! Configure o Instagram Account ID manualmente.');
+        }
         setShowManualSetup(true);
       } else {
         toast.success('Conta Meta conectada com sucesso!');
@@ -726,24 +734,47 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
         <div className="igcfg-oauth-area">
           {hasToken ? (
-            <>
-              <div className="igcfg-info-box" style={{ borderColor: '#854d0e', background: 'rgba(250, 204, 21, 0.06)' }}>
-                <p style={{ color: '#facc15', margin: '0 0 8px', fontWeight: 600 }}>
-                  Token salvo, mas nenhuma conta Instagram Business foi encontrada.
-                </p>
-                <p style={{ color: '#a1a1aa', margin: '0 0 10px', fontSize: 13 }}>
-                  Isso acontece quando a Pagina do Facebook nao esta vinculada a uma conta Instagram Business. Para resolver:
-                </p>
-                <ol style={{ color: '#d4d4d8', margin: '0 0 10px', paddingLeft: 20, fontSize: 13, lineHeight: 1.7 }}>
-                  <li>Abra o <a href="https://www.instagram.com/accounts/convert_to_professional_account/" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}>Instagram</a> e converta para conta <strong>Business</strong> ou <strong>Creator</strong></li>
-                  <li>No Instagram, va em <strong>Configuracoes &gt; Conta &gt; Paginas vinculadas</strong> e conecte sua Pagina do Facebook</li>
-                  <li>Volte aqui e clique em <strong>Reconectar com Facebook</strong></li>
-                </ol>
-                <p style={{ color: '#71717a', margin: 0, fontSize: 12 }}>
-                  Ou preencha o Instagram Account ID manualmente abaixo se ja souber.
-                </p>
-              </div>
-            </>
+            <div className="igcfg-info-box" style={{ borderColor: '#854d0e', background: 'rgba(250, 204, 21, 0.06)' }}>
+              {igReason === 'no_pages' ? (
+                <>
+                  <p style={{ color: '#facc15', margin: '0 0 8px', fontWeight: 600 }}>
+                    Token salvo, mas voce nao possui uma Pagina do Facebook.
+                  </p>
+                  <p style={{ color: '#a1a1aa', margin: '0 0 10px', fontSize: 13 }}>
+                    O Instagram Business precisa estar vinculado a uma Pagina do Facebook (nao ao perfil pessoal). Para resolver:
+                  </p>
+                  <ol style={{ color: '#d4d4d8', margin: '0 0 10px', paddingLeft: 20, fontSize: 13, lineHeight: 1.7 }}>
+                    <li>Crie uma <a href="https://www.facebook.com/pages/create" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}>Pagina do Facebook</a> para seu negocio</li>
+                    <li>No Instagram, va em <strong>Configuracoes &gt; Conta &gt; Paginas vinculadas</strong> e conecte a Pagina que criou</li>
+                    <li>Certifique-se de que a conta Instagram e <strong>Business</strong> ou <strong>Creator</strong> (nao pessoal)</li>
+                    <li>Volte aqui e clique em <strong>Reconectar com Facebook</strong></li>
+                  </ol>
+                </>
+              ) : igReason === 'no_ig_linked' ? (
+                <>
+                  <p style={{ color: '#facc15', margin: '0 0 8px', fontWeight: 600 }}>
+                    Token salvo, mas nenhuma Pagina tem Instagram Business vinculado.
+                  </p>
+                  <p style={{ color: '#a1a1aa', margin: '0 0 10px', fontSize: 13 }}>
+                    Encontramos suas Paginas do Facebook, mas nenhuma tem uma conta Instagram Business conectada. Para resolver:
+                  </p>
+                  <ol style={{ color: '#d4d4d8', margin: '0 0 10px', paddingLeft: 20, fontSize: 13, lineHeight: 1.7 }}>
+                    <li>Abra o <a href="https://www.instagram.com/accounts/convert_to_professional_account/" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}>Instagram</a> e converta para conta <strong>Business</strong> ou <strong>Creator</strong> (se ainda for pessoal)</li>
+                    <li>No Instagram, va em <strong>Configuracoes &gt; Conta &gt; Paginas vinculadas</strong> e conecte sua Pagina do Facebook</li>
+                    <li>Volte aqui e clique em <strong>Reconectar com Facebook</strong></li>
+                  </ol>
+                </>
+              ) : (
+                <>
+                  <p style={{ color: '#facc15', margin: '0 0 8px', fontWeight: 600 }}>
+                    Token salvo, mas nao foi possivel detectar a conta Instagram automaticamente.
+                  </p>
+                </>
+              )}
+              <p style={{ color: '#71717a', margin: 0, fontSize: 12 }}>
+                Ou preencha o Instagram Account ID manualmente abaixo se ja souber.
+              </p>
+            </div>
           ) : (
             <p className="igcfg-oauth-desc">
               Ao conectar, buscaremos automaticamente sua conta Instagram Business,
