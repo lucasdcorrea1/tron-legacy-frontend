@@ -726,10 +726,24 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
         <div className="igcfg-oauth-area">
           {hasToken ? (
-            <p className="igcfg-oauth-desc" style={{ color: '#facc15' }}>
-              Token ja salvo! Nao foi possivel detectar a conta Instagram automaticamente.
-              Preencha o Instagram Account ID manualmente abaixo, ou reconecte com outra conta.
-            </p>
+            <>
+              <div className="igcfg-info-box" style={{ borderColor: '#854d0e', background: 'rgba(250, 204, 21, 0.06)' }}>
+                <p style={{ color: '#facc15', margin: '0 0 8px', fontWeight: 600 }}>
+                  Token salvo, mas nenhuma conta Instagram Business foi encontrada.
+                </p>
+                <p style={{ color: '#a1a1aa', margin: '0 0 10px', fontSize: 13 }}>
+                  Isso acontece quando a Pagina do Facebook nao esta vinculada a uma conta Instagram Business. Para resolver:
+                </p>
+                <ol style={{ color: '#d4d4d8', margin: '0 0 10px', paddingLeft: 20, fontSize: 13, lineHeight: 1.7 }}>
+                  <li>Abra o <a href="https://www.instagram.com/accounts/convert_to_professional_account/" target="_blank" rel="noopener noreferrer" style={{ color: '#a78bfa' }}>Instagram</a> e converta para conta <strong>Business</strong> ou <strong>Creator</strong></li>
+                  <li>No Instagram, va em <strong>Configuracoes &gt; Conta &gt; Paginas vinculadas</strong> e conecte sua Pagina do Facebook</li>
+                  <li>Volte aqui e clique em <strong>Reconectar com Facebook</strong></li>
+                </ol>
+                <p style={{ color: '#71717a', margin: 0, fontSize: 12 }}>
+                  Ou preencha o Instagram Account ID manualmente abaixo se ja souber.
+                </p>
+              </div>
+            </>
           ) : (
             <p className="igcfg-oauth-desc">
               Ao conectar, buscaremos automaticamente sua conta Instagram Business,
@@ -762,23 +776,26 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
               <div className="igcfg-form-grid">
                 <div className="igcfg-field">
-                  <label>Instagram Account ID</label>
+                  <label>Instagram Account ID {hasToken && <span style={{ color: '#f87171', fontSize: 11 }}>(obrigatorio)</span>}</label>
                   <input
                     type="text"
                     value={configAccountId}
                     onChange={(e) => setConfigAccountId(e.target.value)}
                     placeholder="Ex: 17841473285320059"
+                    style={hasToken ? { borderColor: '#a78bfa' } : undefined}
                   />
                 </div>
-                <div className="igcfg-field">
-                  <label>Access Token</label>
-                  <input
-                    type="password"
-                    value={configAccessToken}
-                    onChange={(e) => setConfigAccessToken(e.target.value)}
-                    placeholder="Token do Meta Business Suite"
-                  />
-                </div>
+                {!hasToken && (
+                  <div className="igcfg-field">
+                    <label>Access Token</label>
+                    <input
+                      type="password"
+                      value={configAccessToken}
+                      onChange={(e) => setConfigAccessToken(e.target.value)}
+                      placeholder="Token do Meta Business Suite"
+                    />
+                  </div>
+                )}
                 <div className="igcfg-field">
                   <label>Ad Account ID (opcional)</label>
                   <input
