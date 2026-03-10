@@ -1,3 +1,171 @@
+/* Opportunity Score section */
+.mads-opp-section {
+  background: #1a1d23;
+  border: 1px solid #2d3139;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.mads-opp-header {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.mads-opp-gauge {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.mads-opp-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.mads-opp-score-text {
+  font-size: 28px;
+  font-weight: 800;
+  fill: #f4f4f5;
+}
+
+.mads-opp-score-label {
+  font-size: 13px;
+  fill: #71717a;
+}
+
+.mads-opp-info {
+  flex: 1;
+}
+
+.mads-opp-info .mads-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e4e4e7;
+  margin: 0 0 0.35rem;
+}
+
+.mads-opp-desc {
+  font-size: 0.82rem;
+  color: #a1a1aa;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.mads-opp-desc strong {
+  color: #4ade80;
+}
+
+/* Recommendations list */
+.mads-recs-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.6rem;
+}
+
+.mads-recs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mads-rec-card {
+  background: #141619;
+  border: 1px solid #2d3139;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.mads-rec-card:hover {
+  border-color: #3b82f6;
+}
+
+.mads-rec-card.expanded {
+  border-color: #3b82f6;
+}
+
+.mads-rec-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mads-rec-badge {
+  background: rgba(74, 222, 128, 0.12);
+  color: #4ade80;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.mads-rec-type {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  text-transform: capitalize;
+}
+
+.mads-rec-expand {
+  font-size: 1rem;
+  color: #71717a;
+  font-weight: 600;
+  width: 20px;
+  text-align: center;
+}
+
+.mads-rec-details {
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid #2d3139;
+}
+
+.mads-rec-body {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+  margin: 0 0 0.5rem;
+  line-height: 1.45;
+}
+
+.mads-rec-lift {
+  font-size: 0.78rem;
+  color: #fbbf24;
+  margin: 0 0 0.5rem;
+  font-weight: 500;
+}
+
+.mads-rec-link {
+  font-size: 0.78rem;
+  color: #60a5fa;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.mads-rec-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .mads-opp-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .mads-opp-gauge {
+    width: 80px;
+    height: 80px;
+  }
+}
+
 /* Account finance overview */
 .mads-acct-finance {
   background: #1a1d23;
@@ -182,60 +350,52 @@
   margin: 0 0 1rem;
 }
 
-.mads-fin-chart {
-  display: flex;
-  gap: 0.5rem;
-  height: 200px;
-}
-
-.mads-fin-chart-y {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 0.68rem;
-  color: #52525b;
-  min-width: 65px;
-  text-align: right;
-  padding-bottom: 18px;
-}
-
-.mads-fin-chart-bars {
-  flex: 1;
-  display: flex;
-  align-items: flex-end;
-  gap: 2px;
-  border-bottom: 1px solid #2d3139;
+/* Area Chart */
+.mads-area-chart {
   position: relative;
+  width: 100%;
 }
 
-.mads-fin-bar-col {
-  flex: 1;
+.mads-area-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: crosshair;
+}
+
+.mads-chart-label {
+  fill: #52525b;
+  font-size: 10px;
+  font-family: inherit;
+}
+
+.mads-chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  margin-top: -12px;
+  padding: 6px 10px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  pointer-events: none;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  height: 100%;
-  min-width: 4px;
+  gap: 2px;
+  z-index: 5;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
 
-.mads-fin-bar {
-  width: 100%;
-  max-width: 24px;
-  background: linear-gradient(180deg, #3b82f6 0%, #1d4ed8 100%);
-  border-radius: 3px 3px 0 0;
-  transition: height 0.3s ease;
-  min-height: 1px;
+.mads-chart-tooltip-date {
+  font-size: 0.65rem;
+  color: #71717a;
+  font-weight: 500;
 }
 
-.mads-fin-bar-col:hover .mads-fin-bar {
-  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
-}
-
-.mads-fin-bar-label {
-  font-size: 0.62rem;
-  color: #52525b;
-  margin-top: 4px;
-  white-space: nowrap;
+.mads-chart-tooltip-value {
+  font-size: 0.8rem;
+  color: #60a5fa;
+  font-weight: 700;
 }
 
 /* Table section */
@@ -275,13 +435,8 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .mads-fin-chart {
-    height: 150px;
-  }
-
-  .mads-fin-chart-y {
-    min-width: 50px;
-    font-size: 0.6rem;
+  .mads-chart-label {
+    font-size: 8px;
   }
 }
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { instagram, instagramAnalytics, integratedPublish, API_URL } from '../services/api';
+import { instagram, instagramAnalytics, integratedPublish, metaAds, API_URL } from '../services/api';
 import { useToast } from '../components/Toast';
 import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
@@ -139,21 +139,21 @@ const Icon = ({ name, size = 18 }) => {
 const TABS = [
   { key: 'config', label: 'Config', icon: 'config', alwaysVisible: true },
   { key: 'home', label: 'Home', icon: 'home' },
+  { key: 'campanhas', label: 'Campanhas', icon: 'volume', requiresAdAccount: true },
+  { key: 'financeiro', label: 'Financeiro', icon: 'dollarSign', requiresAdAccount: true },
   { key: 'agendamento', label: 'Agendamento', icon: 'calendar' },
   { key: 'autoreply', label: 'Auto-Resposta', icon: 'chat' },
   { key: 'leads', label: 'Leads', icon: 'users' },
   { key: 'analytics', label: 'Analytics', icon: 'barChart' },
-  { key: 'campanhas', label: 'Campanhas', icon: 'volume', requiresAdAccount: true },
   { key: 'insights', label: 'Insights', icon: 'search', requiresAdAccount: true },
-  { key: 'financeiro', label: 'Financeiro', icon: 'dollarSign', requiresAdAccount: true },
   { key: 'autoboost', label: 'Auto-Boost', icon: 'zap', requiresAdAccount: true },
 ];
 
 const TOOL_CARDS = [
+  { key: 'campanhas', icon: 'volume', title: 'Campanhas', desc: 'Gerencie campanhas Meta Ads', requiresAdAccount: true },
   { key: 'autoreply', icon: 'chat', title: 'Auto-Resposta', desc: 'Respostas automaticas a comentarios' },
   { key: 'leads', icon: 'users', title: 'Leads', desc: 'Capture e gerencie leads' },
   { key: 'analytics', icon: 'barChart', title: 'Analytics', desc: 'Metricas detalhadas e relatorios' },
-  { key: 'campanhas', icon: 'volume', title: 'Campanhas', desc: 'Gerencie campanhas Meta Ads', requiresAdAccount: true },
   { key: 'insights', icon: 'search', title: 'Insights', desc: 'Insights de anuncios pagos', requiresAdAccount: true },
   { key: 'autoboost', icon: 'zap', title: 'Auto-Boost', desc: 'Impulsione posts automaticamente', requiresAdAccount: true },
 ];
@@ -163,6 +163,7 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
   const [engData, setEngData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upcoming, setUpcoming] = useState([]);
+  const [finSummary, setFinSummary] = useState(null);
 
   const loadEngagement = useCallback(async () => {
     setLoading(true);
@@ -199,7 +200,29 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
     } catch { /* silent */ }
   }, []);
 
-  useEffect(() => { loadEngagement(); loadUpcoming(); }, [loadEngagement, loadUpcoming]);
+  const loadFinanceSummary = useCallback(async () => {
+    if (!hasAdAccount) return;
+    try {
+      const [finRes, recsRes] = await Promise.allSettled([
+        metaAds.getAccountFinance(),
+        metaAds.getAccountRecommendations(),
+      ]);
+      const fin = finRes.status === 'fulfilled' ? finRes.value : null;
+      const recs = recsRes.status === 'fulfilled' ? recsRes.value : null;
+      if (fin || recs) {
+        setFinSummary({
+          spend_today: fin?.spend_today || 0,
+          spend_this_month: fin?.spend_this_month || 0,
+          currency: fin?.currency || 'BRL',
+          opportunity_score: recs?.opportunity_score ?? null,
+          recommendations_count: recs?.recommendations?.length || 0,
+          total_lift: (recs?.recommendations || []).reduce((s, r) => s + (r.opportunity_score_lift || 0), 0),
+        });
+      }
+    } catch { /* silent */ }
+  }, [hasAdAccount]);
+
+  useEffect(() => { loadEngagement(); loadUpcoming(); loadFinanceSummary(); }, [loadEngagement, loadUpcoming, loadFinanceSummary]);
 
   const visibleTools = TOOL_CARDS.filter(t => !t.requiresAdAccount || hasAdAccount);
 
@@ -256,6 +279,66 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
               <span className="ig-home-stat-label">Eng. Medio</span>
             </div>
           </div>
+
+          {/* Financial summary */}
+          {finSummary && (
+            <div className="ig-home-section ig-fin-summary">
+              <div className="ig-home-section-header">
+                <span className="ig-home-section-icon"><Icon name="dollarSign" size={16} /></span>
+                <h3 className="ig-home-section-title">Resumo Financeiro</h3>
+                <button className="ig-home-see-all" onClick={() => onNavigate('financeiro')}>
+                  Ver detalhes <Icon name="chevronRight" size={14} />
+                </button>
+              </div>
+              <div className="ig-fin-summary-grid">
+                <div className="ig-fin-summary-card">
+                  <span className="ig-fin-summary-label">Gasto Hoje</span>
+                  <span className="ig-fin-summary-value today">
+                    R$ {(finSummary.spend_today || 0).toFixed(2)}
+                  </span>
+                </div>
+                <div className="ig-fin-summary-card">
+                  <span className="ig-fin-summary-label">Gasto no Mes</span>
+                  <span className="ig-fin-summary-value month">
+                    R$ {(finSummary.spend_this_month || 0).toFixed(2)}
+                  </span>
+                </div>
+                {finSummary.opportunity_score !== null && (
+                  <div className="ig-fin-summary-card score">
+                    <span className="ig-fin-summary-label">Oportunidade</span>
+                    <div className="ig-fin-score-row">
+                      <svg viewBox="0 0 36 36" className="ig-fin-score-mini">
+                        <circle cx="18" cy="18" r="15.5" fill="none" stroke="#27272a" strokeWidth="3" />
+                        <circle
+                          cx="18" cy="18" r="15.5"
+                          fill="none"
+                          stroke={
+                            finSummary.opportunity_score > 70 ? '#22c55e'
+                              : finSummary.opportunity_score > 30 ? '#f59e0b'
+                                : '#ef4444'
+                          }
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(finSummary.opportunity_score / 100) * 97.39} 97.39`}
+                          transform="rotate(-90 18 18)"
+                        />
+                      </svg>
+                      <span className="ig-fin-score-num">{Math.round(finSummary.opportunity_score)}</span>
+                    </div>
+                  </div>
+                )}
+                {finSummary.recommendations_count > 0 && (
+                  <div className="ig-fin-summary-card recs" onClick={() => onNavigate('financeiro')}>
+                    <span className="ig-fin-summary-label">Recomendacoes</span>
+                    <span className="ig-fin-summary-value recs-val">
+                      {finSummary.recommendations_count}
+                    </span>
+                    <span className="ig-fin-summary-sub">+{finSummary.total_lift} pts possiveis</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Scheduled posts */}
           <div className="ig-home-section">
@@ -473,16 +556,16 @@ export default function InstagramPage() {
           </div>
         ) : (
           <>
-            {/* Pill Navigation */}
+            {/* Icon Navigation */}
             <nav className="ig-nav">
               {visibleTabs.map(t => (
                 <button
                   key={t.key}
                   className={`ig-nav-item ${activeTab === t.key ? 'active' : ''}`}
                   onClick={() => { setSchedulingInitialTab(null); setActiveTab(t.key); }}
+                  data-tooltip={t.label}
                 >
-                  <Icon name={t.icon} size={16} />
-                  <span>{t.label}</span>
+                  <Icon name={t.icon} size={18} />
                 </button>
               ))}
             </nav>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { metaAds } from '../services/api';
 import './MetaAdsFinanceiro.css';
 
@@ -8,11 +8,140 @@ const PERIODS = [
   { value: 30, label: '30 dias' },
 ];
 
+function SpendChart({ data, maxSpend, formatCurrency }) {
+  const svgRef = useRef(null);
+  const [hover, setHover] = useState(null);
+
+  const padding = { top: 20, right: 16, bottom: 32, left: 60 };
+  const width = 800;
+  const height = 240;
+  const chartW = width - padding.left - padding.right;
+  const chartH = height - padding.top - padding.bottom;
+
+  const n = data.length;
+  const xStep = n > 1 ? chartW / (n - 1) : chartW;
+
+  // Y-axis ticks (4 lines)
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map(f => ({
+    value: maxSpend * f,
+    y: padding.top + chartH * (1 - f),
+  }));
+
+  // Build path
+  const points = data.map((d, i) => {
+    const x = padding.left + (n > 1 ? i * xStep : xStep / 2);
+    const y = padding.top + chartH * (1 - d.spend / maxSpend);
+    return { x, y, ...d };
+  });
+
+  const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x},${p.y}`).join(' ');
+  const areaPath = `${linePath} L${points[points.length - 1].x},${padding.top + chartH} L${points[0].x},${padding.top + chartH} Z`;
+
+  // X-axis labels — show ~6 evenly spaced
+  const labelCount = Math.min(6, n);
+  const labelStep = Math.max(1, Math.floor((n - 1) / (labelCount - 1)));
+  const xLabels = [];
+  for (let i = 0; i < n; i += labelStep) xLabels.push(i);
+  if (xLabels[xLabels.length - 1] !== n - 1) xLabels.push(n - 1);
+
+  const formatDate = (dateStr) => {
+    const [, m, d] = dateStr.split('-');
+    return `${d}/${m}`;
+  };
+
+  const handleMouseMove = useCallback((e) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const scaleX = width / rect.width;
+    const mouseX = (e.clientX - rect.left) * scaleX;
+    const idx = Math.round((mouseX - padding.left) / xStep);
+    const clamped = Math.max(0, Math.min(n - 1, idx));
+    setHover(clamped);
+  }, [n, xStep]);
+
+  return (
+    <div className="mads-area-chart" onMouseLeave={() => setHover(null)}>
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${width} ${height}`}
+        preserveAspectRatio="none"
+        onMouseMove={handleMouseMove}
+      >
+        {/* Grid lines */}
+        {yTicks.map((t, i) => (
+          <g key={i}>
+            <line
+              x1={padding.left} y1={t.y} x2={width - padding.right} y2={t.y}
+              stroke="rgba(255,255,255,0.06)" strokeWidth="1"
+            />
+            <text x={padding.left - 8} y={t.y + 4} textAnchor="end" className="mads-chart-label">
+              {formatCurrency(t.value)}
+            </text>
+          </g>
+        ))}
+
+        {/* Area fill */}
+        <defs>
+          <linearGradient id="spendGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.02" />
+          </linearGradient>
+        </defs>
+        <path d={areaPath} fill="url(#spendGrad)" />
+
+        {/* Line */}
+        <path d={linePath} fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" />
+
+        {/* Dots */}
+        {points.map((p, i) => (
+          <circle
+            key={i} cx={p.x} cy={p.y} r={hover === i ? 5 : 2.5}
+            fill={hover === i ? '#60a5fa' : '#3b82f6'}
+            stroke={hover === i ? '#1e3a5f' : 'none'}
+            strokeWidth="2"
+          />
+        ))}
+
+        {/* X labels */}
+        {xLabels.map(i => (
+          <text key={i} x={points[i].x} y={height - 6} textAnchor="middle" className="mads-chart-label">
+            {formatDate(data[i].date)}
+          </text>
+        ))}
+
+        {/* Hover vertical line */}
+        {hover !== null && points[hover] && (
+          <line
+            x1={points[hover].x} y1={padding.top}
+            x2={points[hover].x} y2={padding.top + chartH}
+            stroke="rgba(255,255,255,0.15)" strokeWidth="1" strokeDasharray="4 4"
+          />
+        )}
+      </svg>
+
+      {/* Tooltip */}
+      {hover !== null && points[hover] && (
+        <div
+          className="mads-chart-tooltip"
+          style={{ left: `${(points[hover].x / width) * 100}%`, top: `${(points[hover].y / height) * 100}%` }}
+        >
+          <span className="mads-chart-tooltip-date">{formatDate(data[hover].date)}</span>
+          <span className="mads-chart-tooltip-value">{formatCurrency(data[hover].spend)}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function MetaAdsFinanceiro() {
   const [campaigns, setCampaigns] = useState([]);
   const [insights, setInsights] = useState([]);
   const [dailyData, setDailyData] = useState([]);
   const [accountFinance, setAccountFinance] = useState(null);
+  const [opportunityScore, setOpportunityScore] = useState(null);
+  const [recommendations, setRecommendations] = useState([]);
+  const [expandedRec, setExpandedRec] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [period, setPeriod] = useState(30);
@@ -30,10 +159,11 @@ export default function MetaAdsFinanceiro() {
       const dateStop = new Date().toISOString().slice(0, 10);
       const dateStart = new Date(Date.now() - period * 86400000).toISOString().slice(0, 10);
 
-      const [campaignsRes, insightsRes, financeRes] = await Promise.allSettled([
+      const [campaignsRes, insightsRes, financeRes, recsRes] = await Promise.allSettled([
         metaAds.listCampaigns(),
         metaAds.getInsights({ level: 'campaign', date_start: dateStart, date_stop: dateStop }),
         metaAds.getAccountFinance(),
+        metaAds.getAccountRecommendations(),
       ]);
 
       const campaignList = campaignsRes.status === 'fulfilled' ? (campaignsRes.value?.data || campaignsRes.value || []) : [];
@@ -44,6 +174,11 @@ export default function MetaAdsFinanceiro() {
 
       if (financeRes.status === 'fulfilled' && financeRes.value) {
         setAccountFinance(financeRes.value);
+      }
+
+      if (recsRes.status === 'fulfilled' && recsRes.value) {
+        setOpportunityScore(recsRes.value.opportunity_score ?? null);
+        setRecommendations(recsRes.value.recommendations || []);
       }
 
       // Build daily spend data from campaign insights with daily breakdown
@@ -68,6 +203,7 @@ export default function MetaAdsFinanceiro() {
         level: 'account',
         date_start: dateStart,
         date_stop: dateStop,
+        time_increment: 1,
       });
 
       const data = result?.data || [];
@@ -172,6 +308,93 @@ export default function MetaAdsFinanceiro() {
     <div className="mads-fin">
       {error && <div className="mads-error">{error}</div>}
 
+      {/* Opportunity Score + Recommendations */}
+      {(opportunityScore !== null || recommendations.length > 0) && (
+        <div className="mads-opp-section">
+          <div className="mads-opp-header">
+            <div className="mads-opp-gauge">
+              <svg viewBox="0 0 120 120" className="mads-opp-svg">
+                <circle
+                  cx="60" cy="60" r="52"
+                  fill="none" stroke="#27272a" strokeWidth="8"
+                />
+                <circle
+                  cx="60" cy="60" r="52"
+                  fill="none"
+                  stroke={
+                    (opportunityScore || 0) > 70 ? '#22c55e'
+                      : (opportunityScore || 0) > 30 ? '#f59e0b'
+                        : '#ef4444'
+                  }
+                  strokeWidth="8"
+                  strokeLinecap="round"
+                  strokeDasharray={`${((opportunityScore || 0) / 100) * 326.73} 326.73`}
+                  transform="rotate(-90 60 60)"
+                />
+                <text x="60" y="54" textAnchor="middle" className="mads-opp-score-text">
+                  {Math.round(opportunityScore || 0)}
+                </text>
+                <text x="60" y="72" textAnchor="middle" className="mads-opp-score-label">
+                  /100
+                </text>
+              </svg>
+            </div>
+            <div className="mads-opp-info">
+              <h3 className="mads-section-title">Pontuacao de Oportunidade</h3>
+              {recommendations.length > 0 ? (
+                <p className="mads-opp-desc">
+                  Aplicar {recommendations.length} recomendacao(oes) pode aumentar
+                  sua pontuacao em ate{' '}
+                  <strong>
+                    {recommendations.reduce((sum, r) => sum + (r.opportunity_score_lift || 0), 0)} pontos
+                  </strong>
+                </p>
+              ) : (
+                <p className="mads-opp-desc">Nenhuma recomendacao disponivel no momento</p>
+              )}
+            </div>
+          </div>
+
+          {recommendations.length > 0 && (
+            <div className="mads-recs-list">
+              <h4 className="mads-recs-title">Recomendacoes</h4>
+              {recommendations.map((rec, i) => (
+                <div
+                  key={i}
+                  className={`mads-rec-card ${expandedRec === i ? 'expanded' : ''}`}
+                  onClick={() => setExpandedRec(expandedRec === i ? null : i)}
+                >
+                  <div className="mads-rec-row">
+                    <span className="mads-rec-badge">+{rec.opportunity_score_lift || 0} pts</span>
+                    <span className="mads-rec-type">{(rec.type || '').replace(/_/g, ' ')}</span>
+                    <span className="mads-rec-expand">{expandedRec === i ? '−' : '+'}</span>
+                  </div>
+                  {expandedRec === i && (
+                    <div className="mads-rec-details">
+                      {rec.body && <p className="mads-rec-body">{rec.body}</p>}
+                      {rec.lift_estimate && (
+                        <p className="mads-rec-lift">Resultado esperado: {rec.lift_estimate}</p>
+                      )}
+                      {rec.url && (
+                        <a
+                          href={rec.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mads-rec-link"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          Ver no Ads Manager →
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Account finance overview */}
       {accountFinance && (
         <div className="mads-acct-finance">
@@ -271,26 +494,7 @@ export default function MetaAdsFinanceiro() {
         {dailyData.length === 0 ? (
           <div className="mads-empty"><p>Sem dados de gastos para o periodo</p></div>
         ) : (
-          <div className="mads-fin-chart">
-            <div className="mads-fin-chart-y">
-              <span>{formatCurrency(maxSpend)}</span>
-              <span>{formatCurrency(maxSpend / 2)}</span>
-              <span>R$ 0</span>
-            </div>
-            <div className="mads-fin-chart-bars">
-              {dailyData.map((d, i) => (
-                <div key={i} className="mads-fin-bar-col" title={`${d.date}: ${formatCurrency(d.spend)}`}>
-                  <div
-                    className="mads-fin-bar"
-                    style={{ height: `${Math.max((d.spend / maxSpend) * 100, 1)}%` }}
-                  />
-                  {(i % Math.max(Math.floor(dailyData.length / 7), 1) === 0 || i === dailyData.length - 1) && (
-                    <span className="mads-fin-bar-label">{d.date.slice(5)}</span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <SpendChart data={dailyData} maxSpend={maxSpend} formatCurrency={formatCurrency} />
         )}
       </div>
 

@@ -475,6 +475,7 @@ export const metaAds = {
     if (params.level) query.append('level', params.level);
     if (params.date_start) query.append('date_start', params.date_start);
     if (params.date_stop) query.append('date_stop', params.date_stop);
+    if (params.time_increment) query.append('time_increment', params.time_increment);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/insights${qs ? `?${qs}` : ''}`);
   },
@@ -532,6 +533,9 @@ export const metaAds = {
 
   // Account Finance
   getAccountFinance: () => api.get('/api/v1/admin/meta-ads/account/finance'),
+
+  // Account Recommendations (opportunity score)
+  getAccountRecommendations: () => api.get('/api/v1/admin/meta-ads/account/recommendations'),
 
   // Budget Alerts
   listAlerts: () => api.get('/api/v1/admin/meta-ads/alerts'),

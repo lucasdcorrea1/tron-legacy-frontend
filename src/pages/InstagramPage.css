@@ -96,11 +96,11 @@
   50% { opacity: 0.5; }
 }
 
-/* ── Pill Navigation ── */
+/* ── Icon Navigation ── */
 
 .ig-nav {
   display: flex;
-  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.25rem;
   margin-bottom: 1.75rem;
   background: rgba(255, 255, 255, 0.02);
@@ -110,25 +110,24 @@
 }
 
 .ig-nav-item {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.85rem;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
   background: none;
   border: none;
   border-radius: 10px;
   color: #52525b;
-  font-size: 0.8rem;
-  font-weight: 600;
   cursor: pointer;
-  font-family: inherit;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
 }
 
 .ig-nav-item:hover {
   color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .ig-nav-item.active {
@@ -143,11 +142,37 @@
 }
 
 .ig-nav-item:hover svg {
-  opacity: 0.85;
+  opacity: 1;
 }
 
 .ig-nav-item.active svg {
   opacity: 1;
+}
+
+/* Tooltip */
+.ig-nav-item::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  padding: 0.35rem 0.65rem;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e4e4e7;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 10;
+}
+
+.ig-nav-item:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* ── Loading ── */
@@ -732,6 +757,90 @@
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
+/* Financial Summary (Home tab) */
+.ig-fin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.65rem;
+}
+
+.ig-fin-summary-card {
+  background: #141619;
+  border: 1px solid #2d3139;
+  border-radius: 10px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ig-fin-summary-card.recs {
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.ig-fin-summary-card.recs:hover {
+  border-color: #3b82f6;
+}
+
+.ig-fin-summary-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #71717a;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ig-fin-summary-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #f4f4f5;
+}
+
+.ig-fin-summary-value.today { color: #a78bfa; }
+.ig-fin-summary-value.month { color: #fbbf24; }
+.ig-fin-summary-value.recs-val { color: #60a5fa; }
+
+.ig-fin-summary-sub {
+  font-size: 0.68rem;
+  color: #4ade80;
+  font-weight: 500;
+}
+
+.ig-fin-summary-card.score {
+  align-items: center;
+  justify-content: center;
+}
+
+.ig-fin-score-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ig-fin-score-mini {
+  width: 32px;
+  height: 32px;
+}
+
+.ig-fin-score-num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f4f4f5;
+}
+
+@media (max-width: 768px) {
+  .ig-fin-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .ig-fin-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .ig-home-divider {
   height: 1px;
   background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.06) 20%, rgba(255, 255, 255, 0.06) 80%, transparent 100%);
@@ -847,6 +956,12 @@
 
   .ig-nav {
     width: 100%;
+    gap: 0.15rem;
+  }
+
+  .ig-nav-item {
+    width: 36px;
+    height: 36px;
   }
 
   .ig-home-tools-grid {
