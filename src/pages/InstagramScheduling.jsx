@@ -807,7 +807,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
 
         {/* ====== AGENDA TAB ====== */}
         {tab === 'agenda' && (
-          <>
+          <div className="ig-agenda-content">
             <div className="ig-list-header">
               <div className="ig-filter-row">
                 {['', 'scheduled', 'published', 'failed'].map(f => (
@@ -913,7 +913,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                 ))}
               </div>
             )}
-          </>
+          </div>
         )}
 
         {/* ====== NEW POST TAB ====== */}
@@ -958,6 +958,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   </div>
                 </div>
 
+                <div className="ig-step-card-body">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -1022,6 +1023,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                     <span>Enviando imagem...</span>
                   </div>
                 )}
+                </div>
 
                 <div className="ig-step-actions">
                   <div />
@@ -1065,6 +1067,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   </button>
                 </div>
 
+                <div className="ig-step-card-body">
                 <div className="ig-ai-context-row">
                   <label className="ig-ai-context-toggle">
                     <input
@@ -1117,6 +1120,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                     </div>
                   )}
                 </div>
+                </div>
 
                 <div className="ig-step-actions">
                   <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(0)}>
@@ -1148,6 +1152,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   </div>
                 </div>
 
+                <div className="ig-step-card-body">
                 <div className="ig-schedule-options">
                   <button
                     type="button"
@@ -1541,6 +1546,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                     ))}
                   </div>
                 )}
+                </div>
 
                 <div className="ig-step-actions">
                   <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(1)}>
@@ -1572,6 +1578,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   </div>
                 </div>
 
+                <div className="ig-step-card-body">
                 <div className="ig-review-layout">
                   <div className="ig-review-preview">
                     <div className="ig-preview-mockup">
@@ -1706,6 +1713,69 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                     </div>
                   </div>
                 )}
+
+                {/* Ad Quality Validation */}
+                {campaignEnabled && (() => {
+                  const checks = [
+                    { ok: images.length > 0, label: 'Imagem adicionada', tip: 'Posts com imagem tem 2x mais engajamento' },
+                    { ok: images.length === 1 || images.length <= 5, label: images.length > 1 ? `Carrossel (${images.length} imagens)` : 'Imagem unica', tip: images.length > 5 ? 'Maximo recomendado: 5 imagens' : 'Formato ideal para feed' },
+                    { ok: caption.length >= 50, label: `Legenda ${caption.length >= 50 ? 'completa' : 'curta'}`, tip: caption.length < 50 ? 'Legendas com 50+ caracteres performam melhor' : `${caption.length} caracteres` },
+                    { ok: (caption.match(/#\w+/g) || []).length >= 3, label: `${(caption.match(/#\w+/g) || []).length} hashtags`, tip: (caption.match(/#\w+/g) || []).length < 3 ? 'Use 3-10 hashtags para melhor alcance' : 'Bom numero de hashtags' },
+                    { ok: !!campaign.name.trim(), label: 'Nome da campanha', tip: !campaign.name.trim() ? 'Defina um nome para organizar suas campanhas' : campaign.name },
+                    { ok: Number(campaign.daily_budget) >= 10, label: `Orcamento R$${Number(campaign.daily_budget).toFixed(2)}/dia`, tip: Number(campaign.daily_budget) < 10 ? 'R$10+/dia recomendado para resultados consistentes' : 'Orcamento adequado' },
+                    { ok: campaign.targeting.interests.length >= 2, label: `${campaign.targeting.interests.length} interesse(s)`, tip: campaign.targeting.interests.length < 2 ? 'Adicione 2+ interesses para melhor segmentacao' : 'Segmentacao configurada' },
+                    { ok: locations.length > 0 && !(locations.length === 1 && locations[0].key === 'BR'), label: 'Segmentacao geografica', tip: locations.length === 1 && locations[0].key === 'BR' ? 'Refine a localizacao para melhor ROI' : `${locations.map(l => l.name).join(', ')}` },
+                    { ok: Number(campaign.duration_days) >= 3, label: `Duracao ${campaign.duration_days} dia(s)`, tip: Number(campaign.duration_days) < 3 ? 'Minimo 3 dias para o algoritmo otimizar' : 'Duracao suficiente para otimizacao' },
+                    { ok: campaign.objective === 'OUTCOME_TRAFFIC' ? !!campaign.creative.link_url : true, label: 'Link de destino', tip: campaign.objective === 'OUTCOME_TRAFFIC' && !campaign.creative.link_url ? 'Adicione URL para campanhas de trafego' : 'Configurado' },
+                  ];
+                  const passed = checks.filter(c => c.ok).length;
+                  const total = checks.length;
+                  const score = Math.round((passed / total) * 100);
+                  const scoreColor = score >= 80 ? '#22c55e' : score >= 60 ? '#f59e0b' : '#ef4444';
+
+                  return (
+                    <div className="ig-ad-validation">
+                      <div className="ig-ad-validation-header">
+                        <div className="ig-ad-validation-score" style={{ '--score-color': scoreColor }}>
+                          <svg width="48" height="48" viewBox="0 0 48 48">
+                            <circle cx="24" cy="24" r="20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
+                            <circle
+                              cx="24" cy="24" r="20" fill="none"
+                              stroke={scoreColor} strokeWidth="4"
+                              strokeDasharray={`${(score / 100) * 125.6} 125.6`}
+                              strokeLinecap="round"
+                              transform="rotate(-90 24 24)"
+                              style={{ transition: 'stroke-dasharray 0.6s ease' }}
+                            />
+                          </svg>
+                          <span className="ig-ad-validation-score-text" style={{ color: scoreColor }}>{score}%</span>
+                        </div>
+                        <div>
+                          <h4 className="ig-ad-validation-title">
+                            {score >= 80 ? 'Pronto para performar!' : score >= 60 ? 'Quase la, ajuste alguns itens' : 'Precisa de ajustes'}
+                          </h4>
+                          <p className="ig-ad-validation-subtitle">{passed}/{total} criterios atendidos</p>
+                        </div>
+                      </div>
+                      <div className="ig-ad-validation-checks">
+                        {checks.map((c, i) => (
+                          <div key={i} className={`ig-ad-check ${c.ok ? 'pass' : 'fail'}`}>
+                            <span className="ig-ad-check-icon">
+                              {c.ok ? (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12" /></svg>
+                              ) : (
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+                              )}
+                            </span>
+                            <span className="ig-ad-check-label">{c.label}</span>
+                            <span className="ig-ad-check-tip">{c.tip}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+                </div>
 
                 <div className="ig-step-actions">
                   <button className="ig-btn ig-btn-secondary ig-btn-back" onClick={() => setStep(2)}>

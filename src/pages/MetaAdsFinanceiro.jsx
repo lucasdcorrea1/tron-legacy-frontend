@@ -12,6 +12,7 @@ export default function MetaAdsFinanceiro() {
   const [campaigns, setCampaigns] = useState([]);
   const [insights, setInsights] = useState([]);
   const [dailyData, setDailyData] = useState([]);
+  const [accountFinance, setAccountFinance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [period, setPeriod] = useState(30);
@@ -29,16 +30,21 @@ export default function MetaAdsFinanceiro() {
       const dateStop = new Date().toISOString().slice(0, 10);
       const dateStart = new Date(Date.now() - period * 86400000).toISOString().slice(0, 10);
 
-      const [campaignsRes, insightsRes] = await Promise.all([
+      const [campaignsRes, insightsRes, financeRes] = await Promise.allSettled([
         metaAds.listCampaigns(),
         metaAds.getInsights({ level: 'campaign', date_start: dateStart, date_stop: dateStop }),
+        metaAds.getAccountFinance(),
       ]);
 
-      const campaignList = campaignsRes?.data || campaignsRes || [];
-      const insightsList = insightsRes?.data || [];
+      const campaignList = campaignsRes.status === 'fulfilled' ? (campaignsRes.value?.data || campaignsRes.value || []) : [];
+      const insightsList = insightsRes.status === 'fulfilled' ? (insightsRes.value?.data || []) : [];
 
       setCampaigns(Array.isArray(campaignList) ? campaignList : []);
       setInsights(insightsList);
+
+      if (financeRes.status === 'fulfilled' && financeRes.value) {
+        setAccountFinance(financeRes.value);
+      }
 
       // Build daily spend data from campaign insights with daily breakdown
       await loadDailyData(dateStart, dateStop);
@@ -165,6 +171,62 @@ export default function MetaAdsFinanceiro() {
   return (
     <div className="mads-fin">
       {error && <div className="mads-error">{error}</div>}
+
+      {/* Account finance overview */}
+      {accountFinance && (
+        <div className="mads-acct-finance">
+          <div className="mads-acct-finance-header">
+            <h3 className="mads-section-title">Conta: {accountFinance.name || 'Meta Ads'}</h3>
+            <span className={`mads-acct-status ${accountFinance.account_status === 1 ? 'active' : 'inactive'}`}>
+              {accountFinance.account_status === 1 ? 'Ativa' : 'Inativa'}
+            </span>
+          </div>
+          <div className="mads-acct-finance-grid">
+            <div className="mads-fin-card cap">
+              <span className="mads-fin-card-label">Limite da Conta</span>
+              <span className="mads-fin-card-value">
+                {accountFinance.has_spend_cap ? formatCurrency(accountFinance.spend_cap) : 'Sem limite'}
+              </span>
+              <span className="mads-fin-card-sub">{accountFinance.currency || 'BRL'}</span>
+            </div>
+            <div className="mads-fin-card spent">
+              <span className="mads-fin-card-label">Total Gasto (Conta)</span>
+              <span className="mads-fin-card-value">{formatCurrency(accountFinance.amount_spent)}</span>
+              <span className="mads-fin-card-sub">acumulado total</span>
+            </div>
+            <div className="mads-fin-card remaining">
+              <span className="mads-fin-card-label">Saldo Disponivel</span>
+              <span className="mads-fin-card-value">
+                {accountFinance.has_spend_cap ? formatCurrency(accountFinance.remaining) : '∞'}
+              </span>
+              <span className="mads-fin-card-sub">
+                {accountFinance.has_spend_cap
+                  ? `${accountFinance.spend_cap > 0 ? Math.round((accountFinance.remaining / accountFinance.spend_cap) * 100) : 0}% restante`
+                  : 'sem limite definido'}
+              </span>
+            </div>
+            <div className="mads-fin-card today">
+              <span className="mads-fin-card-label">Gasto Hoje</span>
+              <span className="mads-fin-card-value">{formatCurrency(accountFinance.spend_today)}</span>
+              <span className="mads-fin-card-sub">este mes: {formatCurrency(accountFinance.spend_this_month)}</span>
+            </div>
+          </div>
+          {accountFinance.has_spend_cap && (
+            <div className="mads-acct-spend-bar-wrapper">
+              <div className="mads-acct-spend-bar-bg">
+                <div
+                  className="mads-acct-spend-bar-fill"
+                  style={{ width: `${Math.min((accountFinance.amount_spent / accountFinance.spend_cap) * 100, 100)}%` }}
+                />
+              </div>
+              <span className="mads-acct-spend-bar-text">
+                {formatCurrency(accountFinance.amount_spent)} / {formatCurrency(accountFinance.spend_cap)}
+                {' '}({Math.round((accountFinance.amount_spent / accountFinance.spend_cap) * 100)}%)
+              </span>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Period selector */}
       <div className="mads-fin-period">

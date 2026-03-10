@@ -1,3 +1,101 @@
+/* Account finance overview */
+.mads-acct-finance {
+  background: #1a1d23;
+  border: 1px solid #2d3139;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.mads-acct-finance-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mads-acct-finance-header .mads-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e4e4e7;
+  margin: 0;
+}
+
+.mads-acct-status {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mads-acct-status.active {
+  background: rgba(74, 222, 128, 0.15);
+  color: #4ade80;
+}
+
+.mads-acct-status.inactive {
+  background: rgba(248, 113, 113, 0.15);
+  color: #f87171;
+}
+
+.mads-acct-finance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.mads-fin-card.cap::before { background: #06b6d4; }
+.mads-fin-card.spent::before { background: #f59e0b; }
+.mads-fin-card.remaining::before { background: #22c55e; }
+.mads-fin-card.today::before { background: #8b5cf6; }
+
+.mads-fin-card.cap .mads-fin-card-value { color: #22d3ee; }
+.mads-fin-card.spent .mads-fin-card-value { color: #fbbf24; }
+.mads-fin-card.remaining .mads-fin-card-value { color: #4ade80; }
+.mads-fin-card.today .mads-fin-card-value { color: #a78bfa; }
+
+.mads-acct-spend-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.mads-acct-spend-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #27272a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mads-acct-spend-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #f59e0b 70%, #ef4444 100%);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.mads-acct-spend-bar-text {
+  font-size: 0.7rem;
+  color: #71717a;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .mads-acct-finance-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .mads-acct-finance-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Period selector */
 .mads-fin-period {
   display: flex;

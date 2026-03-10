@@ -125,7 +125,6 @@ const adminItems = [
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro' },
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter' },
-  { path: '/admin/settings', icon: Icons_settings, label: 'Configurações' },
 ];
 
 const PLAN_RANK = { free: 0, starter: 1, pro: 2, enterprise: 3 };
@@ -205,7 +204,7 @@ export default function AdminLayout({ children }) {
                 return (
                   <Link
                     key={item.path}
-                    to={locked ? '/admin/settings' : item.path}
+                    to={locked ? '/admin/profile' : item.path}
                     className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''} ${locked ? 'nav-locked' : ''}`}
                     onClick={closeMobileMenu}
                   >

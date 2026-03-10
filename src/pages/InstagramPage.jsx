@@ -171,20 +171,22 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
   const loadUpcoming = useCallback(async () => {
     try {
       const [igRes, ipRes] = await Promise.all([
-        instagram.list({ status: 'scheduled', limit: 5 }),
-        integratedPublish.list({ status: 'scheduled', limit: 5 }),
+        instagram.list({ limit: 20 }),
+        integratedPublish.list({ limit: 20 }),
       ]);
-      const igItems = (igRes.items || []).map(s => ({
+      const igItems = (igRes.schedules || igRes.items || []).map(s => ({
         id: s.id, caption: s.caption, scheduled_at: s.scheduled_at,
-        image: s.image_urls?.[0], integrated: false, status: s.status,
+        image: s.image_urls?.[0], imageCount: s.image_urls?.length || 0,
+        integrated: false, status: s.status, error: s.error_message,
       }));
       const ipItems = (ipRes.items || []).map(s => ({
         id: s.id, caption: s.caption, scheduled_at: s.scheduled_at,
-        image: s.image_urls?.[0], integrated: true, status: s.status,
+        image: s.image_urls?.[0], imageCount: s.image_urls?.length || 0,
+        integrated: true, status: s.status, error: s.error_message,
+        campaignName: s.campaign?.name,
       }));
       const all = [...igItems, ...ipItems]
-        .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
-        .slice(0, 3);
+        .sort((a, b) => new Date(b.scheduled_at) - new Date(a.scheduled_at));
       setUpcoming(all);
     } catch { /* silent */ }
   }, []);
@@ -247,45 +249,89 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
             </div>
           </div>
 
-          {/* Upcoming scheduled posts */}
-          {upcoming.length > 0 && (
-            <div className="ig-home-section">
-              <div className="ig-home-section-header">
-                <span className="ig-home-section-icon"><Icon name="calendar" size={16} /></span>
-                <h3 className="ig-home-section-title">Proximos Agendamentos</h3>
-                <button className="ig-home-see-all" onClick={() => onNavigate('agendamento')}>
-                  Ver todos <Icon name="chevronRight" size={14} />
+          {/* Scheduled posts */}
+          <div className="ig-home-section">
+            <div className="ig-home-section-header">
+              <span className="ig-home-section-icon"><Icon name="calendar" size={16} /></span>
+              <h3 className="ig-home-section-title">Posts Agendados</h3>
+              <button className="ig-home-see-all" onClick={() => onNavigate('agendamento', 'novo')}>
+                <Icon name="plus" size={14} /> Novo post
+              </button>
+            </div>
+            {upcoming.length === 0 ? (
+              <div className="ig-home-empty-posts">
+                <Icon name="calendar" size={32} />
+                <p>Nenhum post agendado</p>
+                <button className="ig-home-empty-btn" onClick={() => onNavigate('agendamento', 'novo')}>
+                  Criar primeiro post
                 </button>
               </div>
-              <div className="ig-home-upcoming">
-                {upcoming.map(item => (
-                  <button
-                    key={item.id}
-                    className="ig-upcoming-card"
-                    onClick={() => onNavigate('agendamento')}
-                  >
-                    <div className="ig-upcoming-thumb">
-                      {item.image ? (
-                        <img src={item.image.startsWith('http') ? item.image : `${API_URL}${item.image}`} alt="" />
-                      ) : (
-                        <div className="ig-upcoming-placeholder"><Icon name="image" size={18} /></div>
-                      )}
-                      {item.integrated && <span className="ig-upcoming-ads-badge">Ads</span>}
+            ) : (
+              <div className="ig-home-posts-grid">
+                {upcoming.map(item => {
+                  const STATUS_MAP = {
+                    scheduled: { label: 'Agendado', cls: 'scheduled' },
+                    publishing: { label: 'Publicando', cls: 'publishing' },
+                    publishing_ig: { label: 'Publicando IG', cls: 'publishing' },
+                    publishing_ads: { label: 'Criando Ads', cls: 'publishing' },
+                    published: { label: 'Publicado', cls: 'published' },
+                    completed: { label: 'Concluido', cls: 'published' },
+                    failed: { label: 'Falhou', cls: 'failed' },
+                  };
+                  const st = STATUS_MAP[item.status] || { label: item.status, cls: '' };
+                  const isScheduled = item.status === 'scheduled';
+                  const dt = new Date(item.scheduled_at);
+                  const now = new Date();
+                  const diffMs = dt - now;
+                  const diffH = Math.floor(diffMs / 3600000);
+                  const diffD = Math.floor(diffMs / 86400000);
+                  let timeLabel = '';
+                  if (diffMs > 0) {
+                    if (diffD > 0) timeLabel = `em ${diffD}d`;
+                    else if (diffH > 0) timeLabel = `em ${diffH}h`;
+                    else timeLabel = 'em breve';
+                  }
+
+                  return (
+                    <div key={item.id} className={`ig-post-card ${st.cls}`}>
+                      <div className="ig-post-card-thumb">
+                        {item.image ? (
+                          <img src={item.image.startsWith('http') ? item.image : `${API_URL}${item.image}`} alt="" />
+                        ) : (
+                          <div className="ig-post-card-no-img"><Icon name="image" size={24} /></div>
+                        )}
+                        {item.imageCount > 1 && (
+                          <span className="ig-post-card-multi">{item.imageCount}</span>
+                        )}
+                        <span className={`ig-post-card-status ${st.cls}`}>{st.label}</span>
+                        {item.integrated && <span className="ig-post-card-ads">Ads</span>}
+                      </div>
+                      <div className="ig-post-card-body">
+                        <p className="ig-post-card-caption">{item.caption || 'Sem legenda'}</p>
+                        <div className="ig-post-card-meta">
+                          <span className="ig-post-card-date">
+                            <Icon name="clock" size={12} />
+                            {dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                            {' '}
+                            {dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                          {isScheduled && timeLabel && (
+                            <span className="ig-post-card-countdown">{timeLabel}</span>
+                          )}
+                        </div>
+                        {item.campaignName && (
+                          <span className="ig-post-card-campaign">{item.campaignName}</span>
+                        )}
+                        {item.error && (
+                          <span className="ig-post-card-error">{item.error}</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="ig-upcoming-info">
-                      <span className="ig-upcoming-caption">{item.caption || 'Sem legenda'}</span>
-                      <span className="ig-upcoming-date">
-                        <Icon name="clock" size={12} />
-                        {new Date(item.scheduled_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
-                        {' '}
-                        {new Date(item.scheduled_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                  );
+                })}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Best posting hours */}
           {engData.best_posting_hours.length > 0 && (

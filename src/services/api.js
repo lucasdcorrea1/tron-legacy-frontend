@@ -530,6 +530,9 @@ export const metaAds = {
   createTemplate: (data) => api.post('/api/v1/admin/meta-ads/templates', data),
   deleteTemplate: (id) => api.delete(`/api/v1/admin/meta-ads/templates/${id}`),
 
+  // Account Finance
+  getAccountFinance: () => api.get('/api/v1/admin/meta-ads/account/finance'),
+
   // Budget Alerts
   listAlerts: () => api.get('/api/v1/admin/meta-ads/alerts'),
   createAlert: (data) => api.post('/api/v1/admin/meta-ads/alerts', data),

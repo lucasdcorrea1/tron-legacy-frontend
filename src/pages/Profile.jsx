@@ -1,9 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useOrg } from '../context/OrgContext';
 import { useToast } from '../components/Toast';
 import { profile as profileApi, ai as aiApi, API_URL } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import { GeneralTab, MembersTab, BillingTab } from './OrgSettings';
 import './Profile.css';
+import './OrgSettings.css';
 
 const getImageUrl = (url) => {
   if (!url) return '';
@@ -13,7 +16,9 @@ const getImageUrl = (url) => {
 
 export default function Profile() {
   const { profile: authProfile, updateProfile } = useAuth();
+  const { hasOrgRole } = useOrg();
   const toast = useToast();
+  const isAdmin = hasOrgRole('owner', 'admin');
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
 
@@ -340,6 +345,29 @@ export default function Profile() {
               >
                 IA
               </button>
+              <span className="profile-tab-divider" />
+              {isAdmin && (
+                <button
+                  className={`profile-tab ${activeTab === 'org' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('org')}
+                >
+                  Empresa
+                </button>
+              )}
+              {isAdmin && (
+                <button
+                  className={`profile-tab ${activeTab === 'members' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('members')}
+                >
+                  Membros
+                </button>
+              )}
+              <button
+                className={`profile-tab ${activeTab === 'billing' ? 'active' : ''}`}
+                onClick={() => setActiveTab('billing')}
+              >
+                Plano
+              </button>
             </div>
 
             {/* Profile Tab */}
@@ -540,6 +568,23 @@ export default function Profile() {
                   {saving ? 'Salvando...' : 'Salvar Preferências'}
                 </button>
               </form>
+            )}
+
+            {/* Org Tabs */}
+            {activeTab === 'org' && isAdmin && (
+              <div className="profile-org-section">
+                <GeneralTab />
+              </div>
+            )}
+            {activeTab === 'members' && isAdmin && (
+              <div className="profile-org-section">
+                <MembersTab />
+              </div>
+            )}
+            {activeTab === 'billing' && (
+              <div className="profile-org-section">
+                <BillingTab />
+              </div>
             )}
 
             {/* AI Tab */}

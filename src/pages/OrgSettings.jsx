@@ -5,7 +5,7 @@ import { orgs, subscription as subscriptionApi } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './OrgSettings.css';
 
-function GeneralTab() {
+export function GeneralTab() {
   const { currentOrg, refreshOrg, hasOrgRole } = useOrg();
   const navigate = useNavigate();
   const [name, setName] = useState(currentOrg?.name || '');
@@ -123,7 +123,7 @@ function GeneralTab() {
   );
 }
 
-function MembersTab() {
+export function MembersTab() {
   const { currentOrg, hasOrgRole, subscription, usage, refreshUsage } = useOrg();
   const [members, setMembers] = useState([]);
   const [invitations, setInvitations] = useState([]);
@@ -268,7 +268,7 @@ function MembersTab() {
   );
 }
 
-function BillingTab() {
+export function BillingTab() {
   const { subscription, usage, refreshUsage } = useOrg();
   const navigate = useNavigate();
   const [canceling, setCanceling] = useState(false);
