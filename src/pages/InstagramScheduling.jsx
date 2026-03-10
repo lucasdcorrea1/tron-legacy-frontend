@@ -676,6 +676,8 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
       const msg = err.message || 'Erro ao gerar conteudo com IA';
       if (msg.includes('nao configurada') || msg.includes('Perfil')) {
         toast.error('IA nao configurada. Acesse Perfil > IA para configurar.');
+      } else if (msg.includes('creditos') || msg.includes('billing') || msg.includes('credit')) {
+        toast.error('Sem creditos na Anthropic. Adicione creditos em console.anthropic.com/settings/billing');
       } else {
         toast.error(msg);
       }

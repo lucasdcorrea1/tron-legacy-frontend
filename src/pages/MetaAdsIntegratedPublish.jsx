@@ -402,6 +402,8 @@ export default function MetaAdsIntegratedPublish() {
       const msg = err.message || 'Erro ao gerar conteudo com IA';
       if (msg.includes('nao configurada') || msg.includes('Perfil')) {
         setWizardError('IA nao configurada. Acesse Perfil > IA para configurar sua API key.');
+      } else if (msg.includes('creditos') || msg.includes('billing') || msg.includes('credit')) {
+        setWizardError('Sem creditos na Anthropic. Adicione creditos em console.anthropic.com/settings/billing');
       } else {
         setWizardError(msg);
       }
