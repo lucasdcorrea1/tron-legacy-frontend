@@ -98,6 +98,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const [configured, setConfigured] = useState(configuredProp ?? null);
   const [hasToken, setHasToken] = useState(false);
   const [igReason, setIgReason] = useState(''); // "no_pages" | "no_ig_linked" | ""
+  const [igAccounts, setIgAccounts] = useState([]); // multiple IG accounts found
   const [configSource, setConfigSource] = useState('');
   const [configAccountIdDisplay, setConfigAccountIdDisplay] = useState('');
   const [adAccountIdDisplay, setAdAccountIdDisplay] = useState('');
@@ -217,6 +218,23 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     setBusinessId('');
   };
 
+  const handleSelectIgAccount = async (account) => {
+    setSavingConfig(true);
+    try {
+      await instagram.saveConfig({
+        instagram_account_id: account.ig_account_id,
+        business_id: account.page_id,
+      });
+      toast.success(`Conta @${account.page_name} configurada!`);
+      setIgAccounts([]);
+      await checkConfig();
+    } catch (err) {
+      toast.error(err.message || 'Erro ao salvar conta selecionada');
+    } finally {
+      setSavingConfig(false);
+    }
+  };
+
   const handleDeleteConfig = async () => {
     try {
       await instagram.deleteConfig();
@@ -328,7 +346,10 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const handleOAuthMessage = useCallback((event) => {
     if (event.data?.type !== 'META_OAUTH_RESULT') return;
     if (event.data.success) {
-      if (event.data.needs_manual_config) {
+      if (event.data.needs_selection && event.data.ig_accounts?.length > 1) {
+        setIgAccounts(event.data.ig_accounts);
+        toast.success(`Conectado! ${event.data.ig_accounts.length} contas Instagram encontradas — escolha qual usar.`);
+      } else if (event.data.needs_manual_config) {
         setIgReason(event.data.ig_reason || '');
         if (event.data.ig_reason === 'no_pages') {
           toast.warning('Conectado! Voce nao possui uma Pagina do Facebook. Crie uma e vincule ao Instagram.');
@@ -790,6 +811,35 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
             {oauthLoading ? 'Abrindo...' : hasToken ? 'Reconectar com Facebook' : 'Conectar com Facebook'}
           </button>
         </div>
+
+        {/* Account selection (multiple IG accounts) */}
+        {igAccounts.length > 1 && (
+          <div className="igcfg-section" style={{ marginTop: 16 }}>
+            <div className="igcfg-section-header">
+              <div className="igcfg-section-icon igcfg-section-icon--purple">
+                <IconGrid />
+              </div>
+              <div>
+                <h3 className="igcfg-section-title">Escolha a conta Instagram</h3>
+                <p className="igcfg-section-sub">{igAccounts.length} contas encontradas — a primeira foi salva automaticamente</p>
+              </div>
+            </div>
+            <div className="igcfg-detail-grid">
+              {igAccounts.map((acc) => (
+                <button
+                  key={acc.ig_account_id}
+                  className="igcfg-detail-card"
+                  style={{ cursor: 'pointer', border: '1px solid #3f3f46', textAlign: 'left', background: 'transparent' }}
+                  onClick={() => handleSelectIgAccount(acc)}
+                  disabled={savingConfig}
+                >
+                  <span className="igcfg-detail-label">{acc.page_name}</span>
+                  <span className="igcfg-detail-value" style={{ fontSize: 12 }}>ID: {acc.ig_account_id}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Manual fallback */}
         <div className="igcfg-manual-fallback">
