@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { instagram, instagramAnalytics } from '../services/api';
+import { instagram, instagramAnalytics, integratedPublish, API_URL } from '../services/api';
 import { useToast } from '../components/Toast';
 import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
@@ -154,6 +154,7 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
   const toast = useToast();
   const [engData, setEngData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [upcoming, setUpcoming] = useState([]);
 
   const loadEngagement = useCallback(async () => {
     setLoading(true);
@@ -167,7 +168,28 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
     }
   }, [toast]);
 
-  useEffect(() => { loadEngagement(); }, [loadEngagement]);
+  const loadUpcoming = useCallback(async () => {
+    try {
+      const [igRes, ipRes] = await Promise.all([
+        instagram.list({ status: 'scheduled', limit: 5 }),
+        integratedPublish.list({ status: 'scheduled', limit: 5 }),
+      ]);
+      const igItems = (igRes.items || []).map(s => ({
+        id: s.id, caption: s.caption, scheduled_at: s.scheduled_at,
+        image: s.image_urls?.[0], integrated: false, status: s.status,
+      }));
+      const ipItems = (ipRes.items || []).map(s => ({
+        id: s.id, caption: s.caption, scheduled_at: s.scheduled_at,
+        image: s.image_urls?.[0], integrated: true, status: s.status,
+      }));
+      const all = [...igItems, ...ipItems]
+        .sort((a, b) => new Date(a.scheduled_at) - new Date(b.scheduled_at))
+        .slice(0, 3);
+      setUpcoming(all);
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => { loadEngagement(); loadUpcoming(); }, [loadEngagement, loadUpcoming]);
 
   const visibleTools = TOOL_CARDS.filter(t => !t.requiresAdAccount || hasAdAccount);
 
@@ -224,6 +246,46 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
               <span className="ig-home-stat-label">Eng. Medio</span>
             </div>
           </div>
+
+          {/* Upcoming scheduled posts */}
+          {upcoming.length > 0 && (
+            <div className="ig-home-section">
+              <div className="ig-home-section-header">
+                <span className="ig-home-section-icon"><Icon name="calendar" size={16} /></span>
+                <h3 className="ig-home-section-title">Proximos Agendamentos</h3>
+                <button className="ig-home-see-all" onClick={() => onNavigate('agendamento')}>
+                  Ver todos <Icon name="chevronRight" size={14} />
+                </button>
+              </div>
+              <div className="ig-home-upcoming">
+                {upcoming.map(item => (
+                  <button
+                    key={item.id}
+                    className="ig-upcoming-card"
+                    onClick={() => onNavigate('agendamento')}
+                  >
+                    <div className="ig-upcoming-thumb">
+                      {item.image ? (
+                        <img src={item.image.startsWith('http') ? item.image : `${API_URL}${item.image}`} alt="" />
+                      ) : (
+                        <div className="ig-upcoming-placeholder"><Icon name="image" size={18} /></div>
+                      )}
+                      {item.integrated && <span className="ig-upcoming-ads-badge">Ads</span>}
+                    </div>
+                    <div className="ig-upcoming-info">
+                      <span className="ig-upcoming-caption">{item.caption || 'Sem legenda'}</span>
+                      <span className="ig-upcoming-date">
+                        <Icon name="clock" size={12} />
+                        {new Date(item.scheduled_at).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                        {' '}
+                        {new Date(item.scheduled_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Best posting hours */}
           {engData.best_posting_hours.length > 0 && (
