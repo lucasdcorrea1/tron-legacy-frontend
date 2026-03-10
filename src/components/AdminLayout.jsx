@@ -122,8 +122,8 @@ const menuItems = [
 
 const adminItems = [
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
-  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro' },
-  { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter' },
+  { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro', superOnly: true },
+  { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter', superOnly: true },
   { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
 ];
 
@@ -139,6 +139,7 @@ export default function AdminLayout({ children }) {
 
   const currentPlan = subscription?.plan_id || 'free';
   const isAdmin = hasOrgRole('owner', 'admin');
+  const isSuperuser = profile?.role === 'superuser' || profile?.role === 'superadmin';
 
   const isActive = (path, exact = false) => {
     if (exact) return location.pathname === path;
@@ -199,7 +200,7 @@ export default function AdminLayout({ children }) {
           {isAdmin && (
             <div className="nav-section">
               <span className="nav-section-title">Admin</span>
-              {adminItems.map(item => {
+              {adminItems.filter(item => !item.superOnly || isSuperuser).map(item => {
                 const locked = item.minPlan && (PLAN_RANK[currentPlan] ?? 0) < (PLAN_RANK[item.minPlan] ?? 0);
                 return (
                   <Link

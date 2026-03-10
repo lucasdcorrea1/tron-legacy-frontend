@@ -40,6 +40,7 @@ const MetaAdsCampaignForm = lazy(() => import('./pages/MetaAdsCampaignForm'));
 const Plans = lazy(() => import('./pages/Plans'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const OrgSettings = lazy(() => import('./pages/OrgSettings'));
+const MetaCallback = lazy(() => import('./pages/MetaCallback'));
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/privacidade" element={<Legal />} />
           <Route path="/exclusao-dados" element={<Legal />} />
           <Route path="/planos" element={<Plans />} />
+          <Route path="/meta/callback" element={<MetaCallback />} />
 
           {/* Onboarding (auth required, no org needed) */}
           <Route path="/onboarding" element={<Onboarding />} />

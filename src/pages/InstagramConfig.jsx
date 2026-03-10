@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../components/Toast';
-import { instagram, metaAds } from '../services/api';
+import { useOrg } from '../context/OrgContext';
+import { instagram, metaAds, metaOAuth } from '../services/api';
 import './InstagramScheduling.css';
 import './MetaAdsConfig.css';
 import './InstagramConfig.css';
@@ -84,8 +85,15 @@ const IconToggle = ({ active }) => (
   </svg>
 );
 
+const IconFacebook = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+  </svg>
+);
+
 export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const toast = useToast();
+  const { currentOrg } = useOrg();
 
   const [configured, setConfigured] = useState(configuredProp ?? null);
   const [configSource, setConfigSource] = useState('');
@@ -96,6 +104,10 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   // Edit mode
   const [editing, setEditing] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+  const [showManualSetup, setShowManualSetup] = useState(false);
+
+  // OAuth
+  const [oauthLoading, setOauthLoading] = useState(false);
 
   // Config form
   const [configAccountId, setConfigAccountId] = useState('');
@@ -279,6 +291,42 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     }
   };
 
+  // ── OAuth: Conectar com Facebook ──
+  const handleConnectFacebook = async () => {
+    if (!currentOrg?.id) {
+      toast.error('Nenhuma organizacao selecionada');
+      return;
+    }
+    setOauthLoading(true);
+    try {
+      const data = await metaOAuth.getOAuthURL(currentOrg.id);
+      const popup = window.open(data.url, 'meta_oauth', 'width=600,height=700,scrollbars=yes');
+      if (!popup) {
+        toast.error('Popup bloqueado. Permita popups para este site.');
+        return;
+      }
+    } catch (err) {
+      toast.error(err.message || 'Erro ao iniciar conexao');
+    } finally {
+      setOauthLoading(false);
+    }
+  };
+
+  const handleOAuthMessage = useCallback((event) => {
+    if (event.data?.type !== 'META_OAUTH_RESULT') return;
+    if (event.data.success) {
+      toast.success('Conta Meta conectada com sucesso!');
+      checkConfig();
+    } else {
+      toast.error(event.data.error || 'Falha na conexao com Facebook');
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('message', handleOAuthMessage);
+    return () => window.removeEventListener('message', handleOAuthMessage);
+  }, [handleOAuthMessage]);
+
   if (configured === null) {
     return (
       <div className="igcfg-loading">
@@ -392,6 +440,9 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                 </button>
                 <button className="igcfg-action-btn igcfg-action-btn--secondary" onClick={handleLoadFeed} disabled={feedLoading}>
                   <IconGrid /> {feedLoading ? 'Carregando...' : 'Ver feed'}
+                </button>
+                <button className="igcfg-action-btn igcfg-action-btn--secondary" onClick={handleConnectFacebook} disabled={oauthLoading}>
+                  <IconFacebook /> {oauthLoading ? 'Abrindo...' : 'Reconectar'}
                 </button>
                 {configSource === 'user' && (
                   <button className="igcfg-action-btn igcfg-action-btn--danger" onClick={handleDeleteConfig}>
@@ -644,145 +695,95 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   // ─── NOT CONFIGURED STATE ───
   return (
     <div className="igcfg">
-      {/* Setup form */}
-      <div className="igcfg-section">
-        <div className="igcfg-section-header">
-          <div className="igcfg-section-icon igcfg-section-icon--purple">
-            <IconKey />
-          </div>
-          <div>
-            <h3 className="igcfg-section-title">Configurar credenciais</h3>
-            <p className="igcfg-section-sub">
-              Necessario: <code>instagram_basic</code>, <code>instagram_content_publish</code>.
-              Para Meta Ads: <code>ads_management</code>, <code>ads_read</code>.
-            </p>
-          </div>
-        </div>
-
-        <div className="igcfg-edit-form">
-          {renderInfoBox()}
-
-          <div className="igcfg-form-grid">
-            <div className="igcfg-field">
-              <label>Instagram Account ID</label>
-              <input
-                type="text"
-                value={configAccountId}
-                onChange={(e) => setConfigAccountId(e.target.value)}
-                placeholder="Ex: 17841473285320059"
-              />
-            </div>
-            <div className="igcfg-field">
-              <label>Access Token</label>
-              <input
-                type="password"
-                value={configAccessToken}
-                onChange={(e) => setConfigAccessToken(e.target.value)}
-                placeholder="Token do Meta Business Suite"
-              />
-            </div>
-            <div className="igcfg-field">
-              <label>Ad Account ID (opcional)</label>
-              <input
-                type="text"
-                value={adAccountId}
-                onChange={(e) => setAdAccountId(e.target.value)}
-                placeholder="Ex: 123456789 ou act_123456789"
-              />
-            </div>
-            <div className="igcfg-field">
-              <label>Business ID (opcional)</label>
-              <input
-                type="text"
-                value={businessId}
-                onChange={(e) => setBusinessId(e.target.value)}
-                placeholder="ID da pagina do Facebook"
-              />
-            </div>
-          </div>
-
-          <button
-            className="igcfg-action-btn igcfg-action-btn--primary"
-            onClick={handleSaveConfig}
-            disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
-          >
-            <IconCheck /> {savingConfig ? 'Salvando...' : 'Salvar configuracao'}
-          </button>
-        </div>
-      </div>
-
-      {/* How-to guide */}
+      {/* OAuth connect */}
       <div className="igcfg-section">
         <div className="igcfg-section-header">
           <div className="igcfg-section-icon igcfg-section-icon--blue">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
+            <IconKey />
           </div>
           <div>
-            <h3 className="igcfg-section-title">Como configurar</h3>
-            <p className="igcfg-section-sub">Passo a passo para conectar sua conta</p>
+            <h3 className="igcfg-section-title">Conectar conta</h3>
+            <p className="igcfg-section-sub">Conecte sua conta do Facebook para configurar tudo automaticamente</p>
           </div>
         </div>
 
-        <div className="igcfg-guide">
-          <div className="igcfg-guide-step">
-            <div className="igcfg-guide-step-num">1</div>
-            <div className="igcfg-guide-step-content">
-              <h4>Criar o App (se ainda nao tiver)</h4>
-              <ol className="igcfg-steps-list">
-                <li>Acesse <a href="https://developers.facebook.com/apps/" target="_blank" rel="noopener noreferrer">developers.facebook.com/apps</a></li>
-                <li>Crie um App do tipo <strong>Business</strong></li>
-                <li>Adicione o produto <strong>API do Instagram com login do Instagram</strong></li>
-              </ol>
-            </div>
-          </div>
+        <div className="igcfg-oauth-area">
+          <p className="igcfg-oauth-desc">
+            Ao conectar, buscaremos automaticamente sua conta Instagram Business,
+            conta de anuncios e token de acesso. Sem precisar copiar nada manualmente.
+          </p>
+          <button
+            className="igcfg-facebook-btn"
+            onClick={handleConnectFacebook}
+            disabled={oauthLoading}
+          >
+            <IconFacebook />
+            {oauthLoading ? 'Abrindo...' : 'Conectar com Facebook'}
+          </button>
+        </div>
 
-          <div className="igcfg-guide-step">
-            <div className="igcfg-guide-step-num">2</div>
-            <div className="igcfg-guide-step-content">
-              <h4>Gerar Token permanente (nao expira)</h4>
-              <ol className="igcfg-steps-list">
-                <li>Acesse <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer">Business Settings &gt; System Users</a></li>
-                <li>Crie um <strong>System User</strong> (tipo Admin) ou use um existente</li>
-                <li>Clique em <strong>Adicionar ativos</strong> e atribua:
-                  <ul className="igcfg-steps-sublist">
-                    <li>Sua <strong>Pagina do Facebook</strong></li>
-                    <li>Sua <strong>Conta do Instagram</strong></li>
-                    <li>Sua <strong>Conta de anuncios</strong> (se usar Meta Ads)</li>
-                    <li>Seu <strong>App</strong></li>
-                  </ul>
-                </li>
-                <li>Clique em <strong>Gerar token</strong>, selecione seu App</li>
-                <li>Marque as permissoes:
-                  <ul className="igcfg-steps-sublist">
-                    <li><code>instagram_basic</code></li>
-                    <li><code>instagram_content_publish</code></li>
-                    <li><code>instagram_manage_comments</code></li>
-                    <li><code>instagram_manage_messages</code></li>
-                    <li><code>pages_show_list</code></li>
-                    <li><code>pages_read_engagement</code></li>
-                    <li>Para Meta Ads: <code>ads_management</code>, <code>ads_read</code></li>
-                  </ul>
-                </li>
-                <li>Copie o token gerado &mdash; <strong>ele nao expira</strong></li>
-              </ol>
-            </div>
-          </div>
+        {/* Manual fallback */}
+        <div className="igcfg-manual-fallback">
+          <button
+            type="button"
+            className="igcfg-info-toggle"
+            onClick={() => setShowManualSetup(!showManualSetup)}
+          >
+            <IconChevron open={showManualSetup} /> Configurar manualmente
+          </button>
 
-          <div className="igcfg-guide-step">
-            <div className="igcfg-guide-step-num">3</div>
-            <div className="igcfg-guide-step-content">
-              <h4>Encontrar o Instagram Account ID</h4>
-              <ol className="igcfg-steps-list">
-                <li>Acesse <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer">Graph API Explorer</a></li>
-                <li>Cole seu token e faca a requisicao: <code>me/accounts</code></li>
-                <li>Pegue o <strong>id</strong> da sua Pagina</li>
-                <li>Faca outra requisicao: <code>{'{page_id}'}?fields=instagram_business_account</code></li>
-                <li>O <strong>id</strong> retornado e o seu Instagram Account ID</li>
-              </ol>
+          {showManualSetup && (
+            <div className="igcfg-edit-form" style={{ marginTop: 12 }}>
+              {renderInfoBox()}
+
+              <div className="igcfg-form-grid">
+                <div className="igcfg-field">
+                  <label>Instagram Account ID</label>
+                  <input
+                    type="text"
+                    value={configAccountId}
+                    onChange={(e) => setConfigAccountId(e.target.value)}
+                    placeholder="Ex: 17841473285320059"
+                  />
+                </div>
+                <div className="igcfg-field">
+                  <label>Access Token</label>
+                  <input
+                    type="password"
+                    value={configAccessToken}
+                    onChange={(e) => setConfigAccessToken(e.target.value)}
+                    placeholder="Token do Meta Business Suite"
+                  />
+                </div>
+                <div className="igcfg-field">
+                  <label>Ad Account ID (opcional)</label>
+                  <input
+                    type="text"
+                    value={adAccountId}
+                    onChange={(e) => setAdAccountId(e.target.value)}
+                    placeholder="Ex: 123456789 ou act_123456789"
+                  />
+                </div>
+                <div className="igcfg-field">
+                  <label>Business ID (opcional)</label>
+                  <input
+                    type="text"
+                    value={businessId}
+                    onChange={(e) => setBusinessId(e.target.value)}
+                    placeholder="ID da pagina do Facebook"
+                  />
+                </div>
+              </div>
+
+              <button
+                className="igcfg-action-btn igcfg-action-btn--primary"
+                onClick={handleSaveConfig}
+                disabled={savingConfig || !configAccountId.trim() || !configAccessToken.trim()}
+              >
+                <IconCheck /> {savingConfig ? 'Salvando...' : 'Salvar configuracao'}
+              </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

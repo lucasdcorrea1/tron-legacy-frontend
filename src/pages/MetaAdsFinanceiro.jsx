@@ -390,9 +390,21 @@ export default function MetaAdsFinanceiro() {
         <div className="mads-acct-finance">
           <div className="mads-acct-finance-header">
             <h3 className="mads-section-title">Conta: {accountFinance.name || 'Meta Ads'}</h3>
-            <span className={`mads-acct-status ${accountFinance.account_status === 1 ? 'active' : 'inactive'}`}>
-              {accountFinance.account_status === 1 ? 'Ativa' : 'Inativa'}
-            </span>
+            <div className="mads-acct-finance-actions">
+              <span className={`mads-acct-status ${accountFinance.account_status === 1 ? 'active' : 'inactive'}`}>
+                {accountFinance.account_status === 1 ? 'Ativa' : 'Inativa'}
+              </span>
+              <a
+                href={accountFinance.business_id
+                  ? `https://business.facebook.com/billing_hub/accounts?business_id=${accountFinance.business_id}&placement=standalone&global_scope_id=${accountFinance.business_id}`
+                  : 'https://business.facebook.com/billing_hub/accounts'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mads-add-funds-btn"
+              >
+                + Adicionar saldo
+              </a>
+            </div>
           </div>
           <div className="mads-acct-finance-grid">
             <div className="mads-fin-card cap">

@@ -761,6 +761,61 @@
   list-style: disc;
 }
 
+/* ── OAuth Area ── */
+.igcfg-oauth-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.igcfg-oauth-desc {
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 420px;
+}
+
+.igcfg-facebook-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.75rem;
+  background: #1877f2;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 12px rgba(24, 119, 242, 0.3);
+}
+
+.igcfg-facebook-btn:hover:not(:disabled) {
+  background: #166fe5;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(24, 119, 242, 0.4);
+}
+
+.igcfg-facebook-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.igcfg-manual-fallback {
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .igcfg-section {

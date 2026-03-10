@@ -325,6 +325,11 @@ export const emailMarketing = {
   deleteSubscriber: (id) => api.delete(`/api/v1/admin/email-marketing/subscribers/${id}`),
 };
 
+export const metaOAuth = {
+  getOAuthURL: (orgId) => api.get(`/api/v1/auth/meta/url?org_id=${orgId}`),
+  exchangeCode: (code, orgId) => api.post('/api/v1/auth/meta/callback', { code, org_id: orgId }),
+};
+
 export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
   saveConfig: (data) => api.put('/api/v1/admin/instagram/config', data),
@@ -610,7 +615,8 @@ export const orgs = {
   updateMemberRole: (uid, role) => api.put(`/api/v1/orgs/current/members/${uid}/role`, { org_role: role }),
   updateMemberPermissions: (uid, permissions) => api.put(`/api/v1/orgs/current/members/${uid}/permissions`, { permissions }),
   removeMember: (uid) => api.delete(`/api/v1/orgs/current/members/${uid}`),
-  acceptInvitation: (token) => api.post(`/api/v1/invitations/${token}/accept`),
+  myInvitations: () => api.get('/api/v1/invitations/mine'),
+  acceptInvitation: (id) => api.post(`/api/v1/invitations/${id}/accept`),
 };
 
 // ── Subscription ───────────────────────────────────────────────────

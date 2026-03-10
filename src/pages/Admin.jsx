@@ -2,22 +2,25 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
-import { blog } from '../services/api';
+import { blog, orgs } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import './Admin.css';
 
 export default function Admin() {
   const { profile } = useAuth();
-  const { hasOrgRole } = useOrg();
+  const { hasOrgRole, switchOrg, refreshOrg } = useOrg();
   const navigate = useNavigate();
   const isSuperuser = profile?.role === 'superuser';
   const isOrgAdmin = hasOrgRole('owner', 'admin');
   const [stats, setStats] = useState({ posts: 0, published: 0, drafts: 0 });
   const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [pendingInvites, setPendingInvites] = useState([]);
+  const [acceptingId, setAcceptingId] = useState(null);
 
   useEffect(() => {
     fetchData();
+    loadInvitations();
   }, []);
 
   const fetchData = async () => {
@@ -35,6 +38,24 @@ export default function Admin() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadInvitations = async () => {
+    try {
+      const data = await orgs.myInvitations();
+      setPendingInvites(Array.isArray(data) ? data : []);
+    } catch { /* ignore */ }
+  };
+
+  const handleAcceptInvite = async (inv) => {
+    setAcceptingId(inv.id);
+    try {
+      await orgs.acceptInvitation(inv.id);
+      await switchOrg(inv.org_id);
+      await refreshOrg();
+      setPendingInvites(prev => prev.filter(i => i.id !== inv.id));
+    } catch { /* ignore */ }
+    setAcceptingId(null);
   };
 
   const formatDate = (dateStr) => {
@@ -60,6 +81,28 @@ export default function Admin() {
             + Novo Post
           </button>
         </div>
+
+        {/* Pending Invitations */}
+        {pendingInvites.length > 0 && (
+          <div className="invites-banner">
+            <h3>Convites pendentes</h3>
+            {pendingInvites.map(inv => (
+              <div key={inv.id} className="invite-item">
+                <div className="invite-info">
+                  <strong>{inv.org_name || 'Organização'}</strong>
+                  <span>Cargo: {inv.org_role}</span>
+                </div>
+                <button
+                  className="btn-primary"
+                  disabled={acceptingId === inv.id}
+                  onClick={() => handleAcceptInvite(inv)}
+                >
+                  {acceptingId === inv.id ? 'Entrando...' : 'Aceitar'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Stats Cards */}
         <div className="stats-grid">
