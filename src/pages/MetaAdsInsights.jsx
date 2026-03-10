@@ -9,7 +9,7 @@ const LEVELS = [
   { value: 'ad', label: 'Anuncio' },
 ];
 
-export default function MetaAdsInsights() {
+export default function MetaAdsInsights({ adAccountId }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -25,13 +25,13 @@ export default function MetaAdsInsights() {
 
   useEffect(() => {
     loadInsights();
-  }, [level, dateStart, dateStop]);
+  }, [level, dateStart, dateStop, adAccountId]);
 
   const loadInsights = async () => {
     setLoading(true);
     setError('');
     try {
-      const result = await metaAds.getInsights({ level, date_start: dateStart, date_stop: dateStop });
+      const result = await metaAds.getInsights({ level, date_start: dateStart, date_stop: dateStop, ad_account_id: adAccountId || undefined });
       setData(result?.data || []);
     } catch (err) {
       setError(err.message);

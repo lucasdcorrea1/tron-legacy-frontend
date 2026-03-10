@@ -134,7 +134,7 @@ function SpendChart({ data, maxSpend, formatCurrency }) {
   );
 }
 
-export default function MetaAdsFinanceiro() {
+export default function MetaAdsFinanceiro({ adAccountId }) {
   const [campaigns, setCampaigns] = useState([]);
   const [insights, setInsights] = useState([]);
   const [dailyData, setDailyData] = useState([]);
@@ -150,20 +150,21 @@ export default function MetaAdsFinanceiro() {
 
   useEffect(() => {
     loadData();
-  }, [period]);
+  }, [period, adAccountId]);
 
   const loadData = async () => {
     setLoading(true);
     setError('');
+    const aaParam = adAccountId ? { ad_account_id: adAccountId } : {};
     try {
       const dateStop = new Date().toISOString().slice(0, 10);
       const dateStart = new Date(Date.now() - period * 86400000).toISOString().slice(0, 10);
 
       const [campaignsRes, insightsRes, financeRes, recsRes] = await Promise.allSettled([
-        metaAds.listCampaigns(),
-        metaAds.getInsights({ level: 'campaign', date_start: dateStart, date_stop: dateStop }),
-        metaAds.getAccountFinance(),
-        metaAds.getAccountRecommendations(),
+        metaAds.listCampaigns(aaParam),
+        metaAds.getInsights({ level: 'campaign', date_start: dateStart, date_stop: dateStop, ...aaParam }),
+        metaAds.getAccountFinance(aaParam),
+        metaAds.getAccountRecommendations(aaParam),
       ]);
 
       const campaignList = campaignsRes.status === 'fulfilled' ? (campaignsRes.value?.data || campaignsRes.value || []) : [];
@@ -197,13 +198,12 @@ export default function MetaAdsFinanceiro() {
       const start = new Date(dateStart);
       const stop = new Date(dateStop);
 
-      // Request insights day by day would be slow, so try to get the full range
-      // and parse date_start/date_stop from each entry
       const result = await metaAds.getInsights({
         level: 'account',
         date_start: dateStart,
         date_stop: dateStop,
         time_increment: 1,
+        ad_account_id: adAccountId || undefined,
       });
 
       const data = result?.data || [];

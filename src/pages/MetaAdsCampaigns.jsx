@@ -230,7 +230,7 @@ const getSpendColor = (percent) => {
   return '#4ade80';
 };
 
-export default function MetaAdsCampaigns() {
+export default function MetaAdsCampaigns({ adAccountId }) {
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState([]);
   const [insights, setInsights] = useState({});
@@ -255,8 +255,9 @@ export default function MetaAdsCampaigns() {
     setLoading(true);
     setError('');
     try {
+      const aaParam = adAccountId ? { ad_account_id: adAccountId } : {};
       const [campData, postsData, alertsData] = await Promise.all([
-        metaAds.listCampaigns({ status: statusFilter || undefined }),
+        metaAds.listCampaigns({ status: statusFilter || undefined, ...aaParam }),
         integratedPublish.list({ page: 1, limit: 200 }).catch(() => ({ items: [] })),
         metaAds.listAlerts().catch(() => []),
       ]);
@@ -279,18 +280,18 @@ export default function MetaAdsCampaigns() {
       await Promise.allSettled(
         list.map(async (c) => {
           try {
-            const res = await metaAds.getCampaignInsights(c.id);
+            const res = await metaAds.getCampaignInsights(c.id, aaParam);
             if (res?.data?.[0]) insightResults[c.id] = res.data[0];
           } catch { /* skip */ }
 
           try {
-            const adSetsRes = await metaAds.listAdSets({ campaign_id: c.id });
+            const adSetsRes = await metaAds.listAdSets({ campaign_id: c.id, ...aaParam });
             const adSets = adSetsRes?.data || [];
             const allAds = [];
             await Promise.allSettled(
               adSets.map(async (as) => {
                 try {
-                  const adsRes = await metaAds.listAds({ adset_id: as.id });
+                  const adsRes = await metaAds.listAds({ adset_id: as.id, ...aaParam });
                   if (adsRes?.data) allAds.push(...adsRes.data);
                 } catch { /* skip */ }
               })
@@ -306,7 +307,7 @@ export default function MetaAdsCampaigns() {
     } finally {
       setLoading(false);
     }
-  }, [statusFilter]);
+  }, [statusFilter, adAccountId]);
 
   useEffect(() => {
     loadCampaigns();

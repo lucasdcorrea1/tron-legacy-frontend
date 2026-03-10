@@ -158,7 +158,7 @@ const TOOL_CARDS = [
   { key: 'autoboost', icon: 'zap', title: 'Auto-Boost', desc: 'Impulsione posts automaticamente', requiresAdAccount: true },
 ];
 
-function InstagramHomeTab({ hasAdAccount, onNavigate }) {
+function InstagramHomeTab({ hasAdAccount, adAccountId, onNavigate }) {
   const toast = useToast();
   const [engData, setEngData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -202,10 +202,11 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
 
   const loadFinanceSummary = useCallback(async () => {
     if (!hasAdAccount) return;
+    const aaParams = adAccountId ? { ad_account_id: adAccountId } : {};
     try {
       const [finRes, recsRes] = await Promise.allSettled([
-        metaAds.getAccountFinance(),
-        metaAds.getAccountRecommendations(),
+        metaAds.getAccountFinance(aaParams),
+        metaAds.getAccountRecommendations(aaParams),
       ]);
       const fin = finRes.status === 'fulfilled' ? finRes.value : null;
       const recs = recsRes.status === 'fulfilled' ? recsRes.value : null;
@@ -220,7 +221,7 @@ function InstagramHomeTab({ hasAdAccount, onNavigate }) {
         });
       }
     } catch { /* silent */ }
-  }, [hasAdAccount]);
+  }, [hasAdAccount, adAccountId]);
 
   useEffect(() => { loadEngagement(); loadUpcoming(); loadFinanceSummary(); }, [loadEngagement, loadUpcoming, loadFinanceSummary]);
 
@@ -488,6 +489,10 @@ export default function InstagramPage() {
   const [activeTab, setActiveTab] = useState('config');
   const [schedulingInitialTab, setSchedulingInitialTab] = useState(null);
 
+  // Multi ad account support
+  const [adAccounts, setAdAccounts] = useState([]);
+  const [selectedAdAccountId, setSelectedAdAccountId] = useState('');
+
   useEffect(() => {
     instagram.getConfig()
       .then(data => {
@@ -498,6 +503,18 @@ export default function InstagramPage() {
       })
       .catch(() => setConfigured(false));
   }, []);
+
+  // Load ad accounts when hasAdAccount is true
+  useEffect(() => {
+    if (!hasAdAccount) return;
+    metaAds.listAdAccounts()
+      .then(data => {
+        const accounts = data?.data || [];
+        setAdAccounts(accounts);
+        // Don't pre-select — empty means use the default saved in DB
+      })
+      .catch(() => setAdAccounts([]));
+  }, [hasAdAccount]);
 
   const handleConfigChange = (isConfigured, data) => {
     const wasNotConfigured = configured === false;
@@ -570,6 +587,25 @@ export default function InstagramPage() {
               ))}
             </nav>
 
+            {/* Ad Account Selector — only when multiple accounts */}
+            {adAccounts.length > 1 && hasAdAccount && (
+              <div className="ig-ad-account-selector">
+                <label className="ig-ad-account-label">Conta de anuncios:</label>
+                <select
+                  className="ig-ad-account-select"
+                  value={selectedAdAccountId}
+                  onChange={e => setSelectedAdAccountId(e.target.value)}
+                >
+                  <option value="">Padrao (salva no sistema)</option>
+                  {adAccounts.map(acc => (
+                    <option key={acc.account_id} value={acc.account_id}>
+                      {acc.name || acc.account_id} ({acc.account_id})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
             <div className="ig-unified-content">
               {activeTab === 'config' && (
                 <InstagramConfig
@@ -580,6 +616,7 @@ export default function InstagramPage() {
               {activeTab === 'home' && (
                 <InstagramHomeTab
                   hasAdAccount={hasAdAccount}
+                  adAccountId={selectedAdAccountId}
                   onNavigate={(tab, subTab) => {
                     if (subTab) setSchedulingInitialTab(subTab);
                     setActiveTab(tab);
@@ -597,9 +634,9 @@ export default function InstagramPage() {
               {activeTab === 'autoreply' && <InstagramAutoReplyContent />}
               {activeTab === 'leads' && <InstagramLeadsContent />}
               {activeTab === 'analytics' && <InstagramAnalyticsContent />}
-              {activeTab === 'campanhas' && <MetaAdsCampaigns />}
-              {activeTab === 'insights' && <MetaAdsInsights />}
-              {activeTab === 'financeiro' && <MetaAdsFinanceiro />}
+              {activeTab === 'campanhas' && <MetaAdsCampaigns adAccountId={selectedAdAccountId} />}
+              {activeTab === 'insights' && <MetaAdsInsights adAccountId={selectedAdAccountId} />}
+              {activeTab === 'financeiro' && <MetaAdsFinanceiro adAccountId={selectedAdAccountId} />}
               {activeTab === 'autoboost' && <AutoBoostContent />}
             </div>
           </>

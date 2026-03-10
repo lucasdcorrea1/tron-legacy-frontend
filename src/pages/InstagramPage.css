@@ -175,6 +175,43 @@
   transform: translateX(-50%) translateY(0);
 }
 
+/* ── Ad Account Selector ── */
+
+.ig-ad-account-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(59, 130, 246, 0.06);
+  border: 1px solid rgba(59, 130, 246, 0.15);
+  border-radius: 10px;
+}
+
+.ig-ad-account-label {
+  font-size: 0.78rem;
+  color: #a1a1aa;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.ig-ad-account-select {
+  flex: 1;
+  background: #18181b;
+  border: 1px solid #3f3f46;
+  border-radius: 6px;
+  color: #e4e4e7;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.ig-ad-account-select:focus {
+  border-color: #3b82f6;
+}
+
 /* ── Loading ── */
 
 .ig-unified-loading {

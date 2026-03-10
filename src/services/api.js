@@ -426,10 +426,14 @@ export const instagramAnalytics = {
 };
 
 export const metaAds = {
+  // Ad Accounts
+  listAdAccounts: () => api.get('/api/v1/admin/meta-ads/accounts'),
+
   // Campaigns
   listCampaigns: (params = {}) => {
     const query = new URLSearchParams();
     if (params.status) query.append('status', params.status);
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/campaigns${qs ? `?${qs}` : ''}`);
   },
@@ -446,6 +450,7 @@ export const metaAds = {
   listAdSets: (params = {}) => {
     const query = new URLSearchParams();
     if (params.campaign_id) query.append('campaign_id', params.campaign_id);
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/adsets${qs ? `?${qs}` : ''}`);
   },
@@ -462,6 +467,7 @@ export const metaAds = {
   listAds: (params = {}) => {
     const query = new URLSearchParams();
     if (params.adset_id) query.append('adset_id', params.adset_id);
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/ads${qs ? `?${qs}` : ''}`);
   },
@@ -481,6 +487,7 @@ export const metaAds = {
     if (params.date_start) query.append('date_start', params.date_start);
     if (params.date_stop) query.append('date_stop', params.date_stop);
     if (params.time_increment) query.append('time_increment', params.time_increment);
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/insights${qs ? `?${qs}` : ''}`);
   },
@@ -488,6 +495,7 @@ export const metaAds = {
     const query = new URLSearchParams();
     if (params.date_start) query.append('date_start', params.date_start);
     if (params.date_stop) query.append('date_stop', params.date_stop);
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
     const qs = query.toString();
     return api.get(`/api/v1/admin/meta-ads/campaigns/${id}/insights${qs ? `?${qs}` : ''}`);
   },
@@ -524,7 +532,12 @@ export const metaAds = {
   // Targeting
   searchInterests: (q) => api.get(`/api/v1/admin/meta-ads/targeting/interests?q=${encodeURIComponent(q)}`),
   searchLocations: (q) => api.get(`/api/v1/admin/meta-ads/targeting/locations?q=${encodeURIComponent(q)}`),
-  listAudiences: () => api.get('/api/v1/admin/meta-ads/targeting/audiences'),
+  listAudiences: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/targeting/audiences${qs ? `?${qs}` : ''}`);
+  },
 
   // Presets
   listPresets: () => api.get('/api/v1/admin/meta-ads/presets'),
@@ -537,10 +550,20 @@ export const metaAds = {
   deleteTemplate: (id) => api.delete(`/api/v1/admin/meta-ads/templates/${id}`),
 
   // Account Finance
-  getAccountFinance: () => api.get('/api/v1/admin/meta-ads/account/finance'),
+  getAccountFinance: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/account/finance${qs ? `?${qs}` : ''}`);
+  },
 
   // Account Recommendations (opportunity score)
-  getAccountRecommendations: () => api.get('/api/v1/admin/meta-ads/account/recommendations'),
+  getAccountRecommendations: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.ad_account_id) query.append('ad_account_id', params.ad_account_id);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/meta-ads/account/recommendations${qs ? `?${qs}` : ''}`);
+  },
 
   // Budget Alerts
   listAlerts: () => api.get('/api/v1/admin/meta-ads/alerts'),

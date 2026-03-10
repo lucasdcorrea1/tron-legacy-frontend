@@ -362,6 +362,13 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
       } else {
         toast.success('Conta Meta conectada com sucesso!');
       }
+      // Toast about ad accounts found
+      const adCount = event.data.ad_accounts_count || event.data.ad_accounts?.length || 0;
+      if (adCount > 1) {
+        toast.success(`${adCount} contas de anuncios encontradas. Use o seletor para alternar entre elas.`);
+      } else if (adCount === 1) {
+        toast.success('1 conta de anuncios configurada.');
+      }
       checkConfig();
     } else {
       toast.error(event.data.error || 'Falha na conexao com Facebook');
