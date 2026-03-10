@@ -39,8 +39,9 @@ export default function Profile() {
 
   // AI Config
   const [aiConfigured, setAiConfigured] = useState(false);
+  const [aiProvider, setAiProvider] = useState('gemini');
   const [aiKeyPrefix, setAiKeyPrefix] = useState('');
-  const [aiModel, setAiModel] = useState('claude-sonnet-4-5-20250929');
+  const [aiModel, setAiModel] = useState('gemini-2.0-flash');
   const [aiApiKey, setAiApiKey] = useState('');
   const [savingAi, setSavingAi] = useState(false);
 
@@ -100,6 +101,7 @@ export default function Profile() {
         const aiData = await aiApi.getConfig();
         setAiConfigured(aiData.configured || false);
         setAiKeyPrefix(aiData.key_prefix || '');
+        if (aiData.provider) setAiProvider(aiData.provider);
         if (aiData.model) setAiModel(aiData.model);
       } catch {
         // AI config not available, ignore
@@ -213,11 +215,12 @@ export default function Profile() {
     }
     setSavingAi(true);
     try {
-      const payload = { model: aiModel };
+      const payload = { provider: aiProvider, model: aiModel };
       if (aiApiKey) payload.api_key = aiApiKey;
       const res = await aiApi.saveConfig(payload);
       setAiConfigured(true);
       setAiKeyPrefix(res.key_prefix || '');
+      if (res.provider) setAiProvider(res.provider);
       setAiApiKey('');
       toast.success('Configuracao de IA salva!', 'IA');
     } catch (err) {
@@ -543,46 +546,82 @@ export default function Profile() {
             {activeTab === 'ai' && (
               <form onSubmit={handleSaveAIConfig} className="profile-form">
                 <div className="settings-section">
-                  <h4>Inteligencia Artificial (Claude)</h4>
+                  <h4>Inteligencia Artificial</h4>
 
                   <div className="ai-status-badge">
                     <span className={`ai-status-dot ${aiConfigured ? 'active' : ''}`} />
                     {aiConfigured ? (
-                      <span>Configurado &middot; {aiKeyPrefix}</span>
+                      <span>Configurado &middot; {aiProvider === 'gemini' ? 'Google Gemini' : 'Claude'} &middot; {aiKeyPrefix}</span>
                     ) : (
                       <span>Nao configurado</span>
                     )}
                   </div>
 
-                  {!aiConfigured && (
+                  <div className="form-group">
+                    <label htmlFor="aiProvider">Provedor</label>
+                    <div className="ai-provider-cards">
+                      <button
+                        type="button"
+                        className={`ai-provider-card ${aiProvider === 'gemini' ? 'active' : ''}`}
+                        onClick={() => { setAiProvider('gemini'); setAiModel('gemini-2.0-flash'); }}
+                      >
+                        <span className="ai-provider-name">Google Gemini</span>
+                        <span className="ai-provider-tag free">Gratis</span>
+                        <span className="ai-provider-desc">15 req/min, 1M tokens/dia</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`ai-provider-card ${aiProvider === 'claude' ? 'active' : ''}`}
+                        onClick={() => { setAiProvider('claude'); setAiModel('claude-sonnet-4-5-20250929'); }}
+                      >
+                        <span className="ai-provider-name">Claude (Anthropic)</span>
+                        <span className="ai-provider-tag paid">Pago</span>
+                        <span className="ai-provider-desc">Melhor qualidade, ~$0.003/req</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {!aiConfigured && aiProvider === 'gemini' && (
                     <div className="ai-setup-guide">
-                      <p className="ai-setup-title">Como obter sua API Key:</p>
+                      <p className="ai-setup-title">Como obter sua API Key (Google Gemini):</p>
                       <ol className="ai-setup-steps">
                         <li>
-                          Acesse o console da Anthropic{' '}
-                          <a
-                            href="https://console.anthropic.com/settings/keys"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="ai-setup-link"
-                          >
+                          Acesse{' '}
+                          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="ai-setup-link">
+                            aistudio.google.com/apikey
+                          </a>
+                        </li>
+                        <li>Faca login com sua conta Google</li>
+                        <li>Clique em <strong>"Create API Key"</strong></li>
+                        <li>Copie a chave e cole abaixo</li>
+                      </ol>
+                      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" className="ai-get-key-btn">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
+                        </svg>
+                        Criar API Key no Google AI Studio
+                      </a>
+                    </div>
+                  )}
+
+                  {!aiConfigured && aiProvider === 'claude' && (
+                    <div className="ai-setup-guide">
+                      <p className="ai-setup-title">Como obter sua API Key (Claude):</p>
+                      <ol className="ai-setup-steps">
+                        <li>
+                          Acesse{' '}
+                          <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="ai-setup-link">
                             console.anthropic.com/settings/keys
                           </a>
                         </li>
                         <li>Crie uma conta ou faca login</li>
                         <li>Clique em <strong>"Create Key"</strong></li>
-                        <li>Copie a chave gerada e cole abaixo</li>
+                        <li>Adicione creditos em Billing (min. $5 USD)</li>
+                        <li>Copie a chave e cole abaixo</li>
                       </ol>
-                      <a
-                        href="https://console.anthropic.com/settings/keys"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="ai-get-key-btn"
-                      >
+                      <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="ai-get-key-btn">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" />
-                          <polyline points="15 3 21 3 21 9" />
-                          <line x1="10" y1="14" x2="21" y2="3" />
+                          <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
                         </svg>
                         Criar API Key na Anthropic
                       </a>
@@ -596,7 +635,7 @@ export default function Profile() {
                       id="aiApiKey"
                       value={aiApiKey}
                       onChange={(e) => setAiApiKey(e.target.value)}
-                      placeholder={aiConfigured ? 'Deixe vazio para manter a atual' : 'Cole sua key aqui: sk-ant-...'}
+                      placeholder={aiConfigured ? 'Deixe vazio para manter a atual' : aiProvider === 'gemini' ? 'Cole sua key aqui: AIza...' : 'Cole sua key aqui: sk-ant-...'}
                     />
                   </div>
 
@@ -607,12 +646,19 @@ export default function Profile() {
                       value={aiModel}
                       onChange={(e) => setAiModel(e.target.value)}
                     >
-                      <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (recomendado)</option>
-                      <option value="claude-haiku-4-5-20251001">Haiku 4.5 (mais rapido)</option>
+                      {aiProvider === 'gemini' ? (
+                        <>
+                          <option value="gemini-2.0-flash">Gemini 2.0 Flash (recomendado)</option>
+                          <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (mais rapido)</option>
+                          <option value="gemini-1.5-pro">Gemini 1.5 Pro (melhor qualidade)</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="claude-sonnet-4-5-20250929">Sonnet 4.5 (recomendado)</option>
+                          <option value="claude-haiku-4-5-20251001">Haiku 4.5 (mais rapido)</option>
+                        </>
+                      )}
                     </select>
-                    <span className="settings-hint">
-                      Sonnet: melhor qualidade. Haiku: mais rapido e economico.
-                    </span>
                   </div>
                 </div>
 
