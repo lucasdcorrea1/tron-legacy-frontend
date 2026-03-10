@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { useToast } from '../components/Toast';
-import { instagram, integratedPublish, metaAds, API_URL } from '../services/api';
+import { instagram, integratedPublish, metaAds, ai as aiApi, API_URL } from '../services/api';
 import './InstagramScheduling.css';
 
 const STEPS = [
@@ -152,6 +152,9 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
   const [images, setImages] = useState([]); // [{id, url, file?}]
   const [uploading, setUploading] = useState(false);
   const [caption, setCaption] = useState('');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiContext, setAiContext] = useState('');
+  const [showAiContext, setShowAiContext] = useState(false);
   const [scheduleDate, setScheduleDate] = useState('');
   const [scheduleTime, setScheduleTime] = useState('');
   const [publishNow, setPublishNow] = useState(false);
@@ -655,10 +658,38 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
     }
   };
 
+  const handleAIGenerate = async () => {
+    setAiGenerating(true);
+    try {
+      const res = await aiApi.generate({
+        type: 'caption',
+        context: aiContext || undefined,
+        media_count: images.length,
+        media_type: images.length > 1 ? 'carousel' : 'image',
+        language: 'pt-BR',
+      });
+      if (res.text) setCaption(res.text);
+      if (res.campaign_name && campaignEnabled && !campaign.name) {
+        setCampaign(prev => ({ ...prev, name: res.campaign_name }));
+      }
+    } catch (err) {
+      const msg = err.message || 'Erro ao gerar conteudo com IA';
+      if (msg.includes('nao configurada') || msg.includes('Perfil')) {
+        toast.error('IA nao configurada. Acesse Perfil > IA para configurar.');
+      } else {
+        toast.error(msg);
+      }
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
   const handleReset = () => {
     setStep(0);
     setImages([]);
     setCaption('');
+    setAiContext('');
+    setShowAiContext(false);
     setScheduleDate('');
     setScheduleTime('');
     setPublishNow(false);
@@ -1011,10 +1042,45 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   <div className="ig-step-card-icon">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" /></svg>
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <h3 className="ig-step-card-title">Escreva a legenda</h3>
                     <p className="ig-step-card-subtitle">A legenda e opcional. Use #hashtags para aumentar o alcance do post.</p>
                   </div>
+                  <button
+                    type="button"
+                    className="ig-btn-ai"
+                    disabled={aiGenerating || images.length === 0}
+                    onClick={handleAIGenerate}
+                  >
+                    {aiGenerating ? (
+                      <><span className="ig-spinner-small" /> Gerando...</>
+                    ) : (
+                      <>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7L12 16.4 5.7 21l2.3-7L2 9.4h7.6z" /></svg>
+                        Preencher com IA
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                <div className="ig-ai-context-row">
+                  <label className="ig-ai-context-toggle">
+                    <input
+                      type="checkbox"
+                      checked={showAiContext}
+                      onChange={e => setShowAiContext(e.target.checked)}
+                    />
+                    Adicionar contexto para a IA
+                  </label>
+                  {showAiContext && (
+                    <input
+                      className="ig-ai-context-input"
+                      type="text"
+                      placeholder="Ex: promocao de verao, lancamento de produto..."
+                      value={aiContext}
+                      onChange={e => setAiContext(e.target.value)}
+                    />
+                  )}
                 </div>
 
                 <div className="ig-caption-layout">
