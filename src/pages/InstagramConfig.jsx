@@ -328,7 +328,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
     if (event.data?.type !== 'META_OAUTH_RESULT') return;
     if (event.data.success) {
       if (event.data.needs_manual_config) {
-        toast.warning('Token salvo! Configure o Instagram Account ID manualmente abaixo.');
+        toast.warning('Conectado! Vincule o Instagram a sua Pagina do Facebook e reconecte, ou preencha o Account ID abaixo.');
         setShowManualSetup(true);
       } else {
         toast.success('Conta Meta conectada com sucesso!');
