@@ -17,6 +17,7 @@
 
 .newsletter-text {
   flex-shrink: 0;
+  max-width: 50%;
 }
 
 .newsletter-title {
@@ -34,7 +35,7 @@
 
 .newsletter-form {
   flex: 1;
-  min-width: 0;
+  min-width: 280px;
 }
 
 .newsletter-input-group {
@@ -121,6 +122,14 @@
     align-items: stretch;
     padding: 1.5rem;
     gap: 1.25rem;
+  }
+
+  .newsletter-text {
+    max-width: 100%;
+  }
+
+  .newsletter-form {
+    min-width: 0;
   }
 
   .newsletter-input-group {

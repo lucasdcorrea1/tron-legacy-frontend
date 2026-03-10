@@ -144,6 +144,16 @@ export function OrgProvider({ children }) {
     return roles.flat().includes(currentOrg.my_role);
   }, [currentOrg]);
 
+  const hasPermission = useCallback((perm) => {
+    if (!currentOrg?.my_role) return false;
+    // Owner and admin always have all permissions
+    if (currentOrg.my_role === 'owner' || currentOrg.my_role === 'admin') return true;
+    // Viewer never has permissions
+    if (currentOrg.my_role === 'viewer') return false;
+    // Member: check explicit permissions
+    return (currentOrg.my_permissions || []).includes(perm);
+  }, [currentOrg]);
+
   // Rerun init when authentication changes (login/logout)
   const prevAuth = useRef(isAuthenticated);
   useEffect(() => {
@@ -167,6 +177,7 @@ export function OrgProvider({ children }) {
       canUse,
       isAtLimit,
       hasOrgRole,
+      hasPermission,
       setOrgList,
       setCurrentOrg,
       setSub,

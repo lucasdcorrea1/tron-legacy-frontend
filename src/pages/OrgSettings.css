@@ -292,6 +292,87 @@
   background: rgba(239, 68, 68, 0.1);
 }
 
+/* Invite form row */
+.invite-form-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.invite-form-row input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.invite-form-row select {
+  width: 140px;
+}
+
+/* Permissions grid */
+.permissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 0 0;
+}
+
+.permissions-grid .permissions-label {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin-bottom: 0.25rem;
+}
+
+.permission-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: #d4d4d8;
+  cursor: pointer;
+  padding: 0.375rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.permission-checkbox:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.permission-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #3b82f6;
+  cursor: pointer;
+}
+
+/* Member row wrapper for expandable permissions */
+.member-row-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.member-row-wrapper .member-row {
+  border-radius: 8px;
+}
+
+.member-row-wrapper.expanded .member-row {
+  border-radius: 8px 8px 0 0;
+  border-bottom-color: transparent;
+}
+
+.member-permissions {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
 .invitations-title {
   font-size: 0.875rem;
   font-weight: 600;
@@ -475,14 +556,18 @@
 }
 
 @media (max-width: 640px) {
-  .invite-form {
+  .invite-form-row {
     flex-direction: column;
   }
 
-  .invite-form input,
-  .invite-form select {
+  .invite-form-row input,
+  .invite-form-row select {
     width: 100%;
     min-width: 0;
+  }
+
+  .permissions-grid {
+    grid-template-columns: 1fr;
   }
 
   .member-row {

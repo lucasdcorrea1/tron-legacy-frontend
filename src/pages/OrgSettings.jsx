@@ -123,6 +123,19 @@ export function GeneralTab() {
   );
 }
 
+const ALL_PERMISSIONS = [
+  { key: 'instagram:schedule', label: 'Agendar posts Instagram' },
+  { key: 'instagram:autoreply', label: 'Auto-resposta Instagram' },
+  { key: 'instagram:leads', label: 'Leads Instagram' },
+  { key: 'instagram:config', label: 'Configurar Instagram' },
+  { key: 'meta_ads:manage', label: 'Gerenciar Meta Ads' },
+  { key: 'meta_ads:budget', label: 'Alertas de orçamento' },
+  { key: 'auto_boost:manage', label: 'Auto-boost' },
+  { key: 'blog:manage', label: 'Blog' },
+  { key: 'email:manage', label: 'Email Marketing' },
+  { key: 'ai:generate', label: 'IA / Geração de conteúdo' },
+];
+
 export function MembersTab() {
   const { currentOrg, hasOrgRole, subscription, usage, refreshUsage } = useOrg();
   const [members, setMembers] = useState([]);
@@ -131,7 +144,9 @@ export function MembersTab() {
   const [showInvite, setShowInvite] = useState(false);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('member');
+  const [invitePerms, setInvitePerms] = useState([]);
   const [inviteMsg, setInviteMsg] = useState('');
+  const [expandedMember, setExpandedMember] = useState(null);
   const canManage = hasOrgRole('owner', 'admin');
 
   const load = useCallback(async () => {
@@ -150,13 +165,29 @@ export function MembersTab() {
     if (!email.trim()) return;
     setInviteMsg('');
     try {
-      await orgs.inviteMember({ email: email.trim(), org_role: role });
+      const data = { email: email.trim(), org_role: role };
+      if (role === 'member' && invitePerms.length > 0) {
+        data.permissions = invitePerms;
+      }
+      await orgs.inviteMember(data);
       setEmail('');
+      setInvitePerms([]);
       setShowInvite(false);
       await Promise.all([load(), refreshUsage()]);
     } catch (err) {
       setInviteMsg(err.message || 'Erro ao convidar');
     }
+  };
+
+  const handlePermissionToggle = async (uid, perm, currentPerms) => {
+    const has = (currentPerms || []).includes(perm);
+    const newPerms = has
+      ? (currentPerms || []).filter(p => p !== perm)
+      : [...(currentPerms || []), perm];
+    try {
+      await orgs.updateMemberPermissions(uid, newPerms);
+      await load();
+    } catch { /* ignore */ }
   };
 
   const handleRemove = async (uid) => {
@@ -203,48 +234,93 @@ export function MembersTab() {
 
       {showInvite && (
         <form onSubmit={handleInvite} className="invite-form">
-          <input
-            type="email"
-            placeholder="Email do membro"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoFocus
-          />
-          <select value={role} onChange={(e) => setRole(e.target.value)}>
-            <option value="member">Membro</option>
-            <option value="admin">Admin</option>
-            <option value="viewer">Visualizador</option>
-          </select>
-          <button type="submit" className="settings-btn primary sm">Enviar</button>
-          <button type="button" className="settings-btn sm" onClick={() => setShowInvite(false)}>Cancelar</button>
+          <div className="invite-form-row">
+            <input
+              type="email"
+              placeholder="Email do membro"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoFocus
+            />
+            <select value={role} onChange={(e) => { setRole(e.target.value); setInvitePerms([]); }}>
+              <option value="member">Membro</option>
+              <option value="admin">Admin</option>
+              <option value="viewer">Visualizador</option>
+            </select>
+            <button type="submit" className="settings-btn primary sm">Enviar</button>
+            <button type="button" className="settings-btn sm" onClick={() => setShowInvite(false)}>Cancelar</button>
+          </div>
+          {role === 'member' && (
+            <div className="permissions-grid">
+              <span className="permissions-label">Permissões:</span>
+              {ALL_PERMISSIONS.map(p => (
+                <label key={p.key} className="permission-checkbox">
+                  <input
+                    type="checkbox"
+                    checked={invitePerms.includes(p.key)}
+                    onChange={() => {
+                      setInvitePerms(prev =>
+                        prev.includes(p.key) ? prev.filter(x => x !== p.key) : [...prev, p.key]
+                      );
+                    }}
+                  />
+                  {p.label}
+                </label>
+              ))}
+            </div>
+          )}
           {inviteMsg && <span className="invite-error">{inviteMsg}</span>}
         </form>
       )}
 
       <div className="members-list">
         {members.map((m) => (
-          <div key={m.user_id} className="member-row">
-            <div className="member-info">
-              <strong>{m.name}</strong>
-              <span>{m.email}</span>
+          <div key={m.user_id} className={`member-row-wrapper ${expandedMember === m.user_id ? 'expanded' : ''}`}>
+            <div className="member-row">
+              <div className="member-info">
+                <strong>{m.name}</strong>
+                <span>{m.email}</span>
+              </div>
+              <div className="member-actions">
+                {canManage && m.org_role !== 'owner' ? (
+                  <select
+                    value={m.org_role}
+                    onChange={(e) => handleRoleChange(m.user_id, e.target.value)}
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="member">Membro</option>
+                    <option value="viewer">Visualizador</option>
+                  </select>
+                ) : (
+                  <span className="member-role">{m.org_role}</span>
+                )}
+                {canManage && m.org_role === 'member' && (
+                  <button
+                    className="settings-btn sm"
+                    onClick={() => setExpandedMember(expandedMember === m.user_id ? null : m.user_id)}
+                  >
+                    {expandedMember === m.user_id ? 'Fechar' : 'Permissões'}
+                  </button>
+                )}
+                {canManage && m.org_role !== 'owner' && (
+                  <button className="member-remove" onClick={() => handleRemove(m.user_id)}>Remover</button>
+                )}
+              </div>
             </div>
-            <div className="member-actions">
-              {canManage && m.org_role !== 'owner' ? (
-                <select
-                  value={m.org_role}
-                  onChange={(e) => handleRoleChange(m.user_id, e.target.value)}
-                >
-                  <option value="admin">Admin</option>
-                  <option value="member">Membro</option>
-                  <option value="viewer">Visualizador</option>
-                </select>
-              ) : (
-                <span className="member-role">{m.org_role}</span>
-              )}
-              {canManage && m.org_role !== 'owner' && (
-                <button className="member-remove" onClick={() => handleRemove(m.user_id)}>Remover</button>
-              )}
-            </div>
+            {canManage && m.org_role === 'member' && expandedMember === m.user_id && (
+              <div className="permissions-grid member-permissions">
+                {ALL_PERMISSIONS.map(p => (
+                  <label key={p.key} className="permission-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={(m.permissions || []).includes(p.key)}
+                      onChange={() => handlePermissionToggle(m.user_id, p.key, m.permissions)}
+                    />
+                    {p.label}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
         ))}
       </div>
