@@ -244,9 +244,16 @@ function InstagramHomeTab({ hasAdAccount, adAccountId, igAccountId, onNavigate }
       </button>
 
       {loading ? (
-        <div className="ig-home-loading">
-          <div className="ig-spinner" />
-          Buscando dados de engajamento...
+        <div className="ig-skel-home">
+          <div className="ig-skel-stats">
+            {[...Array(5)].map((_, i) => <div key={i} className="ig-skel-stat" />)}
+          </div>
+          <div className="ig-skel-section">
+            <div className="ig-skel-line w30" />
+            <div className="ig-skel-cards">
+              {[...Array(3)].map((_, i) => <div key={i} className="ig-skel-card" />)}
+            </div>
+          </div>
         </div>
       ) : engData && (
         <>
@@ -787,9 +794,39 @@ export default function InstagramPage() {
         </div>
 
         {configured === null ? (
-          <div className="ig-unified-loading">
-            <span className="ig-spinner" />
-            Verificando configuracao...
+          <div className="ig-skeleton-preload">
+            {/* Skeleton banner */}
+            <div className="ig-skel-banner">
+              <div className="ig-skel-circle" />
+              <div className="ig-skel-banner-text">
+                <div className="ig-skel-line w60" />
+                <div className="ig-skel-line w40 sm" />
+              </div>
+              <div className="ig-skel-line w20 ml-auto" />
+            </div>
+            {/* Skeleton nav */}
+            <div className="ig-skel-nav">
+              {[...Array(6)].map((_, i) => <div key={i} className="ig-skel-nav-dot" />)}
+            </div>
+            {/* Skeleton CTA */}
+            <div className="ig-skel-cta">
+              <div className="ig-skel-cta-icon" />
+              <div className="ig-skel-cta-text">
+                <div className="ig-skel-line w50" />
+                <div className="ig-skel-line w70 sm" />
+              </div>
+            </div>
+            {/* Skeleton stat cards */}
+            <div className="ig-skel-stats">
+              {[...Array(5)].map((_, i) => <div key={i} className="ig-skel-stat" />)}
+            </div>
+            {/* Skeleton section */}
+            <div className="ig-skel-section">
+              <div className="ig-skel-line w30" />
+              <div className="ig-skel-cards">
+                {[...Array(3)].map((_, i) => <div key={i} className="ig-skel-card" />)}
+              </div>
+            </div>
           </div>
         ) : (
           <>

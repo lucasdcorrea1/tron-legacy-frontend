@@ -452,16 +452,170 @@
   margin: 0.25rem 0;
 }
 
-/* ── Loading ── */
+/* ── Skeleton Preload ── */
 
-.ig-unified-loading {
+@keyframes ig-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.ig-skel-shimmer {
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.03) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+}
+
+.ig-skeleton-preload,
+.ig-skel-home {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Skeleton banner */
+.ig-skel-banner {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 0.75rem;
-  padding: 3rem 0;
-  color: #a1a1aa;
-  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 12px;
+}
+
+.ig-skel-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.03) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ig-skel-banner-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+
+/* Skeleton generic line */
+.ig-skel-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.03) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+}
+
+.ig-skel-line.sm { height: 9px; }
+.ig-skel-line.w20 { width: 20%; }
+.ig-skel-line.w30 { width: 30%; }
+.ig-skel-line.w40 { width: 40%; }
+.ig-skel-line.w50 { width: 50%; }
+.ig-skel-line.w60 { width: 60%; }
+.ig-skel-line.w70 { width: 70%; }
+.ig-skel-line.ml-auto { margin-left: auto; }
+
+/* Skeleton nav */
+.ig-skel-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.35rem;
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.04);
+  border-radius: 14px;
+}
+
+.ig-skel-nav-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+}
+
+/* Skeleton CTA */
+.ig-skel-cta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.15rem 1.35rem;
+  background: rgba(37,99,235,0.04);
+  border: 1px solid rgba(37,99,235,0.08);
+  border-radius: 16px;
+}
+
+.ig-skel-cta-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(37,99,235,0.06) 0%, rgba(37,99,235,0.12) 40%, rgba(37,99,235,0.06) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ig-skel-cta-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+/* Skeleton stat cards */
+.ig-skel-stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.85rem;
+}
+
+.ig-skel-stat {
+  height: 100px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Skeleton section with cards */
+.ig-skel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.ig-skel-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+}
+
+.ig-skel-card {
+  height: 180px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 40%, rgba(255,255,255,0.02) 80%);
+  background-size: 800px 100%;
+  animation: ig-shimmer 1.6s ease-in-out infinite;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+@media (max-width: 768px) {
+  .ig-skel-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ig-skel-cards {
+    grid-template-columns: 1fr;
+  }
+  .ig-skel-nav-dot {
+    width: 36px;
+    height: 36px;
+  }
 }
 
 /* Hide duplicate headers from child Content components */
