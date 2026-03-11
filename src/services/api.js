@@ -339,6 +339,7 @@ export const metaOAuth = {
 
 export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
+  listAllOrgProfiles: () => api.get('/api/v1/admin/instagram/all-profiles'),
   saveConfig: (data) => api.put('/api/v1/admin/instagram/config', data),
   deleteConfig: () => api.delete('/api/v1/admin/instagram/config'),
   listAccounts: () => api.get('/api/v1/admin/instagram/accounts'),

@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { instagram, instagramAnalytics, integratedPublish, metaAds, API_URL } from '../services/api';
+import { instagram, instagramAnalytics, integratedPublish, metaAds, orgs as orgsApi, API_URL } from '../services/api';
 import { useToast } from '../components/Toast';
+import { useOrg } from '../context/OrgContext';
 import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
 import { InstagramAutoReplyContent } from './InstagramAutoReply';
@@ -483,7 +484,196 @@ function InstagramHomeTab({ hasAdAccount, adAccountId, igAccountId, onNavigate }
   );
 }
 
+function AccountBanner({
+  igProfiles, adAccounts, hasAdAccount,
+  selectedIgAccountId, setSelectedIgAccountId,
+  selectedAdAccountId, setSelectedAdAccountId,
+  crossOrgProfiles, onSwitchOrg,
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const activeProfile = igProfiles.find(p => p.ig_account_id === selectedIgAccountId) || igProfiles[0];
+  const activeAdAccount = adAccounts.find(a => a.account_id === selectedAdAccountId) || adAccounts[0];
+  const otherOrgProfiles = (crossOrgProfiles || []).filter(p => !p.is_current);
+  const canOpen = igProfiles.length > 0 || adAccounts.length > 0 || otherOrgProfiles.length > 0;
+
+  const getInitial = (name) => (name || '?')[0].toUpperCase();
+
+  const handleSelectIg = (igId) => {
+    setSelectedIgAccountId(igId);
+  };
+
+  const handleSelectAd = (adId) => {
+    setSelectedAdAccountId(adId);
+  };
+
+  if (!activeProfile) return null;
+
+  return (
+    <div className="ig-account-banner" ref={ref}>
+      <button
+        className="ig-account-banner-trigger"
+        onClick={() => canOpen && setOpen(!open)}
+      >
+        <div className="ig-account-banner-left">
+          <div className="ig-account-banner-avatar">
+            {activeProfile.profile_picture_url ? (
+              <img src={activeProfile.profile_picture_url} alt="" />
+            ) : (
+              <span>{getInitial(activeProfile.username || activeProfile.page_name)}</span>
+            )}
+          </div>
+          <div className="ig-account-banner-info">
+            <span className="ig-account-banner-username">
+              {activeProfile.username ? `@${activeProfile.username}` : activeProfile.page_name || 'Instagram'}
+            </span>
+            <span className="ig-account-banner-page">
+              {activeProfile.username ? (activeProfile.page_name || 'Pagina Facebook') : activeProfile.ig_account_id}
+            </span>
+          </div>
+        </div>
+        <div className="ig-account-banner-right">
+          {hasAdAccount && activeAdAccount && (
+            <div className="ig-account-banner-ad">
+              <span className="ig-account-banner-ad-name">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="1" x2="12" y2="23" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                {activeAdAccount.name || 'Conta de Anuncios'}
+              </span>
+              <span className="ig-account-banner-ad-id">
+                {activeAdAccount.account_id}
+              </span>
+            </div>
+          )}
+          <svg className={`ig-account-banner-chevron ${open ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </button>
+
+      {open && (
+        <div className="ig-account-banner-dropdown">
+          {/* IG Profiles section — current org */}
+          <div className="ig-account-banner-dropdown-label">Esta org</div>
+          {igProfiles.map(profile => {
+            const isActive = profile.ig_account_id === (activeProfile?.ig_account_id || '');
+            return (
+              <button
+                key={profile.ig_account_id}
+                className={`ig-account-banner-dropdown-item ${isActive ? 'active' : ''}`}
+                onClick={() => handleSelectIg(profile.ig_account_id)}
+              >
+                <div className="ig-account-banner-dropdown-avatar">
+                  {profile.profile_picture_url ? (
+                    <img src={profile.profile_picture_url} alt="" />
+                  ) : (
+                    <span>{getInitial(profile.username || profile.page_name)}</span>
+                  )}
+                </div>
+                <div className="ig-account-banner-dropdown-info">
+                  <span className="ig-account-banner-dropdown-name">
+                    {profile.username ? `@${profile.username}` : profile.page_name || 'Instagram'}
+                  </span>
+                  <span className="ig-account-banner-dropdown-sub">
+                    {profile.username ? (profile.page_name || 'Pagina Facebook') : profile.ig_account_id}
+                  </span>
+                </div>
+                {isActive && (
+                  <svg className="ig-account-banner-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                )}
+              </button>
+            );
+          })}
+
+          {/* Ad Accounts section */}
+          {hasAdAccount && adAccounts.length > 0 && (
+            <>
+              <div className="ig-account-banner-dropdown-divider" />
+              <div className="ig-account-banner-dropdown-label">Contas de anuncios</div>
+              {adAccounts.map(acc => {
+                const isActive = acc.account_id === (activeAdAccount?.account_id || '');
+                return (
+                  <button
+                    key={acc.account_id}
+                    className={`ig-account-banner-dropdown-item ${isActive ? 'active' : ''}`}
+                    onClick={() => handleSelectAd(acc.account_id)}
+                  >
+                    <div className="ig-account-banner-dropdown-avatar ad">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23" />
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                      </svg>
+                    </div>
+                    <div className="ig-account-banner-dropdown-info">
+                      <span className="ig-account-banner-dropdown-name">
+                        {acc.name || 'Conta de Anuncios'}
+                      </span>
+                      <span className="ig-account-banner-dropdown-sub">
+                        {acc.account_id}
+                        {acc.currency && ` · ${acc.currency}`}
+                      </span>
+                    </div>
+                    {isActive && (
+                      <svg className="ig-account-banner-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+            </>
+          )}
+
+          {/* Other orgs section */}
+          {otherOrgProfiles.length > 0 && (
+            <>
+              <div className="ig-account-banner-dropdown-divider" />
+              <div className="ig-account-banner-dropdown-label">Outras orgs</div>
+              {otherOrgProfiles.map(profile => (
+                <button
+                  key={profile.org_id}
+                  className="ig-account-banner-dropdown-item"
+                  onClick={() => { setOpen(false); onSwitchOrg(profile.org_id); }}
+                >
+                  <div className="ig-account-banner-dropdown-avatar">
+                    <span>{getInitial(profile.username || profile.org_name)}</span>
+                  </div>
+                  <div className="ig-account-banner-dropdown-info">
+                    <span className="ig-account-banner-dropdown-name">
+                      {profile.username ? `@${profile.username}` : profile.page_name || profile.org_name}
+                    </span>
+                    <span className="ig-account-banner-dropdown-sub">
+                      {profile.org_name}
+                    </span>
+                  </div>
+                  <svg className="ig-account-banner-switch-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6" />
+                  </svg>
+                </button>
+              ))}
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function InstagramPage() {
+  const { switchOrg } = useOrg();
   const [configured, setConfigured] = useState(null); // null = loading
   const [hasAdAccount, setHasAdAccount] = useState(false);
   const [activeTab, setActiveTab] = useState('config');
@@ -496,6 +686,9 @@ export default function InstagramPage() {
   // Multi IG profile support
   const [igProfiles, setIgProfiles] = useState([]);
   const [selectedIgAccountId, setSelectedIgAccountId] = useState('');
+
+  // Cross-org profiles
+  const [crossOrgProfiles, setCrossOrgProfiles] = useState([]);
 
   useEffect(() => {
     instagram.getConfig()
@@ -530,6 +723,18 @@ export default function InstagramPage() {
       })
       .catch(() => setIgProfiles([]));
   }, [configured]);
+
+  // Load cross-org profiles on mount
+  useEffect(() => {
+    instagram.listAllOrgProfiles()
+      .then(data => setCrossOrgProfiles(data?.profiles || []))
+      .catch(() => setCrossOrgProfiles([]));
+  }, []);
+
+  const handleSwitchOrg = useCallback(async (orgId) => {
+    await switchOrg(orgId);
+    window.location.reload();
+  }, [switchOrg]);
 
   const handleConfigChange = (isConfigured, data) => {
     const wasNotConfigured = configured === false;
@@ -588,6 +793,21 @@ export default function InstagramPage() {
           </div>
         ) : (
           <>
+            {/* Account Banner — always visible when configured */}
+            {configured && igProfiles.length > 0 && (
+              <AccountBanner
+                igProfiles={igProfiles}
+                adAccounts={adAccounts}
+                hasAdAccount={hasAdAccount}
+                selectedIgAccountId={selectedIgAccountId}
+                setSelectedIgAccountId={setSelectedIgAccountId}
+                selectedAdAccountId={selectedAdAccountId}
+                setSelectedAdAccountId={setSelectedAdAccountId}
+                crossOrgProfiles={crossOrgProfiles}
+                onSwitchOrg={handleSwitchOrg}
+              />
+            )}
+
             {/* Icon Navigation */}
             <nav className="ig-nav">
               {visibleTabs.map(t => (
@@ -601,46 +821,6 @@ export default function InstagramPage() {
                 </button>
               ))}
             </nav>
-
-            {/* Account Selectors — only when multiple accounts */}
-            {(igProfiles.length > 1 || (adAccounts.length > 1 && hasAdAccount)) && (
-              <div className="ig-account-selectors">
-                {igProfiles.length > 1 && (
-                  <div className="ig-ad-account-selector">
-                    <label className="ig-ad-account-label">Perfil Instagram:</label>
-                    <select
-                      className="ig-ad-account-select"
-                      value={selectedIgAccountId}
-                      onChange={e => setSelectedIgAccountId(e.target.value)}
-                    >
-                      <option value="">Padrao (salvo no sistema)</option>
-                      {igProfiles.map(p => (
-                        <option key={p.ig_account_id} value={p.ig_account_id}>
-                          {p.page_name || p.ig_account_id}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-                {adAccounts.length > 1 && hasAdAccount && (
-                  <div className="ig-ad-account-selector">
-                    <label className="ig-ad-account-label">Conta de anuncios:</label>
-                    <select
-                      className="ig-ad-account-select"
-                      value={selectedAdAccountId}
-                      onChange={e => setSelectedAdAccountId(e.target.value)}
-                    >
-                      <option value="">Padrao (salva no sistema)</option>
-                      {adAccounts.map(acc => (
-                        <option key={acc.account_id} value={acc.account_id}>
-                          {acc.name || acc.account_id} ({acc.account_id})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-            )}
 
             <div className="ig-unified-content">
               {activeTab === 'config' && (
