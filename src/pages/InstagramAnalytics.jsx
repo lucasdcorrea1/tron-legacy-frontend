@@ -4,7 +4,7 @@ import { useToast } from '../components/Toast';
 import { instagramAnalytics } from '../services/api';
 import './InstagramAnalytics.css';
 
-export function InstagramAnalyticsContent() {
+export function InstagramAnalyticsContent({ igAccountId }) {
   const toast = useToast();
   const [tab, setTab] = useState('autoreply');
 
@@ -32,14 +32,14 @@ export function InstagramAnalyticsContent() {
   const loadEngagement = useCallback(async () => {
     setEngLoading(true);
     try {
-      const data = await instagramAnalytics.engagement();
+      const data = await instagramAnalytics.engagement(igAccountId);
       setEngData(data);
     } catch (err) {
       toast.error(err.message);
     } finally {
       setEngLoading(false);
     }
-  }, [toast]);
+  }, [toast, igAccountId]);
 
   useEffect(() => { if (tab === 'autoreply') loadAutoReply(); }, [tab, loadAutoReply]);
   useEffect(() => { if (tab === 'engagement') loadEngagement(); }, [tab, loadEngagement]);

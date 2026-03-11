@@ -158,7 +158,7 @@ const TOOL_CARDS = [
   { key: 'autoboost', icon: 'zap', title: 'Auto-Boost', desc: 'Impulsione posts automaticamente', requiresAdAccount: true },
 ];
 
-function InstagramHomeTab({ hasAdAccount, adAccountId, onNavigate }) {
+function InstagramHomeTab({ hasAdAccount, adAccountId, igAccountId, onNavigate }) {
   const toast = useToast();
   const [engData, setEngData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -168,14 +168,14 @@ function InstagramHomeTab({ hasAdAccount, adAccountId, onNavigate }) {
   const loadEngagement = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await instagramAnalytics.engagement();
+      const data = await instagramAnalytics.engagement(igAccountId);
       setEngData(data);
     } catch (err) {
       toast.error(err.message);
     } finally {
       setLoading(false);
     }
-  }, [toast]);
+  }, [toast, igAccountId]);
 
   const loadUpcoming = useCallback(async () => {
     try {
@@ -493,6 +493,10 @@ export default function InstagramPage() {
   const [adAccounts, setAdAccounts] = useState([]);
   const [selectedAdAccountId, setSelectedAdAccountId] = useState('');
 
+  // Multi IG profile support
+  const [igProfiles, setIgProfiles] = useState([]);
+  const [selectedIgAccountId, setSelectedIgAccountId] = useState('');
+
   useEffect(() => {
     instagram.getConfig()
       .then(data => {
@@ -515,6 +519,17 @@ export default function InstagramPage() {
       })
       .catch(() => setAdAccounts([]));
   }, [hasAdAccount]);
+
+  // Load IG profiles when configured
+  useEffect(() => {
+    if (!configured) return;
+    instagram.listAccounts()
+      .then(data => {
+        const profiles = data?.data || [];
+        setIgProfiles(profiles);
+      })
+      .catch(() => setIgProfiles([]));
+  }, [configured]);
 
   const handleConfigChange = (isConfigured, data) => {
     const wasNotConfigured = configured === false;
@@ -587,22 +602,43 @@ export default function InstagramPage() {
               ))}
             </nav>
 
-            {/* Ad Account Selector — only when multiple accounts */}
-            {adAccounts.length > 1 && hasAdAccount && (
-              <div className="ig-ad-account-selector">
-                <label className="ig-ad-account-label">Conta de anuncios:</label>
-                <select
-                  className="ig-ad-account-select"
-                  value={selectedAdAccountId}
-                  onChange={e => setSelectedAdAccountId(e.target.value)}
-                >
-                  <option value="">Padrao (salva no sistema)</option>
-                  {adAccounts.map(acc => (
-                    <option key={acc.account_id} value={acc.account_id}>
-                      {acc.name || acc.account_id} ({acc.account_id})
-                    </option>
-                  ))}
-                </select>
+            {/* Account Selectors — only when multiple accounts */}
+            {(igProfiles.length > 1 || (adAccounts.length > 1 && hasAdAccount)) && (
+              <div className="ig-account-selectors">
+                {igProfiles.length > 1 && (
+                  <div className="ig-ad-account-selector">
+                    <label className="ig-ad-account-label">Perfil Instagram:</label>
+                    <select
+                      className="ig-ad-account-select"
+                      value={selectedIgAccountId}
+                      onChange={e => setSelectedIgAccountId(e.target.value)}
+                    >
+                      <option value="">Padrao (salvo no sistema)</option>
+                      {igProfiles.map(p => (
+                        <option key={p.ig_account_id} value={p.ig_account_id}>
+                          {p.page_name || p.ig_account_id}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                {adAccounts.length > 1 && hasAdAccount && (
+                  <div className="ig-ad-account-selector">
+                    <label className="ig-ad-account-label">Conta de anuncios:</label>
+                    <select
+                      className="ig-ad-account-select"
+                      value={selectedAdAccountId}
+                      onChange={e => setSelectedAdAccountId(e.target.value)}
+                    >
+                      <option value="">Padrao (salva no sistema)</option>
+                      {adAccounts.map(acc => (
+                        <option key={acc.account_id} value={acc.account_id}>
+                          {acc.name || acc.account_id} ({acc.account_id})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
             )}
 
@@ -617,6 +653,7 @@ export default function InstagramPage() {
                 <InstagramHomeTab
                   hasAdAccount={hasAdAccount}
                   adAccountId={selectedAdAccountId}
+                  igAccountId={selectedIgAccountId}
                   onNavigate={(tab, subTab) => {
                     if (subTab) setSchedulingInitialTab(subTab);
                     setActiveTab(tab);
@@ -633,7 +670,7 @@ export default function InstagramPage() {
               )}
               {activeTab === 'autoreply' && <InstagramAutoReplyContent />}
               {activeTab === 'leads' && <InstagramLeadsContent />}
-              {activeTab === 'analytics' && <InstagramAnalyticsContent />}
+              {activeTab === 'analytics' && <InstagramAnalyticsContent igAccountId={selectedIgAccountId} />}
               {activeTab === 'campanhas' && <MetaAdsCampaigns adAccountId={selectedAdAccountId} />}
               {activeTab === 'insights' && <MetaAdsInsights adAccountId={selectedAdAccountId} />}
               {activeTab === 'financeiro' && <MetaAdsFinanceiro adAccountId={selectedAdAccountId} />}

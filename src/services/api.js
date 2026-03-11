@@ -93,8 +93,15 @@ async function request(endpoint, options = {}) {
   }
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'Erro de conexão' }));
-    throw new Error(error.message || 'Erro na requisição');
+    const text = await response.text();
+    let message;
+    try {
+      const parsed = JSON.parse(text);
+      message = parsed.message;
+    } catch {
+      message = text || `Erro ${response.status}`;
+    }
+    throw new Error(message || `Erro na requisição (${response.status})`);
   }
 
   return response.json();
@@ -334,8 +341,17 @@ export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
   saveConfig: (data) => api.put('/api/v1/admin/instagram/config', data),
   deleteConfig: () => api.delete('/api/v1/admin/instagram/config'),
-  testConnection: () => api.get('/api/v1/admin/instagram/test'),
-  getFeed: (limit = 12) => api.get(`/api/v1/admin/instagram/feed?limit=${limit}`),
+  listAccounts: () => api.get('/api/v1/admin/instagram/accounts'),
+  testConnection: (igAccountId) => {
+    const params = igAccountId ? `?instagram_account_id=${igAccountId}` : '';
+    return api.get(`/api/v1/admin/instagram/test${params}`);
+  },
+  getFeed: (limit = 12, igAccountId) => {
+    const query = new URLSearchParams();
+    query.append('limit', limit);
+    if (igAccountId) query.append('instagram_account_id', igAccountId);
+    return api.get(`/api/v1/admin/instagram/feed?${query.toString()}`);
+  },
   list: (params = {}) => {
     const query = new URLSearchParams();
     if (params.page) query.append('page', params.page);
@@ -422,7 +438,10 @@ export const instagramLeads = {
 
 export const instagramAnalytics = {
   autoreply: (days = 30) => api.get(`/api/v1/admin/instagram/analytics/autoreply?days=${days}`),
-  engagement: () => api.get('/api/v1/admin/instagram/analytics/engagement'),
+  engagement: (igAccountId) => {
+    const params = igAccountId ? `?instagram_account_id=${igAccountId}` : '';
+    return api.get(`/api/v1/admin/instagram/analytics/engagement${params}`);
+  },
 };
 
 export const metaAds = {
