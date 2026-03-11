@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrg } from '../context/OrgContext';
+import { instagram } from '../services/api';
 import './OrgSwitcher.css';
 
 export default function OrgSwitcher({ onClose }) {
   const { currentOrg, orgs, switchOrg, loading } = useOrg();
   const [open, setOpen] = useState(false);
+  const [igMap, setIgMap] = useState({});
   const ref = useRef(null);
   const navigate = useNavigate();
 
@@ -15,6 +17,20 @@ export default function OrgSwitcher({ onClose }) {
     };
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  // Load IG profiles for all orgs → build orgId→username map
+  useEffect(() => {
+    instagram.listAllOrgProfiles()
+      .then(data => {
+        const profiles = data?.profiles || [];
+        const map = {};
+        for (const p of profiles) {
+          if (p.org_id && p.username) map[p.org_id] = `@${p.username}`;
+        }
+        setIgMap(map);
+      })
+      .catch(() => {});
   }, []);
 
   const handleSwitch = async (orgId) => {
@@ -45,7 +61,10 @@ export default function OrgSwitcher({ onClose }) {
         <span className="org-avatar">{getInitial(currentOrg?.name)}</span>
         <div className="org-info">
           <span className="org-name">{currentOrg?.name || 'Selecionar empresa'}</span>
-          <span className="org-plan">{currentOrg?.my_role || ''}</span>
+          {igMap[currentOrg?.id]
+            ? <span className="org-ig-handle">{igMap[currentOrg.id]}</span>
+            : <span className="org-plan">{currentOrg?.my_role || ''}</span>
+          }
         </div>
         <svg className={`org-chevron ${open ? 'open' : ''}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="6 9 12 15 18 9" />
@@ -64,7 +83,10 @@ export default function OrgSwitcher({ onClose }) {
               <span className="org-avatar-sm">{getInitial(org.name)}</span>
               <div className="org-dropdown-info">
                 <span className="org-dropdown-name">{org.name}</span>
-                <span className="org-dropdown-role">{org.my_role}</span>
+                {igMap[org.id]
+                  ? <span className="org-dropdown-ig">{igMap[org.id]}</span>
+                  : <span className="org-dropdown-role">{org.my_role}</span>
+                }
               </div>
               {org.id === currentOrg?.id && (
                 <svg className="org-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

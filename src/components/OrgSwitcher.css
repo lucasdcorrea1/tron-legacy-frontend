@@ -59,6 +59,14 @@
   text-transform: capitalize;
 }
 
+.org-ig-handle {
+  font-size: 0.68rem;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .org-chevron {
   width: 16px;
   height: 16px;
@@ -163,6 +171,14 @@
   font-size: 0.6875rem;
   color: #52525b;
   text-transform: capitalize;
+}
+
+.org-dropdown-ig {
+  font-size: 0.68rem;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .org-check {

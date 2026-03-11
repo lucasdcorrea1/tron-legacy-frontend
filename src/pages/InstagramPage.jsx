@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { instagram, instagramAnalytics, integratedPublish, metaAds, orgs as orgsApi, API_URL } from '../services/api';
+import { instagram, instagramAnalytics, integratedPublish, metaAds, API_URL } from '../services/api';
 import { useToast } from '../components/Toast';
 import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
@@ -494,7 +494,6 @@ function AccountBanner({
   igProfiles, adAccounts, hasAdAccount,
   selectedIgAccountId, setSelectedIgAccountId,
   selectedAdAccountId, setSelectedAdAccountId,
-  crossOrgProfiles, onSwitchOrg,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -509,8 +508,7 @@ function AccountBanner({
 
   const activeProfile = igProfiles.find(p => p.ig_account_id === selectedIgAccountId) || igProfiles[0];
   const activeAdAccount = adAccounts.find(a => a.account_id === selectedAdAccountId) || adAccounts[0];
-  const otherOrgProfiles = (crossOrgProfiles || []).filter(p => !p.is_current);
-  const canOpen = igProfiles.length > 0 || adAccounts.length > 0 || otherOrgProfiles.length > 0;
+  const canOpen = igProfiles.length > 0 || adAccounts.length > 0;
 
   const getInitial = (name) => (name || '?')[0].toUpperCase();
 
@@ -570,8 +568,8 @@ function AccountBanner({
 
       {open && (
         <div className="ig-account-banner-dropdown">
-          {/* IG Profiles section — current org */}
-          <div className="ig-account-banner-dropdown-label">Esta org</div>
+          {/* IG Profiles */}
+          <div className="ig-account-banner-dropdown-label">Perfis Instagram</div>
           {igProfiles.map(profile => {
             const isActive = profile.ig_account_id === (activeProfile?.ig_account_id || '');
             return (
@@ -643,35 +641,7 @@ function AccountBanner({
             </>
           )}
 
-          {/* Other orgs section */}
-          {otherOrgProfiles.length > 0 && (
-            <>
-              <div className="ig-account-banner-dropdown-divider" />
-              <div className="ig-account-banner-dropdown-label">Outras orgs</div>
-              {otherOrgProfiles.map(profile => (
-                <button
-                  key={profile.org_id}
-                  className="ig-account-banner-dropdown-item"
-                  onClick={() => { setOpen(false); onSwitchOrg(profile.org_id); }}
-                >
-                  <div className="ig-account-banner-dropdown-avatar">
-                    <span>{getInitial(profile.username || profile.org_name)}</span>
-                  </div>
-                  <div className="ig-account-banner-dropdown-info">
-                    <span className="ig-account-banner-dropdown-name">
-                      {profile.username ? `@${profile.username}` : profile.page_name || profile.org_name}
-                    </span>
-                    <span className="ig-account-banner-dropdown-sub">
-                      {profile.org_name}
-                    </span>
-                  </div>
-                  <svg className="ig-account-banner-switch-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="9 18 15 12 9 6" />
-                  </svg>
-                </button>
-              ))}
-            </>
-          )}
+
         </div>
       )}
     </div>
@@ -691,9 +661,6 @@ export default function InstagramPage() {
   // Multi IG profile support
   const [igProfiles, setIgProfiles] = useState([]);
   const [selectedIgAccountId, setSelectedIgAccountId] = useState('');
-
-  // Cross-org profiles
-  const [crossOrgProfiles, setCrossOrgProfiles] = useState([]);
 
   useEffect(() => {
     instagram.getConfig()
@@ -728,20 +695,6 @@ export default function InstagramPage() {
       })
       .catch(() => setIgProfiles([]));
   }, [configured]);
-
-  // Load cross-org profiles on mount
-  useEffect(() => {
-    instagram.listAllOrgProfiles()
-      .then(data => setCrossOrgProfiles(data?.profiles || []))
-      .catch(() => setCrossOrgProfiles([]));
-  }, []);
-
-  const handleSwitchOrg = useCallback(async (orgId) => {
-    // Use orgsApi.switch directly to avoid OrgContext's setLoading(true) flash
-    await orgsApi.switch(orgId);
-    localStorage.setItem('lastOrgId', orgId);
-    window.location.reload();
-  }, []);
 
   const handleConfigChange = (isConfigured, data) => {
     const wasNotConfigured = configured === false;
@@ -840,8 +793,6 @@ export default function InstagramPage() {
                 setSelectedIgAccountId={setSelectedIgAccountId}
                 selectedAdAccountId={selectedAdAccountId}
                 setSelectedAdAccountId={setSelectedAdAccountId}
-                crossOrgProfiles={crossOrgProfiles}
-                onSwitchOrg={handleSwitchOrg}
               />
             )}
 
