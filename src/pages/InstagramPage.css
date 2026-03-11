@@ -175,49 +175,281 @@
   transform: translateX(-50%) translateY(0);
 }
 
-/* ── Account Selectors ── */
+/* ── Account Banner ── */
 
-.ig-account-selectors {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+.ig-account-banner {
+  position: relative;
+  margin-bottom: 1rem;
 }
 
-.ig-ad-account-selector {
+.ig-account-banner-trigger {
+  width: 100%;
   display: flex;
-  flex: 1;
-  min-width: 280px;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgba(59, 130, 246, 0.06);
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  border-radius: 10px;
-}
-
-.ig-ad-account-label {
-  font-size: 0.78rem;
-  color: #a1a1aa;
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-.ig-ad-account-select {
-  flex: 1;
-  background: #18181b;
-  border: 1px solid #3f3f46;
-  border-radius: 6px;
-  color: #e4e4e7;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.8rem;
-  outline: none;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  font-family: inherit;
+  color: inherit;
   cursor: pointer;
-  min-width: 0;
+  transition: all 0.2s;
 }
 
-.ig-ad-account-select:focus {
-  border-color: #3b82f6;
+.ig-account-banner-trigger:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ig-account-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ig-account-banner-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d62976, #962fbf, #4f5bd5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ig-account-banner-avatar img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.ig-account-banner-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.ig-account-banner-username {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fafafa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.ig-account-banner-page {
+  font-size: 0.72rem;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.ig-account-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.ig-account-banner-ad {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.ig-account-banner-ad-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ig-account-banner-ad-name svg {
+  color: #71717a;
+  flex-shrink: 0;
+}
+
+.ig-account-banner-ad-id {
+  font-size: 0.68rem;
+  color: #52525b;
+  font-family: monospace;
+}
+
+.ig-account-banner-chevron {
+  color: #52525b;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.ig-account-banner-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+
+.ig-account-banner-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  max-height: 420px;
+  overflow-y: auto;
+  background: #1a1d23;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  z-index: 200;
+  padding: 0.375rem;
+  animation: igBannerDropIn 0.15s ease;
+}
+
+.ig-account-banner-dropdown::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ig-account-banner-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.ig-account-banner-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+@keyframes igBannerDropIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ig-account-banner-dropdown-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #52525b;
+  padding: 0.5rem 0.75rem 0.375rem;
+}
+
+.ig-account-banner-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  color: inherit;
+  text-align: left;
+  font-family: inherit;
+}
+
+.ig-account-banner-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ig-account-banner-dropdown-item.active {
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.ig-account-banner-dropdown-avatar {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  min-height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d62976, #962fbf, #4f5bd5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.ig-account-banner-dropdown-avatar img {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.ig-account-banner-dropdown-avatar.ad {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border-radius: 8px;
+}
+
+.ig-account-banner-dropdown-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.05rem;
+}
+
+.ig-account-banner-dropdown-name {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #fafafa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ig-account-banner-dropdown-sub {
+  font-size: 0.6875rem;
+  color: #52525b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ig-account-banner-check {
+  color: #2563eb;
+  flex-shrink: 0;
+}
+
+.ig-account-banner-switch-icon {
+  color: #52525b;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.ig-account-banner-dropdown-item:hover .ig-account-banner-switch-icon {
+  color: #60a5fa;
+}
+
+.ig-account-banner-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0.25rem 0;
 }
 
 /* ── Loading ── */
@@ -989,6 +1221,14 @@
 
   .ig-header-badge {
     align-self: flex-start;
+  }
+
+  .ig-account-banner-trigger {
+    gap: 0.65rem;
+  }
+
+  .ig-account-banner-ad {
+    display: none;
   }
 
   .ig-home-stats {

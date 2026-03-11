@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import { instagram, instagramAnalytics, integratedPublish, metaAds, orgs as orgsApi, API_URL } from '../services/api';
 import { useToast } from '../components/Toast';
-import { useOrg } from '../context/OrgContext';
 import InstagramConfig from './InstagramConfig';
 import { InstagramSchedulingContent } from './InstagramScheduling';
 import { InstagramAutoReplyContent } from './InstagramAutoReply';
@@ -673,7 +672,6 @@ function AccountBanner({
 }
 
 export default function InstagramPage() {
-  const { switchOrg } = useOrg();
   const [configured, setConfigured] = useState(null); // null = loading
   const [hasAdAccount, setHasAdAccount] = useState(false);
   const [activeTab, setActiveTab] = useState('config');
@@ -732,9 +730,11 @@ export default function InstagramPage() {
   }, []);
 
   const handleSwitchOrg = useCallback(async (orgId) => {
-    await switchOrg(orgId);
+    // Use orgsApi.switch directly to avoid OrgContext's setLoading(true) flash
+    await orgsApi.switch(orgId);
+    localStorage.setItem('lastOrgId', orgId);
     window.location.reload();
-  }, [switchOrg]);
+  }, []);
 
   const handleConfigChange = (isConfigured, data) => {
     const wasNotConfigured = configured === false;
