@@ -508,8 +508,19 @@ function AccountBanner({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Use allProfiles for the dropdown list, igProfiles for active profile resolution
-  const displayProfiles = allProfiles.length > 0 ? allProfiles : igProfiles;
+  // Deduplicate allProfiles by ig_account_id, preferring current org's entry
+  const displayProfiles = (() => {
+    if (allProfiles.length === 0) return igProfiles;
+    const map = new Map();
+    for (const p of allProfiles) {
+      const existing = map.get(p.ig_account_id);
+      // Keep current org's version if duplicate
+      if (!existing || p.org_id === currentOrgId) {
+        map.set(p.ig_account_id, p);
+      }
+    }
+    return Array.from(map.values());
+  })();
   const activeProfile = igProfiles.find(p => p.ig_account_id === selectedIgAccountId) || igProfiles[0];
   const activeAdAccount = adAccounts.find(a => a.account_id === selectedAdAccountId) || adAccounts[0];
   const canOpen = displayProfiles.length > 0 || adAccounts.length > 0;
