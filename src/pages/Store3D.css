@@ -384,9 +384,38 @@
   align-items: center;
 }
 
+.store3d-footer-content .footer-brand-link {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fafafa;
+  text-decoration: none;
+  letter-spacing: -0.025em;
+  transition: color 0.2s;
+}
+
+.store3d-footer-content .footer-brand-link:hover {
+  color: #a78bfa;
+}
+
+.store3d-footer-content .footer-whatsapp {
+  color: #22c55e;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.store3d-footer-content .footer-whatsapp:hover {
+  color: #4ade80;
+}
+
 .store3d-footer-content p {
   font-size: 0.875rem;
   color: #a1a1aa;
+}
+
+.store3d-footer-content .footer-rights {
+  margin-top: 0.25rem;
 }
 
 /* ─── Responsive ─────────────────────────────────────────────────── */
