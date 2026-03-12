@@ -2,10 +2,12 @@ import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 import { OrgProvider } from './context/OrgContext';
 import { ToastProvider } from './components/Toast';
 import CookieConsent from './components/CookieConsent';
 import PrivateRoute from './components/PrivateRoute';
+import AuthRoute from './components/AuthRoute';
 import { AdminLayoutSkeleton } from './components/LoadingSkeleton';
 import './styles/global.css';
 
@@ -42,11 +44,20 @@ const Plans = lazy(() => import('./pages/Plans'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const OrgSettings = lazy(() => import('./pages/OrgSettings'));
 const MetaCallback = lazy(() => import('./pages/MetaCallback'));
+const Store3D = lazy(() => import('./pages/Store3D'));
+const Admin3DStore = lazy(() => import('./pages/Admin3DStore'));
+const ProductDetail3D = lazy(() => import('./pages/ProductDetail3D'));
+const Cart3D = lazy(() => import('./pages/Cart3D'));
+const Checkout3D = lazy(() => import('./pages/Checkout3D'));
+const OrderConfirmation3D = lazy(() => import('./pages/OrderConfirmation3D'));
+const OrderHistory3D = lazy(() => import('./pages/OrderHistory3D'));
+const OrderDetail3D = lazy(() => import('./pages/OrderDetail3D'));
 
 export default function App() {
   return (
     <HelmetProvider>
     <AuthProvider>
+      <CartProvider>
       <OrgProvider>
       <ToastProvider>
       <BrowserRouter>
@@ -64,6 +75,13 @@ export default function App() {
           <Route path="/exclusao-dados" element={<Legal />} />
           <Route path="/planos" element={<Plans />} />
           <Route path="/meta/callback" element={<MetaCallback />} />
+          <Route path="/3d" element={<Store3D />} />
+          <Route path="/3d/produto/:slug" element={<ProductDetail3D />} />
+          <Route path="/3d/carrinho" element={<Cart3D />} />
+          <Route path="/3d/checkout" element={<AuthRoute><Checkout3D /></AuthRoute>} />
+          <Route path="/3d/pedido/:id/confirmacao" element={<AuthRoute><OrderConfirmation3D /></AuthRoute>} />
+          <Route path="/3d/meus-pedidos" element={<AuthRoute><OrderHistory3D /></AuthRoute>} />
+          <Route path="/3d/meus-pedidos/:id" element={<AuthRoute><OrderDetail3D /></AuthRoute>} />
 
           {/* Onboarding (auth required, no org needed) */}
           <Route path="/onboarding" element={<Onboarding />} />
@@ -158,6 +176,14 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/3d-store"
+            element={
+              <PrivateRoute>
+                <Admin3DStore />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/admin/settings"
             element={<Navigate to="/admin/profile" replace />}
           />
@@ -166,6 +192,7 @@ export default function App() {
       </BrowserRouter>
       </ToastProvider>
       </OrgProvider>
+      </CartProvider>
     </AuthProvider>
     <CookieConsent />
     </HelmetProvider>

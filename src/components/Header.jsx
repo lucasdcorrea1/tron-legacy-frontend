@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import UserAvatar from './UserAvatar';
 import './Header.css';
 
@@ -8,6 +9,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, profile, logout } = useAuth();
+  const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dropdownRef = useRef(null);
@@ -93,6 +95,25 @@ export default function Header() {
           >
             Blog
           </Link>
+          <Link
+            to="/3d"
+            className={`site-nav-link ${isActive('/3d') || location.pathname.startsWith('/3d/') ? 'active' : ''}`}
+            onClick={closeMenus}
+          >
+            3D Store
+          </Link>
+          <Link
+            to="/3d/carrinho"
+            className="site-cart-link"
+            onClick={closeMenus}
+            aria-label="Carrinho"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
+              <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+            </svg>
+            {itemCount > 0 && <span className="site-cart-badge">{itemCount}</span>}
+          </Link>
 
           {isAuthenticated ? (
             <div className="site-user-area">
@@ -118,6 +139,10 @@ export default function Header() {
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                       Meu Perfil
                     </Link>
+                    <Link to="/3d/meus-pedidos" className="site-dropdown-item" onClick={closeMenus}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                      Meus Pedidos
+                    </Link>
                     <button className="site-dropdown-item logout" onClick={handleLogout}>
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                       Sair
@@ -130,6 +155,7 @@ export default function Header() {
               <div className="site-mobile-auth">
                 <Link to="/admin" className="site-nav-link" onClick={closeMenus}>Painel</Link>
                 <Link to="/admin/profile" className="site-nav-link" onClick={closeMenus}>Meu Perfil</Link>
+                <Link to="/3d/meus-pedidos" className="site-nav-link" onClick={closeMenus}>Meus Pedidos</Link>
                 <button className="site-nav-link site-mobile-logout" onClick={handleLogout}>Sair</button>
               </div>
             </div>

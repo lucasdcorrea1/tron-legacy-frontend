@@ -1,0 +1,339 @@
+/* Product Detail 3D */
+.pd3d-main {
+  padding: clamp(5rem, 10vw, 7rem) clamp(0.75rem, 2vw, 1rem) clamp(2rem, 4vw, 4rem);
+  min-height: 60vh;
+}
+
+.pd3d-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Breadcrumb */
+.pd3d-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  font-size: 0.875rem;
+  color: #a1a1aa;
+}
+
+.pd3d-breadcrumb a {
+  color: #a78bfa;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.pd3d-breadcrumb a:hover {
+  color: #c4b5fd;
+}
+
+.pd3d-breadcrumb-sep {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* Layout */
+.pd3d-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* Gallery */
+.pd3d-gallery {
+  position: sticky;
+  top: 5rem;
+}
+
+.pd3d-image-main {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pd3d-image-main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd3d-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
+}
+
+.pd3d-image-placeholder svg {
+  width: 64px;
+  height: 64px;
+  color: #a78bfa;
+  opacity: 0.5;
+}
+
+.pd3d-thumbnails {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.pd3d-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.02);
+  transition: border-color 0.2s;
+}
+
+.pd3d-thumb.active {
+  border-color: #8b5cf6;
+}
+
+.pd3d-thumb:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+}
+
+.pd3d-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Info */
+.pd3d-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pd3d-name {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #fafafa;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+.pd3d-price {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #a78bfa;
+  margin-bottom: 1rem;
+}
+
+.pd3d-material {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: #a1a1aa;
+  margin-bottom: 1.25rem;
+  align-self: flex-start;
+}
+
+.pd3d-description {
+  color: #d4d4d8;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+/* Specs */
+.pd3d-specs {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.pd3d-specs-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.pd3d-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.pd3d-spec {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.pd3d-spec-label {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.pd3d-spec-value {
+  font-size: 0.9375rem;
+  color: #fafafa;
+  font-weight: 500;
+}
+
+/* Stock */
+.pd3d-stock {
+  margin-bottom: 1.5rem;
+}
+
+.pd3d-stock-available {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: #4ade80;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.pd3d-stock-out {
+  color: #ef4444;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* Actions */
+.pd3d-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pd3d-qty {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.pd3d-qty-btn {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.03);
+  border: none;
+  color: #fafafa;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.pd3d-qty-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pd3d-qty-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.pd3d-qty-value {
+  width: 44px;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fafafa;
+}
+
+.pd3d-add-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pd3d-add-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.pd3d-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Skeleton */
+.pd3d-skeleton {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+}
+
+.pd3d-skeleton-image {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  background: linear-gradient(110deg, rgba(255, 255, 255, 0.03) 30%, rgba(255, 255, 255, 0.06) 50%, rgba(255, 255, 255, 0.03) 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.pd3d-skeleton-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pd3d-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .pd3d-gallery {
+    position: static;
+  }
+
+  .pd3d-skeleton {
+    grid-template-columns: 1fr;
+  }
+
+  .pd3d-actions {
+    flex-direction: column;
+  }
+
+  .pd3d-add-btn {
+    width: 100%;
+  }
+
+  .pd3d-thumbnails {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 0.25rem;
+  }
+
+  .pd3d-thumbnails::-webkit-scrollbar {
+    display: none;
+  }
+}

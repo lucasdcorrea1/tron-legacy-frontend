@@ -1,0 +1,194 @@
+/* Order Confirmation 3D */
+.oc3d-main {
+  padding: clamp(5rem, 10vw, 7rem) clamp(0.75rem, 2vw, 1rem) clamp(2rem, 4vw, 4rem);
+  min-height: 60vh;
+}
+
+.oc3d-container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 clamp(0.5rem, 2vw, 1rem);
+}
+
+.oc3d-loading {
+  text-align: center;
+  padding: 4rem 0;
+}
+
+/* Header */
+.oc3d-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.oc3d-success-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.1);
+  border: 2px solid rgba(74, 222, 128, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  color: #4ade80;
+}
+
+.oc3d-header h1 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #fafafa;
+  margin-bottom: 0.5rem;
+}
+
+.oc3d-order-id {
+  font-size: 0.9375rem;
+  color: #a1a1aa;
+  font-family: monospace;
+}
+
+/* Banner */
+.oc3d-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: rgba(234, 179, 8, 0.06);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.oc3d-banner svg {
+  color: #eab308;
+  flex-shrink: 0;
+}
+
+.oc3d-banner p {
+  font-size: 0.875rem;
+  color: #fde047;
+  line-height: 1.5;
+}
+
+/* Sections */
+.oc3d-section {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.oc3d-section h2 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+/* Items */
+.oc3d-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.oc3d-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+}
+
+.oc3d-item-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  color: #fafafa;
+}
+
+.oc3d-item-qty {
+  font-size: 0.8125rem;
+  color: #a1a1aa;
+  min-width: 32px;
+}
+
+.oc3d-item-price {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #a78bfa;
+  min-width: 80px;
+  text-align: right;
+}
+
+.oc3d-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #fafafa;
+}
+
+.oc3d-total span:last-child {
+  color: #a78bfa;
+}
+
+/* Address */
+.oc3d-address {
+  font-size: 0.9375rem;
+  color: #d4d4d8;
+  line-height: 1.6;
+}
+
+/* Actions */
+.oc3d-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.oc3d-btn {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border-radius: 10px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.oc3d-btn-primary {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.oc3d-btn-primary:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  color: white;
+  text-decoration: none;
+}
+
+.oc3d-btn-secondary {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #d4d4d8;
+}
+
+.oc3d-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fafafa;
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .oc3d-actions {
+    flex-direction: column;
+  }
+}
