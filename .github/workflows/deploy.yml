@@ -17,6 +17,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +34,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          VITE_API_URL: ${{ vars.VITE_API_URL }}
+          VITE_API_URL: ${{ secrets.VITE_API_URL || vars.VITE_API_URL }}
+          VITE_3D_API_URL: ${{ secrets.VITE_3D_API_URL || vars.VITE_3D_API_URL }}
 
       - name: List dist contents
         run: |
