@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { instagramAnalytics } from '../services/api';
 import './InstagramAnalytics.css';
@@ -88,10 +89,7 @@ export function InstagramAnalyticsContent({ igAccountId }) {
             </div>
 
             {arLoading ? (
-              <div className="analytics-loading">
-                <div className="analytics-spinner" />
-                Carregando métricas...
-              </div>
+              <LoadingSkeleton variant="stats" />
             ) : !arData ? (
               <div className="analytics-empty">Nenhum dado disponível.</div>
             ) : (
@@ -204,10 +202,7 @@ export function InstagramAnalyticsContent({ igAccountId }) {
             </div>
 
             {engLoading ? (
-              <div className="analytics-loading">
-                <div className="analytics-spinner" />
-                Buscando dados do Instagram...
-              </div>
+              <LoadingSkeleton variant="content" />
             ) : !engData ? (
               <div className="analytics-empty">
                 <p>Clique em "Atualizar dados" para buscar o relatório de engajamento.</p>

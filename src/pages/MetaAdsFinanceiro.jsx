@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { metaAds } from '../services/api';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsFinanceiro.css';
 
 const PERIODS = [
@@ -296,12 +297,7 @@ export default function MetaAdsFinanceiro({ adAccountId }) {
   const sortArrow = (key) => sortKey === key ? (sortDir > 0 ? ' ↑' : ' ↓') : '';
 
   if (loading) {
-    return (
-      <div className="mads-loading">
-        <span className="ig-spinner" />
-        Carregando dados financeiros...
-      </div>
-    );
+    return <LoadingSkeleton variant="content" />;
   }
 
   return (

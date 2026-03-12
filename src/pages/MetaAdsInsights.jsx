@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { metaAds } from '../services/api';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsInsights.css';
 
 const LEVELS = [
@@ -179,10 +180,7 @@ export default function MetaAdsInsights({ adAccountId }) {
 
       {/* Data table */}
       {loading ? (
-        <div className="mads-loading">
-          <span className="ig-spinner" />
-          Carregando insights...
-        </div>
+        <LoadingSkeleton variant="content" />
       ) : data.length === 0 ? (
         <div className="mads-empty">
           <p>Nenhum dado disponivel para o periodo selecionado</p>

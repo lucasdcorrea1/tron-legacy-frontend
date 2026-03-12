@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { instagramAutoReply, API_URL } from '../services/api';
 import './InstagramAutoReply.css';
@@ -155,10 +156,7 @@ export function InstagramAutoReplyContent() {
             </div>
 
             {rulesLoading ? (
-              <div className="ar-loading">
-                <div className="ar-spinner" />
-                Carregando regras...
-              </div>
+              <LoadingSkeleton variant="list" />
             ) : rules.length === 0 ? (
               <div className="ar-empty">
                 <p>Nenhuma regra configurada.</p>
@@ -270,10 +268,7 @@ export function InstagramAutoReplyContent() {
             </div>
 
             {logsLoading ? (
-              <div className="ar-loading">
-                <div className="ar-spinner" />
-                Carregando histórico...
-              </div>
+              <LoadingSkeleton variant="list" />
             ) : logs.length === 0 ? (
               <div className="ar-empty">
                 <p>Nenhum registro encontrado.</p>

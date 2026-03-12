@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { blog, API_URL } from '../services/api';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './BlogHome.css';
 
 const getImageUrl = (url) => {
@@ -96,7 +97,7 @@ export default function BlogHome() {
         {error && <div className="bloghome-error">{error}</div>}
 
         {loading ? (
-          <div className="bloghome-loading">Carregando...</div>
+          <LoadingSkeleton variant="cards" />
         ) : posts.length === 0 ? (
           <div className="bloghome-empty">
             <p>Nenhum post publicado ainda.</p>

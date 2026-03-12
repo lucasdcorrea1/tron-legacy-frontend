@@ -1,13 +1,14 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
+import { AdminLayoutSkeleton } from './LoadingSkeleton';
 
 export default function PrivateRoute({ children }) {
   const { isAuthenticated, loading: authLoading } = useAuth();
   const { orgs, loading: orgLoading, currentOrg } = useOrg();
 
   if (authLoading || orgLoading) {
-    return <div className="loading">Carregando...</div>;
+    return <AdminLayoutSkeleton />;
   }
 
   if (!isAuthenticated) {

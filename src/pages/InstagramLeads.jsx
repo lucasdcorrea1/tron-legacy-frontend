@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { instagramLeads } from '../services/api';
 import './InstagramLeads.css';
@@ -178,10 +179,7 @@ export function InstagramLeadsContent() {
 
         {/* Leads list */}
         {loading ? (
-          <div className="leads-loading">
-            <div className="leads-spinner" />
-            Carregando leads...
-          </div>
+          <LoadingSkeleton variant="list" />
         ) : leads.length === 0 ? (
           <div className="leads-empty">
             <p>Nenhum lead encontrado.</p>

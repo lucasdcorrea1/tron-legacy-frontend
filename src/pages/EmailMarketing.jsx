@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { emailMarketing } from '../services/api';
 import './EmailMarketing.css';
@@ -213,10 +214,7 @@ export default function EmailMarketing() {
             </div>
 
             {subsLoading && subscribers.length === 0 ? (
-              <div className="em-loading">
-                <span className="em-spinner" />
-                Carregando inscritos...
-              </div>
+              <LoadingSkeleton variant="list" />
             ) : filteredSubscribers.length === 0 ? (
               <div className="em-subs-empty">
                 {subsSearch ? 'Nenhum inscrito encontrado.' : 'Nenhum inscrito ainda.'}

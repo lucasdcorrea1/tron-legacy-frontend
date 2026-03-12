@@ -4,6 +4,7 @@ import { useOrg } from '../context/OrgContext';
 import { useToast } from '../components/Toast';
 import { profile as profileApi, ai as aiApi, API_URL } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { GeneralTab, MembersTab, BillingTab } from './OrgSettings';
 import './Profile.css';
 import './OrgSettings.css';
@@ -251,7 +252,7 @@ export default function Profile() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="profile-loading">Carregando...</div>
+        <LoadingSkeleton variant="form" />
       </AdminLayout>
     );
   }

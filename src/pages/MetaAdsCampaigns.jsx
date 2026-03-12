@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { metaAds, integratedPublish, API_URL } from '../services/api';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsCampaigns.css';
 
 const STATUS_COLORS = {
@@ -529,10 +530,7 @@ export default function MetaAdsCampaigns({ adAccountId }) {
       {error && <div className="mads-error">{error}</div>}
 
       {loading ? (
-        <div className="mads-loading">
-          <span className="mads-spinner" />
-          Carregando campanhas...
-        </div>
+        <LoadingSkeleton variant="cards" />
       ) : sortedCampaigns.length === 0 ? (
         <div className="mads-empty">
           <div className="mads-empty-icon">

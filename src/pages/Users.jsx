@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { users, orgs, platform } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './Users.css';
 
 const ORG_ROLES = ['owner', 'admin', 'member', 'viewer'];
@@ -89,7 +90,7 @@ function PlatformView() {
       {error && <div className="users-error">{error}</div>}
 
       {loading ? (
-        <div className="users-loading">Carregando...</div>
+        <LoadingSkeleton variant="list" />
       ) : filtered.length === 0 ? (
         <div className="users-empty">Nenhum resultado encontrado</div>
       ) : (
@@ -298,7 +299,7 @@ function OrgMembersView() {
       {success && <div className="users-success">{success}</div>}
 
       {loading ? (
-        <div className="users-loading">Carregando...</div>
+        <LoadingSkeleton variant="list" />
       ) : (
         <>
           <div className="users-table-wrapper">

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { integratedPublish, instagram, metaAds, ai as aiApi, API_URL } from '../services/api';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsIntegratedPublish.css';
 
 const STATUS_COLORS = {
@@ -467,10 +468,7 @@ export default function MetaAdsIntegratedPublish() {
         {listError && <div className="mads-error">{listError}</div>}
 
         {listLoading ? (
-          <div className="mads-loading">
-            <span className="mads-spinner" />
-            Carregando publicacoes...
-          </div>
+          <LoadingSkeleton variant="list" />
         ) : filteredItems.length === 0 ? (
           <div className="mads-empty">
             <div className="mads-empty-icon">

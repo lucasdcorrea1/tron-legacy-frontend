@@ -8,6 +8,7 @@ import AdSlot from '../components/AdSlot';
 import NewsletterForm from '../components/NewsletterForm';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import AuthorHoverCard from '../components/AuthorHoverCard';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './Blog.css';
 
 export default function Blog() {
@@ -153,7 +154,7 @@ export default function Blog() {
           {error && <div className="blog-error">{error}</div>}
 
           {loading ? (
-            <div className="blog-loading">Carregando posts...</div>
+            <LoadingSkeleton variant="cards" />
           ) : posts.length === 0 ? (
             <div className="blog-empty">
               <p>Nenhum post publicado ainda.</p>
@@ -279,7 +280,7 @@ export default function Blog() {
             </>
           )}
         </div>
-        {showSidebarAds && (
+        {showSidebarAds && !loading && !error && posts.length > 0 && (
           <aside className="ad-sidebar ad-sidebar-right">
             <AdSlot
               slot="9257625337"

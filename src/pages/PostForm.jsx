@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import { useToast } from '../components/Toast';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import RichTextEditor from '../components/RichTextEditor';
 import './PostForm.css';
 
@@ -164,7 +165,7 @@ export function PostFormContent({ slug, onSuccess }) {
   const hasLegacyOnly = !hasNewImages && !!coverImage;
 
   if (loadingPost) {
-    return <div className="postform-loading">Carregando...</div>;
+    return <LoadingSkeleton variant="form" />;
   }
 
   return (

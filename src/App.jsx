@@ -6,6 +6,7 @@ import { OrgProvider } from './context/OrgContext';
 import { ToastProvider } from './components/Toast';
 import CookieConsent from './components/CookieConsent';
 import PrivateRoute from './components/PrivateRoute';
+import { AdminLayoutSkeleton } from './components/LoadingSkeleton';
 import './styles/global.css';
 
 function PageTracker() {
@@ -50,7 +51,7 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <PageTracker />
-        <Suspense fallback={null}>
+        <Suspense fallback={<AdminLayoutSkeleton />}>
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Home />} />

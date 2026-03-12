@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { ctaAnalytics } from '../services/api';
 import './CTAAnalytics.css';
 
@@ -50,7 +51,7 @@ export default function CTAAnalytics() {
         </div>
 
         {loading ? (
-          <div className="cta-loading">Carregando...</div>
+          <LoadingSkeleton variant="content" />
         ) : !data ? (
           <div className="cta-loading">Erro ao carregar dados</div>
         ) : (

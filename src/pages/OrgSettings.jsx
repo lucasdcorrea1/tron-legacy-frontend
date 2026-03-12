@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useOrg } from '../context/OrgContext';
 import { orgs, subscription as subscriptionApi } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './OrgSettings.css';
 
 export function GeneralTab() {
@@ -209,7 +210,7 @@ export function MembersTab() {
   const memberCount = usage?.usage?.members ?? members.length;
   const atLimit = memberLimit !== -1 && memberCount >= memberLimit;
 
-  if (loading) return <div className="settings-loading">Carregando...</div>;
+  if (loading) return <LoadingSkeleton variant="form" />;
 
   return (
     <div className="settings-section">

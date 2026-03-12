@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { autoBoost } from '../services/api';
 import './AutoBoostPage.css';
@@ -231,7 +232,7 @@ export function AutoBoostContent() {
             </div>
 
             {rulesLoading ? (
-              <div className="ab-loading">Carregando regras...</div>
+              <LoadingSkeleton variant="list" />
             ) : rules.length === 0 ? (
               <div className="ab-empty">
                 <p>Nenhuma regra criada.</p>
@@ -300,7 +301,7 @@ export function AutoBoostContent() {
             </div>
 
             {logsLoading ? (
-              <div className="ab-loading">Carregando historico...</div>
+              <LoadingSkeleton variant="list" />
             ) : logs.length === 0 ? (
               <div className="ab-empty">
                 <p>Nenhum registro de auto-boost encontrado.</p>

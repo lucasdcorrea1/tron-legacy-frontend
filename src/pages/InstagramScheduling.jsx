@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
 import { instagram, integratedPublish, metaAds, ai as aiApi, API_URL } from '../services/api';
 import './InstagramScheduling.css';
@@ -771,10 +772,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
   if (configured === null) {
     return (
         <div className="ig-page">
-          <div className="ig-loading">
-            <span className="ig-spinner" />
-            Verificando configuracao...
-          </div>
+          <LoadingSkeleton variant="cards" />
         </div>
     );
   }
@@ -826,10 +824,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
             </div>
 
             {listLoading && schedules.length === 0 ? (
-              <div className="ig-loading">
-                <span className="ig-spinner" />
-                Carregando agendamentos...
-              </div>
+              <LoadingSkeleton variant="cards" />
             ) : schedules.length === 0 ? (
               <div className="ig-empty">
                 <p>Nenhum agendamento encontrado.</p>

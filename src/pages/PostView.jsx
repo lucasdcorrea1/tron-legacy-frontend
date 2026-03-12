@@ -22,6 +22,7 @@ import yaml from 'highlight.js/lib/languages/yaml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import 'highlight.js/styles/github-dark.css';
 import AuthorHoverCard from '../components/AuthorHoverCard';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './PostView.css';
 
 hljs.registerLanguage('javascript', javascript);
@@ -405,7 +406,7 @@ export default function PostView() {
   if (loading) {
     return (
       <div className="postview-page">
-        <div className="postview-loading">Carregando...</div>
+        <LoadingSkeleton variant="content" />
       </div>
     );
   }
@@ -999,7 +1000,7 @@ export default function PostView() {
               ))}
 
               {commentsLoading && (
-                <div className="comments-loading">Carregando comentários...</div>
+                <LoadingSkeleton variant="content" />
               )}
 
               {!commentsLoading && comments.length === 0 && (

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { blog, orgs } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
+import LoadingSkeleton from '../components/LoadingSkeleton';
 import './Admin.css';
 
 export default function Admin() {
@@ -177,7 +178,7 @@ export default function Admin() {
           </div>
 
           {loading ? (
-            <div className="loading-state">Carregando...</div>
+            <LoadingSkeleton variant="cards" />
           ) : recentPosts.length === 0 ? (
             <div className="empty-state">
               <p>Nenhum post ainda</p>
