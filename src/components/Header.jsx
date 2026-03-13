@@ -104,7 +104,7 @@ export default function Header() {
           </Link>
           <button
             className="site-cart-link"
-            onClick={() => { closeMenus(); openDrawer(); }}
+            onClick={() => { closeMenus(); location.pathname.startsWith('/3d') ? openDrawer() : navigate('/3d/carrinho'); }}
             aria-label="Carrinho"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
