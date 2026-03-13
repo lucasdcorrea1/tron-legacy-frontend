@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { products3d, categories3d, admin3d } from '../services/api3d';
+import { products3d, categories3d, admin3d, imageUrl } from '../services/api3d';
 import AdminLayout from '../components/AdminLayout';
 import './Admin3DStore.css';
 
@@ -153,16 +153,34 @@ function ProductsTab() {
     }
   };
 
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef(null);
+
   const formatPrice = (price) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(price);
 
-  const addImageUrl = () => {
-    const url = prompt('URL da imagem:');
-    if (url) setForm(f => ({ ...f, images: [...f.images, url] }));
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of files) {
+        const data = await admin3d.images.upload(file);
+        setForm(f => ({ ...f, images: [...f.images, data.group_id] }));
+      }
+    } catch (err) {
+      alert('Erro no upload: ' + err.message);
+    }
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const removeImage = (index) => {
+  const removeImage = async (index) => {
+    const groupId = form.images[index];
     setForm(f => ({ ...f, images: f.images.filter((_, i) => i !== index) }));
+    try {
+      await admin3d.images.deleteGroup(groupId);
+    } catch { /* image may have been an old URL, ignore */ }
   };
 
   return (
@@ -227,13 +245,24 @@ function ProductsTab() {
           <div className="s3d-field full">
             <label>Imagens</label>
             <div className="s3d-images-list">
-              {form.images.map((url, i) => (
+              {form.images.map((groupId, i) => (
                 <div key={i} className="s3d-image-item">
-                  <img src={url} alt="" />
+                  <img src={imageUrl(groupId, 'thumb')} alt="" />
                   <button type="button" onClick={() => removeImage(i)}>x</button>
                 </div>
               ))}
-              <button type="button" className="s3d-btn-outline" onClick={addImageUrl}>+ URL</button>
+              <label className={`s3d-upload-btn ${uploading ? 'uploading' : ''}`}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  onChange={handleImageUpload}
+                  disabled={uploading}
+                  hidden
+                />
+                {uploading ? 'Enviando...' : '+ Upload'}
+              </label>
             </div>
           </div>
           <div className="s3d-form-actions">
@@ -265,7 +294,7 @@ function ProductsTab() {
                   <td>
                     <div className="s3d-product-cell">
                       {p.images && p.images.length > 0 ? (
-                        <img src={p.images[0]} alt="" className="s3d-thumb" />
+                        <img src={imageUrl(p.images[0], 'thumb')} alt="" className="s3d-thumb" />
                       ) : (
                         <div className="s3d-thumb-placeholder" />
                       )}

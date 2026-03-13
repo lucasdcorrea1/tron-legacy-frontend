@@ -154,4 +154,30 @@ export const admin3d = {
     },
     updateStatus: (id, data) => api3d.put(`/api/v1/admin/orders/${id}/status`, data),
   },
+  images: {
+    upload: async (file) => {
+      const token = localStorage.getItem('token');
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await fetch(`${API_3D_URL}/api/v1/admin/upload`, {
+        method: 'POST',
+        headers: { ...(token && { Authorization: `Bearer ${token}` }) },
+        body: formData,
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        let message;
+        try { message = JSON.parse(text).message; } catch { message = text; }
+        throw new Error(message || `Erro ${res.status}`);
+      }
+      return res.json();
+    },
+    deleteGroup: (groupId) => api3d.delete(`/api/v1/admin/images/${groupId}`),
+  },
 };
+
+// Helper to resolve a group_id to a servable image URL
+export function imageUrl(groupId, size = 'thumb') {
+  if (!groupId) return '';
+  return `${API_3D_URL}/api/v1/images/group/${groupId}?size=${size}`;
+}
