@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
-import { products3d, categories3d } from '../services/api3d';
+import { products3d, categories3d, imageUrl } from '../services/api3d';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../components/Toast';
 import Header from '../components/Header';
@@ -165,7 +165,7 @@ export default function Store3D() {
                     <article className="store3d-card">
                       <div className="store3d-card-image">
                         {product.images && product.images.length > 0 ? (
-                          <img src={product.images[0]} alt={product.name} />
+                          <img src={imageUrl(product.images[0], 'card')} alt={product.name} />
                         ) : (
                           <div className="store3d-card-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

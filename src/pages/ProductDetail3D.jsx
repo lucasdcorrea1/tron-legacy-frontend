@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { products3d } from '../services/api3d';
+import { products3d, imageUrl } from '../services/api3d';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../components/Toast';
 import Header from '../components/Header';
@@ -56,7 +56,7 @@ export default function ProductDetail3D() {
             '@type': 'Product',
             name: product.name,
             description: product.description,
-            image: product.images?.[0],
+            image: imageUrl(product.images?.[0], 'full'),
             offers: {
               '@type': 'Offer',
               price: product.price,
@@ -95,7 +95,7 @@ export default function ProductDetail3D() {
               <div className="pd3d-gallery">
                 <div className="pd3d-image-main">
                   {product.images?.length > 0 ? (
-                    <img src={product.images[selectedImage]} alt={product.name} />
+                    <img src={imageUrl(product.images[selectedImage], 'full')} alt={product.name} />
                   ) : (
                     <div className="pd3d-image-placeholder">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -108,13 +108,13 @@ export default function ProductDetail3D() {
                 </div>
                 {product.images?.length > 1 && (
                   <div className="pd3d-thumbnails">
-                    {product.images.map((img, i) => (
+                    {product.images.map((groupId, i) => (
                       <button
                         key={i}
                         className={`pd3d-thumb ${i === selectedImage ? 'active' : ''}`}
                         onClick={() => setSelectedImage(i)}
                       >
-                        <img src={img} alt={`${product.name} ${i + 1}`} />
+                        <img src={imageUrl(groupId, 'thumb')} alt={`${product.name} ${i + 1}`} />
                       </button>
                     ))}
                   </div>

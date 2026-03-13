@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { imageUrl } from '../services/api3d';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'cart3d';
@@ -33,7 +34,7 @@ export function CartProvider({ children }) {
         name: product.name,
         slug: product.slug,
         price: product.price,
-        image: product.images?.[0] || '',
+        image: imageUrl(product.images?.[0], 'thumb'),
         quantity: Math.min(qty, product.stock),
         stock: product.stock,
       }];
