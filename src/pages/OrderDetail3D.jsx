@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { orders3d } from '../services/api3d';
 import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
+import './Store3D.css';
 import './OrderDetail3D.css';
 
 const STATUS_STEPS = [

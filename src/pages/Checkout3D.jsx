@@ -7,6 +7,7 @@ import { useToast } from '../components/Toast';
 import { orders3d } from '../services/api3d';
 import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
+import './Store3D.css';
 import './Checkout3D.css';
 
 const UF_LIST = [

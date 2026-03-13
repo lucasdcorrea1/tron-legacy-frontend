@@ -6,6 +6,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../components/Toast';
 import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
+import './Store3D.css';
 import './ProductDetail3D.css';
 
 export default function ProductDetail3D() {
