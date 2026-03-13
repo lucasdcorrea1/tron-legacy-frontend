@@ -52,6 +52,7 @@ const Checkout3D = lazy(() => import('./pages/Checkout3D'));
 const OrderConfirmation3D = lazy(() => import('./pages/OrderConfirmation3D'));
 const OrderHistory3D = lazy(() => import('./pages/OrderHistory3D'));
 const OrderDetail3D = lazy(() => import('./pages/OrderDetail3D'));
+const CartDrawer = lazy(() => import('./components/CartDrawer'));
 
 export default function App() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <PageTracker />
+        <Suspense fallback={null}><CartDrawer /></Suspense>
         <Suspense fallback={<AdminLayoutSkeleton />}>
         <Routes>
           {/* Public routes */}

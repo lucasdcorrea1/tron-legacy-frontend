@@ -133,6 +133,10 @@
   text-decoration: none;
   border-radius: 8px;
   transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font: inherit;
 }
 
 .site-cart-link:hover {

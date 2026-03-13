@@ -3,7 +3,6 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { products3d, categories3d, imageUrl } from '../services/api3d';
 import { useCart } from '../context/CartContext';
-import { useToast } from '../components/Toast';
 import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Store3D.css';
@@ -12,7 +11,6 @@ export default function Store3D() {
   const pageRef = useRef(null);
   useHorizontalPageSwipe(pageRef);
   const { addItem } = useCart();
-  const { showToast } = useToast();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -195,7 +193,6 @@ export default function Store3D() {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 addItem(product);
-                                showToast(`${product.name} adicionado ao carrinho!`, 'success');
                               }}
                               aria-label={`Adicionar ${product.name} ao carrinho`}
                             >

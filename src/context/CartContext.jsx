@@ -15,10 +15,16 @@ function loadCart() {
 
 export function CartProvider({ children }) {
   const [items, setItems] = useState(loadCart);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [lastAddedId, setLastAddedId] = useState(null);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
   }, [items]);
+
+  const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
+  const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
+  const clearLastAdded = useCallback(() => setLastAddedId(null), []);
 
   const addItem = useCallback((product, qty = 1) => {
     setItems(prev => {
@@ -39,6 +45,8 @@ export function CartProvider({ children }) {
         stock: product.stock,
       }];
     });
+    setLastAddedId(product.id);
+    setIsDrawerOpen(true);
   }, []);
 
   const removeItem = useCallback((product_id) => {
@@ -73,7 +81,9 @@ export function CartProvider({ children }) {
     items, itemCount, total,
     addItem, removeItem, updateQuantity, clearCart,
     isInCart, getItemQuantity,
-  }), [items, itemCount, total, addItem, removeItem, updateQuantity, clearCart, isInCart, getItemQuantity]);
+    isDrawerOpen, openDrawer, closeDrawer,
+    lastAddedId, clearLastAdded,
+  }), [items, itemCount, total, addItem, removeItem, updateQuantity, clearCart, isInCart, getItemQuantity, isDrawerOpen, openDrawer, closeDrawer, lastAddedId, clearLastAdded]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

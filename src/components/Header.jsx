@@ -9,7 +9,7 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, profile, logout } = useAuth();
-  const { itemCount } = useCart();
+  const { itemCount, openDrawer } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const dropdownRef = useRef(null);
@@ -102,10 +102,9 @@ export default function Header() {
           >
             3D Store
           </Link>
-          <Link
-            to="/3d/carrinho"
+          <button
             className="site-cart-link"
-            onClick={closeMenus}
+            onClick={() => { closeMenus(); openDrawer(); }}
             aria-label="Carrinho"
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
@@ -113,7 +112,7 @@ export default function Header() {
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
             </svg>
             {itemCount > 0 && <span className="site-cart-badge">{itemCount}</span>}
-          </Link>
+          </button>
 
           {isAuthenticated ? (
             <div className="site-user-area">
