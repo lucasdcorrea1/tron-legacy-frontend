@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const PAGE_ORDER = ['/', '/servicos', '/blog'];
+const PAGE_ORDER = ['/', '/servicos', '/blog', '/3d'];
 const THRESHOLD = 60;
 
 export default function useHorizontalPageSwipe(containerRef) {

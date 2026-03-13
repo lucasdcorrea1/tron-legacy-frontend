@@ -86,7 +86,7 @@ function generateMetaTags({ title, description, url, image, type, publishedTime,
   return meta;
 }
 
-function injectMetaTags(html, metaTags) {
+function injectMetaTags(html, metaTags, bodyContent = '') {
   // Replace the default <title> and <meta name="description"> with our custom ones
   let result = html
     .replace(/<title>.*?<\/title>/, '')
@@ -94,6 +94,15 @@ function injectMetaTags(html, metaTags) {
 
   // Inject meta tags right before </head>
   result = result.replace('</head>', `${metaTags}\n  </head>`);
+
+  // Inject visible content inside #root for crawlers (React createRoot will replace it)
+  if (bodyContent) {
+    result = result.replace(
+      '<div id="root"></div>',
+      `<div id="root">${bodyContent}</div>`
+    );
+  }
+
   return result;
 }
 
@@ -105,6 +114,91 @@ function writePage(relativePath, html) {
   }
   writeFileSync(filePath, html, 'utf-8');
   console.log(`  Generated: ${relativePath}`);
+}
+
+// Static body content for crawlers — React replaces this on mount
+function homeBodyContent() {
+  return `
+    <header><a href="/">Whodo</a></header>
+    <main>
+      <h1>Whodo - Transforme suas ideias em soluções digitais</h1>
+      <p>Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença.</p>
+      <section>
+        <h2>Nossos Serviços</h2>
+        <ul>
+          <li>Desenvolvimento de Websites profissionais</li>
+          <li>Sistemas Web sob medida</li>
+          <li>Aplicativos Mobile</li>
+          <li>Automação e Inteligência Artificial</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Por que escolher a Whodo?</h2>
+        <p>Combinamos design moderno com tecnologia de ponta para criar soluções digitais que geram resultados reais para o seu negócio.</p>
+      </section>
+    </main>
+    <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
+}
+
+function servicesBodyContent() {
+  return `
+    <header><a href="/">Whodo</a></header>
+    <main>
+      <h1>Serviços de Desenvolvimento de Software</h1>
+      <p>Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita.</p>
+      <section>
+        <h2>Websites Profissionais</h2>
+        <p>Sites modernos, responsivos e otimizados para SEO. Landing pages, sites institucionais e e-commerce.</p>
+      </section>
+      <section>
+        <h2>Sistemas Web</h2>
+        <p>Plataformas e dashboards sob medida para gerenciar seu negócio com eficiência.</p>
+      </section>
+      <section>
+        <h2>Aplicativos Mobile</h2>
+        <p>Apps nativos e multiplataforma para iOS e Android.</p>
+      </section>
+      <section>
+        <h2>Automação e IA</h2>
+        <p>Automatize processos repetitivos e integre inteligência artificial ao seu fluxo de trabalho.</p>
+      </section>
+    </main>
+    <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
+}
+
+function blogBodyContent(posts = []) {
+  const postList = posts.slice(0, 10).map(p => {
+    const date = p.published_at ? new Date(p.published_at).toLocaleDateString('pt-BR') : '';
+    return `<li><a href="/blog/${p.slug}">${escapeHtml(p.title)}</a>${p.excerpt ? ` - ${escapeHtml(p.excerpt)}` : ''}${date ? ` <time>${date}</time>` : ''}</li>`;
+  }).join('\n          ');
+
+  return `
+    <header><a href="/">Whodo</a> &gt; <a href="/blog">Blog</a></header>
+    <main>
+      <h1>Blog Tron Legacy - Artigos sobre Tecnologia</h1>
+      <p>Artigos, tutoriais e novidades sobre tecnologia, programação e desenvolvimento de software. Explorando código, sistemas e o futuro digital.</p>
+      ${posts.length > 0 ? `<section><h2>Artigos Recentes</h2><ul>${postList}</ul></section>` : ''}
+    </main>
+    <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
+}
+
+function postBodyContent(post) {
+  const date = post.published_at ? new Date(post.published_at).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+  const plainContent = post.content ? post.content.replace(/<[^>]*>/g, '').slice(0, 500) : '';
+
+  return `
+    <header><a href="/">Whodo</a> &gt; <a href="/blog">Blog</a> &gt; ${escapeHtml(post.title)}</header>
+    <main>
+      <article>
+        <h1>${escapeHtml(post.meta_title || post.title)}</h1>
+        <p>${escapeHtml(post.meta_description || post.excerpt || post.title)}</p>
+        ${post.author_name ? `<p>Por ${escapeHtml(post.author_name)}${date ? ` — ${date}` : ''}</p>` : ''}
+        ${post.category ? `<p>Categoria: ${escapeHtml(post.category)}</p>` : ''}
+        ${post.tags && post.tags.length > 0 ? `<p>Tags: ${post.tags.map(t => escapeHtml(t)).join(', ')}</p>` : ''}
+        ${plainContent ? `<div>${escapeHtml(plainContent)}${plainContent.length >= 500 ? '...' : ''}</div>` : ''}
+      </article>
+    </main>
+    <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
 }
 
 async function main() {
@@ -141,7 +235,7 @@ async function main() {
       },
     },
   });
-  writePage('index.html', injectMetaTags(indexHtml, homeMeta));
+  writePage('index.html', injectMetaTags(indexHtml, homeMeta, homeBodyContent()));
 
   // 2. Services page
   const servicesMeta = generateMetaTags({
@@ -170,7 +264,7 @@ async function main() {
       ],
     },
   });
-  writePage('servicos/index.html', injectMetaTags(indexHtml, servicesMeta));
+  writePage('servicos/index.html', injectMetaTags(indexHtml, servicesMeta, servicesBodyContent()));
 
   // 3. Blog listing page
   const blogMeta = generateMetaTags({
@@ -201,7 +295,8 @@ async function main() {
       ],
     },
   });
-  writePage('blog/index.html', injectMetaTags(indexHtml, blogMeta));
+  // Blog page body content will be updated after fetching posts
+  let blogPosts = [];
 
   // 3. Fetch all published posts and generate individual pages
   try {
@@ -214,6 +309,7 @@ async function main() {
 
     const data = await response.json();
     const posts = data.posts || [];
+    blogPosts = posts;
     console.log(`  Found ${posts.length} published posts\n`);
 
     for (const post of posts) {
@@ -279,7 +375,7 @@ async function main() {
         },
       });
 
-      writePage(`blog/${post.slug}/index.html`, injectMetaTags(indexHtml, postMeta));
+      writePage(`blog/${post.slug}/index.html`, injectMetaTags(indexHtml, postMeta, postBodyContent(post)));
     }
 
     // 4. Generate sitemap.xml
@@ -297,6 +393,9 @@ async function main() {
     // Generate sitemap with static pages only
     generateSitemap([]);
   }
+
+  // Generate blog listing page (after fetching posts so we can include them)
+  writePage('blog/index.html', injectMetaTags(indexHtml, blogMeta, blogBodyContent(blogPosts)));
 }
 
 function generateSitemap(posts) {

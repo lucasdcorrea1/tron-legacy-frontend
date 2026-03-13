@@ -493,9 +493,8 @@ function InstagramHomeTab({ hasAdAccount, adAccountId, igAccountId, onNavigate }
 
 function AccountBanner({
   igProfiles, adAccounts, hasAdAccount,
-  selectedIgAccountId, setSelectedIgAccountId,
+  selectedIgAccountId, onSelectProfile,
   selectedAdAccountId, setSelectedAdAccountId,
-  allProfiles, currentOrgId, onSwitchOrg,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
@@ -508,31 +507,14 @@ function AccountBanner({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  // Deduplicate allProfiles by ig_account_id, preferring current org's entry
-  const displayProfiles = (() => {
-    if (allProfiles.length === 0) return igProfiles;
-    const map = new Map();
-    for (const p of allProfiles) {
-      const existing = map.get(p.ig_account_id);
-      // Keep current org's version if duplicate
-      if (!existing || p.org_id === currentOrgId) {
-        map.set(p.ig_account_id, p);
-      }
-    }
-    return Array.from(map.values());
-  })();
   const activeProfile = igProfiles.find(p => p.ig_account_id === selectedIgAccountId) || igProfiles[0];
   const activeAdAccount = adAccounts.find(a => a.account_id === selectedAdAccountId) || adAccounts[0];
-  const canOpen = displayProfiles.length > 0 || adAccounts.length > 0;
+  const canOpen = igProfiles.length > 0 || adAccounts.length > 0;
 
   const getInitial = (name) => (name || '?')[0].toUpperCase();
 
   const handleSelectIg = (profile) => {
-    if (profile.org_id && profile.org_id !== currentOrgId) {
-      onSwitchOrg(profile.org_id);
-    } else {
-      setSelectedIgAccountId(profile.ig_account_id);
-    }
+    onSelectProfile(profile.ig_account_id);
     setOpen(false);
   };
 
@@ -588,11 +570,9 @@ function AccountBanner({
 
       {open && (
         <div className="ig-account-banner-dropdown">
-          {/* IG Profiles — cross-org */}
           <div className="ig-account-banner-dropdown-label">Perfis Instagram</div>
-          {displayProfiles.map(profile => {
-            const isSameOrg = !profile.org_id || profile.org_id === currentOrgId;
-            const isActive = isSameOrg && profile.ig_account_id === (activeProfile?.ig_account_id || '');
+          {igProfiles.map(profile => {
+            const isActive = profile.ig_account_id === (activeProfile?.ig_account_id || '');
             return (
               <button
                 key={profile.ig_account_id}
@@ -611,18 +591,13 @@ function AccountBanner({
                     {profile.username ? `@${profile.username}` : profile.page_name || 'Instagram'}
                   </span>
                   <span className="ig-account-banner-dropdown-sub">
-                    {profile.username ? (profile.page_name || profile.org_name || 'Pagina Facebook') : profile.ig_account_id}
+                    {profile.username ? (profile.page_name || 'Pagina Facebook') : profile.ig_account_id}
                   </span>
                 </div>
-                {isActive ? (
-                  <span className="ig-account-banner-current">
-                    <svg className="ig-account-banner-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                    <span className="ig-account-banner-badge">atual</span>
-                  </span>
-                ) : !isSameOrg && (
-                  <span className="ig-account-banner-switch">trocar</span>
+                {isActive && (
+                  <svg className="ig-account-banner-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
                 )}
               </button>
             );
@@ -675,7 +650,7 @@ function AccountBanner({
 }
 
 export default function InstagramPage() {
-  const { currentOrg, switchOrg } = useOrg();
+  const { currentOrg } = useOrg();
   const [configured, setConfigured] = useState(null); // null = loading
   const [hasAdAccount, setHasAdAccount] = useState(false);
   const [activeTab, setActiveTab] = useState('config');
@@ -688,16 +663,6 @@ export default function InstagramPage() {
   // Multi IG profile support
   const [igProfiles, setIgProfiles] = useState([]);
   const [selectedIgAccountId, setSelectedIgAccountId] = useState('');
-
-  // Cross-org profiles (from DB, all orgs)
-  const [allProfiles, setAllProfiles] = useState([]);
-
-  // Load all org profiles once on mount
-  useEffect(() => {
-    instagram.listAllOrgProfiles()
-      .then(data => setAllProfiles(data?.profiles || []))
-      .catch(() => setAllProfiles([]));
-  }, []);
 
   // Reset state when org changes
   useEffect(() => {
@@ -752,6 +717,13 @@ export default function InstagramPage() {
     if (isConfigured && wasNotConfigured) {
       setActiveTab('home');
     }
+  };
+
+  const handleSelectProfile = async (igAccountId) => {
+    setSelectedIgAccountId(igAccountId);
+    try {
+      await instagram.saveConfig({ instagram_account_id: igAccountId });
+    } catch { /* silent */ }
   };
 
   const visibleTabs = configured
@@ -837,12 +809,9 @@ export default function InstagramPage() {
                 adAccounts={adAccounts}
                 hasAdAccount={hasAdAccount}
                 selectedIgAccountId={selectedIgAccountId}
-                setSelectedIgAccountId={setSelectedIgAccountId}
+                onSelectProfile={handleSelectProfile}
                 selectedAdAccountId={selectedAdAccountId}
                 setSelectedAdAccountId={setSelectedAdAccountId}
-                allProfiles={allProfiles}
-                currentOrgId={currentOrg?.id}
-                onSwitchOrg={switchOrg}
               />
             )}
 
