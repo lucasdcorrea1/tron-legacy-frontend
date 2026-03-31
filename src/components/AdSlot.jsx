@@ -3,6 +3,11 @@ import { useEffect, useRef, useState } from 'react';
 const AD_CLIENT = 'ca-pub-8952525362331082';
 const SCRIPT_SRC = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${AD_CLIENT}`;
 
+// Pause ad requests by default to prevent auto-ads on non-editorial pages.
+// AdController in App.jsx resumes requests only on /blog* routes.
+window.adsbygoogle = window.adsbygoogle || [];
+window.adsbygoogle.pauseAdRequests = 1;
+
 // Singleton: load the AdSense script once across all AdSlot instances
 let scriptLoadPromise = null;
 

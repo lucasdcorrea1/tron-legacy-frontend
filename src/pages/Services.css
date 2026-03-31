@@ -554,52 +554,80 @@
   line-height: 1.7;
 }
 
-.svc-cta-btn {
+.svc-cta-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.svc-cta-btn-blue {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   padding: 1.125rem 2.75rem;
   font-size: 1.0625rem;
   font-weight: 700;
   color: #fff;
-  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
   border: none;
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.25s ease;
-  box-shadow: 0 8px 24px -4px rgba(37, 211, 102, 0.3);
+  box-shadow: 0 8px 24px -4px rgba(37, 99, 235, 0.35);
   position: relative;
 }
 
-.svc-cta-btn::after {
+.svc-cta-btn-blue::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: 14px;
-  box-shadow: 0 0 0 8px rgba(37, 211, 102, 0.15);
+  box-shadow: 0 0 0 8px rgba(37, 99, 235, 0.15);
   opacity: 0;
   animation: svcPulse 3s ease-in-out infinite;
   will-change: opacity;
   pointer-events: none;
 }
 
-.svc-cta-btn:hover {
+.svc-cta-btn-blue:hover {
   transform: translateY(-3px) scale(1.02);
   color: #fff;
 }
 
-.svc-cta-btn:hover::after {
+.svc-cta-btn-blue:hover::after {
   animation: none;
   opacity: 0;
 }
 
-.svc-cta-btn svg:last-child {
+.svc-cta-btn-blue svg:last-child {
   transition: transform 0.2s;
 }
 
-.svc-cta-btn:hover svg:last-child {
+.svc-cta-btn-blue:hover svg:last-child {
   transform: translateX(4px);
+}
+
+.svc-cta-btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.125rem 2.25rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: #fafafa;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.svc-cta-btn-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #fff;
 }
 
 @keyframes svcPulse {
@@ -766,12 +794,24 @@
     font-size: 0.9375rem;
   }
 
-  .svc-cta-btn {
+  .svc-cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .svc-cta-btn-blue {
     width: 100%;
     max-width: 320px;
     padding: 1rem 2rem;
     font-size: 1rem;
     animation: none;
+  }
+
+  .svc-cta-btn-outline {
+    width: 100%;
+    max-width: 320px;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
   }
 
   .svc-footer {

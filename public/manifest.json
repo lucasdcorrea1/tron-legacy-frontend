@@ -1,7 +1,7 @@
 {
-  "name": "Whodo - Soluções Digitais",
+  "name": "Whodo - Marketing Digital",
   "short_name": "Whodo",
-  "description": "Transforme suas ideias em soluções digitais. Blog sobre tecnologia, programação e desenvolvimento.",
+  "description": "Plataforma de marketing digital: agende posts, automatize respostas e gerencie campanhas.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#09090b",

@@ -830,86 +830,126 @@
 /* Home Plans */
 .home-plans {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1.15fr 1fr;
   gap: 1rem;
   width: 100%;
-  max-width: 860px;
-  margin: 0 auto 1.5rem;
+  max-width: 880px;
+  margin: 0 auto 1.25rem;
+  align-items: start;
 }
 
 .home-plan-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 1.25rem 1rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  padding: 1.25rem 1.125rem;
   text-align: left;
   display: flex;
   flex-direction: column;
-  transition: all 0.3s;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .home-plan-card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.14);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
 }
 
 .home-plan-card.popular {
   border-color: rgba(37, 99, 235, 0.4);
-  background: rgba(37, 99, 235, 0.06);
+  background: linear-gradient(180deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.02) 100%);
+  padding: 1.5rem 1.125rem;
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.12),
+    0 12px 40px rgba(37, 99, 235, 0.1),
+    0 0 100px rgba(37, 99, 235, 0.04);
 }
 
 .home-plan-card.popular:hover {
   border-color: rgba(37, 99, 235, 0.6);
-  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(37, 99, 235, 0.2),
+    0 20px 60px rgba(37, 99, 235, 0.18),
+    0 0 120px rgba(37, 99, 235, 0.06);
+  transform: translateY(-6px);
 }
 
 .home-plan-badge {
   position: absolute;
-  top: -10px;
+  top: -11px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   color: white;
-  font-size: 0.5625rem;
+  font-size: 0.625rem;
   font-weight: 700;
-  padding: 0.15rem 0.625rem;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.4);
 }
 
-.home-plan-card h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #fafafa;
-  margin: 0 0 0.25rem;
-}
-
-.home-plan-price {
-  font-size: 0.75rem;
-  color: #71717a;
+.home-plan-top {
   margin-bottom: 0.75rem;
 }
 
+.home-plan-card h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #a1a1aa;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.6875rem;
+}
+
+.home-plan-card.popular h3 {
+  color: #60a5fa;
+}
+
+.home-plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 0.125rem;
+}
+
 .home-plan-price span {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: #fafafa;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.home-plan-card.popular .home-plan-price span {
+  background: linear-gradient(135deg, #fafafa, #93c5fd);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-plan-price small {
+  font-size: 0.75rem;
+  color: #52525b;
+  font-weight: 400;
 }
 
 .home-plan-card ul {
   list-style: none;
   padding: 0;
-  margin: 0 0 0.75rem;
+  margin: 0 0 0.875rem;
   flex: 1;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 0.625rem;
 }
 
 .home-plan-card li {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: #a1a1aa;
-  padding: 0.2rem 0;
-  padding-left: 1rem;
+  padding: 0.25rem 0;
+  padding-left: 1.125rem;
   position: relative;
 }
 
@@ -919,21 +959,24 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: #22c55e;
 }
 
 .home-plan-btn {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
   text-align: center;
-  padding: 0.5rem;
-  border-radius: 8px;
-  font-size: 0.75rem;
+  padding: 0.625rem;
+  border-radius: 10px;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #fafafa;
@@ -942,16 +985,46 @@
 .home-plan-btn:hover {
   background: rgba(255, 255, 255, 0.1);
   text-decoration: none;
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .home-plan-btn.primary {
   background: linear-gradient(135deg, #2563eb, #3b82f6);
   border: none;
   color: white;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.3);
 }
 
 .home-plan-btn.primary:hover {
-  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.home-plan-btn.primary svg {
+  transition: transform 0.2s;
+}
+
+.home-plan-btn.primary:hover svg {
+  transform: translateX(2px);
+}
+
+/* Trust line under plans */
+.home-plans-trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.75rem;
+  color: #52525b;
+}
+
+.trust-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #3f3f46;
+  flex-shrink: 0;
 }
 
 /* Compact Footer */
@@ -1002,6 +1075,128 @@
 .footer-copy {
   color: #a1a1aa;
   font-size: 0.8125rem;
+}
+
+/* ============================================
+   TELA 3 - CLIENTES
+   ============================================ */
+.section-clients {
+  padding: 4rem 2rem;
+  overflow: hidden;
+}
+
+.section-clients .section-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.clients-badge {
+  display: inline-block;
+  padding: 0.3rem 0.875rem;
+  margin-bottom: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #a78bfa;
+  background: rgba(167, 139, 250, 0.1);
+  border: 1px solid rgba(167, 139, 250, 0.25);
+  border-radius: 100px;
+}
+
+.clients-carousel {
+  width: 100%;
+  max-width: 900px;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  margin: 2rem 0;
+}
+
+.clients-track {
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  animation: scrollClients 25s linear infinite;
+  width: max-content;
+}
+
+.clients-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollClients {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 3));
+  }
+}
+
+.client-logo-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  min-width: 180px;
+  height: 100px;
+}
+
+.client-logo-wrapper:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.2);
+}
+
+.client-logo {
+  max-width: 140px;
+  max-height: 60px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(100%) brightness(1.5);
+  opacity: 0.7;
+  transition: all 0.3s ease;
+}
+
+.client-logo-wrapper:hover .client-logo {
+  filter: grayscale(0%) brightness(1);
+  opacity: 1;
+}
+
+.clients-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.clients-cta-text {
+  font-size: 1rem;
+  color: #a1a1aa;
+  font-weight: 500;
+}
+
+.clients-cta .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.clients-cta .btn-primary svg {
+  transition: transform 0.2s;
+}
+
+.clients-cta .btn-primary:hover svg {
+  transform: translateX(4px);
 }
 
 /* ============================================
@@ -1177,6 +1372,35 @@
     margin-top: 1.5rem;
   }
 
+  /* Clients */
+  .section-clients {
+    padding: 4rem 1rem;
+  }
+
+  .clients-carousel {
+    margin: 1.5rem 0;
+  }
+
+  .clients-track {
+    gap: 2rem;
+    animation-duration: 20s;
+  }
+
+  .client-logo-wrapper {
+    min-width: 140px;
+    height: 80px;
+    padding: 1rem 1.5rem;
+  }
+
+  .client-logo {
+    max-width: 100px;
+    max-height: 45px;
+  }
+
+  .clients-cta-text {
+    font-size: 0.875rem;
+  }
+
   /* CTA + Footer */
   .cta-title {
     font-size: 1.75rem;
@@ -1200,12 +1424,22 @@
 
   .home-plans {
     grid-template-columns: 1fr;
-    max-width: 320px;
+    max-width: 340px;
     gap: 0.75rem;
+  }
+
+  .home-plan-card.popular {
+    order: -1;
+    padding: 1.25rem 1.125rem;
   }
 
   .home-plan-card {
     padding: 1rem;
+  }
+
+  .home-plans-trust {
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
 
   .audit-cta-btn {

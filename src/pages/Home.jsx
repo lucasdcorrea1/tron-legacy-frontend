@@ -7,7 +7,15 @@ import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Home.css';
 
-const TOTAL_SECTIONS = 3;
+const TOTAL_SECTIONS = 4;
+
+// Dados dos clientes
+const CLIENTS = [
+  { name: 'Masson Contabilidade', logo: '/clients/masson.webp', url: 'https://www.massoncontabilidade.com.br/' },
+  { name: 'AutoFas Store', logo: '/clients/autofas.avif', url: 'https://autofasstore.com/' },
+  { name: 'Dreamer Studios', logo: '/clients/dreamer.png', url: 'https://dreamerstudios.io/' },
+  { name: 'House of Caju', logo: '/clients/houseofcaju.png', url: 'https://www.houseofcaju.com.br/' },
+];
 const COOLDOWN_MS = 1000;
 
 export default function Home() {
@@ -212,26 +220,26 @@ export default function Home() {
   return (
     <div className="home" ref={homeRef}>
       <Helmet>
-        <title>Whodo - Transforme suas ideias em soluções digitais</title>
-        <meta name="description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença." />
+        <title>Whodo - A plataforma que acelera seu marketing digital</title>
+        <meta name="description" content="Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar." />
         <link rel="canonical" href="https://whodo.com.br/" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://whodo.com.br/" />
-        <meta property="og:title" content="Whodo - Transforme suas ideias em soluções digitais" />
-        <meta property="og:description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença." />
+        <meta property="og:title" content="Whodo - A plataforma que acelera seu marketing digital" />
+        <meta property="og:description" content="Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar." />
         <meta property="og:image" content="https://whodo.com.br/teste-image-home.png" />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Whodo" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Whodo - Transforme suas ideias em soluções digitais" />
-        <meta name="twitter:description" content="Desenvolvemos tecnologia sob medida para impulsionar seu negócio." />
+        <meta name="twitter:title" content="Whodo - A plataforma que acelera seu marketing digital" />
+        <meta name="twitter:description" content="Agende posts, automatize respostas e gerencie campanhas. Tudo em um só lugar." />
         <meta name="twitter:image" content="https://whodo.com.br/teste-image-home.png" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'Organization',
           name: 'Whodo',
           url: 'https://whodo.com.br',
-          description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio.',
+          description: 'Plataforma de marketing digital: agende posts, automatize respostas e gerencie campanhas.',
           logo: { '@type': 'ImageObject', url: 'https://whodo.com.br/favicon.svg' },
           contactPoint: {
             '@type': 'ContactPoint',
@@ -276,7 +284,7 @@ export default function Home() {
 
       {/* Scroll Indicator Dots */}
       <div className="scroll-dots">
-        {[0, 1, 2].map((i) => (
+        {[0, 1, 2, 3].map((i) => (
           <button
             key={i}
             className={`scroll-dot ${activeSection === i ? 'active' : ''}`}
@@ -297,20 +305,20 @@ export default function Home() {
           <div className="hero-glow" ref={heroGlowRef} aria-hidden="true" />
           <div className="hero-inner">
             <div className="hero-content">
-              <p className="hero-tagline animate-item">Onde a inovação ganha forma</p>
+              <p className="hero-tagline animate-item">Seu marketing no piloto automático</p>
               <h1 className="hero-title animate-item" style={{ transitionDelay: '0.1s' }}>
-                Transforme suas ideias em <span className="text-gradient">soluções digitais</span>
+                Alavanque seus resultados com o <span className="text-gradient">Whodo</span>
               </h1>
               <p className="hero-description animate-item" style={{ transitionDelay: '0.2s' }}>
-                Desenvolvemos tecnologia sob medida para impulsionar seu negócio.
-                Websites, apps e sistemas que fazem a diferença.
+                Agende posts, automatize respostas e gerencie campanhas no Instagram,
+                Meta Ads e Email Marketing. Tudo em um só lugar.
               </p>
               <div className="hero-actions animate-item" style={{ transitionDelay: '0.3s' }}>
-                <a href="https://wa.me/5516999493490" target="_blank" rel="noopener noreferrer" className="btn-primary">
-                  Fale Conosco
-                </a>
-                <Link to="/blog" className="btn-ghost">
-                  Ver Blog
+                <Link to="/login" className="btn-primary">
+                  Comece Grátis
+                </Link>
+                <Link to="/onboarding" className="btn-ghost">
+                  Ver Planos
                 </Link>
               </div>
             </div>
@@ -403,23 +411,71 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tela 3 - CTA + Footer */}
-        <section className="section-snap section-cta-footer" ref={setSectionRef(2)}>
+        {/* Tela 3 - Clientes */}
+        <section className="section-snap section-clients" ref={setSectionRef(2)}>
+          <div className="section-inner">
+            <div className="section-header">
+              <span className="clients-badge animate-item">Parceiros</span>
+              <h2 className="section-title animate-item" style={{ transitionDelay: '0.05s' }}>
+                Quem confia no <span className="text-gradient">Whodo</span>
+              </h2>
+              <p className="section-description animate-item" style={{ transitionDelay: '0.1s' }}>
+                Empresas que escolheram acelerar seus resultados com nossa plataforma
+              </p>
+            </div>
+
+            <div className="clients-carousel animate-item" style={{ transitionDelay: '0.15s' }}>
+              <div className="clients-track">
+                {/* Duplicamos os logos para criar o efeito infinito */}
+                {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, index) => (
+                  <a
+                    key={`${client.name}-${index}`}
+                    href={client.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="client-logo-wrapper"
+                    title={client.name}
+                  >
+                    <img
+                      src={client.logo}
+                      alt={client.name}
+                      className="client-logo"
+                      loading="lazy"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="clients-cta animate-item" style={{ transitionDelay: '0.25s' }}>
+              <p className="clients-cta-text">Quer fazer parte dessa lista?</p>
+              <Link to="/login" className="btn-primary">
+                Comece agora
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Tela 4 - CTA + Footer */}
+        <section className="section-snap section-cta-footer" ref={setSectionRef(3)}>
           <div className="cta-footer-content">
             <div className="cta-inner">
               <span className="audit-badge animate-item">Planos</span>
               <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
-                Escale seu negócio com o<br />
-                plano <span className="text-gradient">ideal pra você</span>
+                Invista no crescimento<br />
+                do seu <span className="text-gradient">negócio</span>
               </h2>
               <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Comece grátis e faça upgrade quando precisar. Sem fidelidade.
+                Comece grátis. Escale sem limites. Cancele quando quiser.
               </p>
 
               <div className="home-plans animate-item" style={{ transitionDelay: '0.2s' }}>
                 <div className="home-plan-card">
-                  <h3>Free</h3>
-                  <div className="home-plan-price"><span>R$0</span>/mês</div>
+                  <div className="home-plan-top">
+                    <h3>Free</h3>
+                    <div className="home-plan-price"><span>R$0</span><small>/mês</small></div>
+                  </div>
                   <ul>
                     <li>1 membro</li>
                     <li>10 posts agendados</li>
@@ -430,36 +486,44 @@ export default function Home() {
                 </div>
 
                 <div className="home-plan-card popular">
-                  <span className="home-plan-badge">Popular</span>
-                  <h3>Pro</h3>
-                  <div className="home-plan-price"><span>R$149</span>/mês</div>
+                  <span className="home-plan-badge">Mais escolhido</span>
+                  <div className="home-plan-top">
+                    <h3>Pro</h3>
+                    <div className="home-plan-price"><span>R$149</span><small>/mês</small></div>
+                  </div>
                   <ul>
-                    <li>10 membros</li>
-                    <li>Tudo ilimitado</li>
+                    <li>10 membros da equipe</li>
+                    <li>Posts e campanhas ilimitados</li>
                     <li>Instagram + Meta Ads</li>
-                    <li>Email Marketing</li>
+                    <li>Email Marketing completo</li>
                   </ul>
-                  <Link to="/planos" className="home-plan-btn primary">Assinar Pro</Link>
+                  <Link to="/onboarding" className="home-plan-btn primary">
+                    Começar agora
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </Link>
                 </div>
 
                 <div className="home-plan-card">
-                  <h3>Enterprise</h3>
-                  <div className="home-plan-price"><span>R$399</span>/mês</div>
+                  <div className="home-plan-top">
+                    <h3>Enterprise</h3>
+                    <div className="home-plan-price"><span>R$399</span><small>/mês</small></div>
+                  </div>
                   <ul>
                     <li>Membros ilimitados</li>
-                    <li>Tudo ilimitado</li>
+                    <li>Tudo do Pro incluso</li>
                     <li>Suporte prioritário</li>
                     <li>SLA dedicado</li>
                   </ul>
-                  <Link to="/planos" className="home-plan-btn">Falar com vendas</Link>
+                  <Link to="/onboarding" className="home-plan-btn">Falar com vendas</Link>
                 </div>
               </div>
 
-              <div className="audit-cta-wrapper animate-item" style={{ transitionDelay: '0.3s' }}>
-                <Link to="/planos" className="audit-cta-btn">
-                  Ver todos os planos
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </Link>
+              <div className="home-plans-trust animate-item" style={{ transitionDelay: '0.25s' }}>
+                <span>Sem fidelidade</span>
+                <span className="trust-dot" />
+                <span>PIX, boleto ou cartão</span>
+                <span className="trust-dot" />
+                <span>Cancele quando quiser</span>
               </div>
             </div>
           </div>

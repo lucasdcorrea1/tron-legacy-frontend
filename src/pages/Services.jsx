@@ -8,27 +8,54 @@ import './Services.css';
 const TOTAL_SECTIONS = 3;
 const COOLDOWN_MS = 1000;
 
-const FAQ_DATA = [
+const FEATURES = [
   {
-    q: 'Quanto custa desenvolver um site ou sistema?',
-    a: 'Cada projeto é único, então o investimento depende do escopo, funcionalidades e prazos. Após uma conversa inicial gratuita, montamos uma proposta detalhada com valores transparentes — sem surpresas.',
+    num: '01',
+    title: 'Instagram',
+    desc: 'Agende posts, automatize respostas no Direct e acompanhe métricas de engajamento em tempo real.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="5" /><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none" />
+      </svg>
+    ),
   },
   {
-    q: 'Quanto tempo leva pra ficar pronto?',
-    a: 'Projetos simples como landing pages ficam prontos em 1–2 semanas. Sistemas mais complexos levam de 4 a 12 semanas. Definimos cronograma realista na proposta e fazemos entregas semanais para você acompanhar a evolução.',
+    num: '02',
+    title: 'Meta Ads',
+    desc: 'Crie e gerencie campanhas, defina alertas de orçamento e ative auto-boost nos seus melhores posts.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" />
+      </svg>
+    ),
   },
   {
-    q: 'Vocês fazem manutenção depois da entrega?',
-    a: 'Sim. Oferecemos planos de suporte e manutenção contínua para garantir que tudo continue funcionando, seguro e atualizado. Correções críticas são tratadas com prioridade.',
+    num: '03',
+    title: 'Email Marketing',
+    desc: 'Dispare campanhas segmentadas, acompanhe aberturas e cliques, e nutra seus leads automaticamente.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><polyline points="22,6 12,13 2,6" />
+      </svg>
+    ),
   },
   {
-    q: 'Preciso ter conhecimento técnico pra acompanhar?',
-    a: 'Não. Traduzimos toda a parte técnica em linguagem clara. Você acompanha o progresso com entregas visuais semanais e tem canal direto com a equipe para tirar dúvidas a qualquer momento.',
+    num: '04',
+    title: 'Blog & Analytics',
+    desc: 'Publique conteúdo otimizado para SEO, capture leads com CTAs inteligentes e meça cada resultado.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" />
+      </svg>
+    ),
   },
-  {
-    q: 'Como funciona o pagamento?',
-    a: 'Trabalhamos com pagamento dividido em etapas vinculadas a entregas — você só paga conforme o projeto avança. Aceitamos Pix, boleto e cartão de crédito.',
-  },
+];
+
+const STEPS = [
+  { n: '1', label: 'Crie sua conta', desc: 'Cadastro gratuito em menos de 2 minutos' },
+  { n: '2', label: 'Conecte seus canais', desc: 'Instagram, Meta Ads e e-mail prontos para uso' },
+  { n: '3', label: 'Configure e publique', desc: 'Agende posts, crie campanhas e automações' },
+  { n: '4', label: 'Acompanhe resultados', desc: 'Métricas em tempo real para decisões rápidas' },
 ];
 
 export default function Services() {
@@ -165,12 +192,19 @@ export default function Services() {
     else goToSection(index);
   }, [isMobile, goToSection]);
 
-  const serviceLd = {
+  const softwareLd = {
     '@context': 'https://schema.org',
-    '@type': 'Service',
-    serviceType: 'Desenvolvimento de Soluções Digitais',
+    '@type': 'SoftwareApplication',
+    name: 'Whodo',
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: '0',
+      highPrice: '399',
+      priceCurrency: 'BRL',
+    },
     provider: { '@type': 'Organization', name: 'Whodo', url: 'https://whodo.com.br' },
-    areaServed: { '@type': 'Country', name: 'Brasil' },
   };
 
   const breadcrumbLd = {
@@ -178,38 +212,27 @@ export default function Services() {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://whodo.com.br' },
-      { '@type': 'ListItem', position: 2, name: 'Serviços', item: 'https://whodo.com.br/servicos' },
+      { '@type': 'ListItem', position: 2, name: 'Features', item: 'https://whodo.com.br/features' },
     ],
-  };
-
-  const faqLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: FAQ_DATA.map((item) => ({
-      '@type': 'Question',
-      name: item.q,
-      acceptedAnswer: { '@type': 'Answer', text: item.a },
-    })),
   };
 
   return (
     <div className="svc" ref={pageRef}>
       <Helmet>
-        <title>Desenvolvimento de Software sob medida | Sites, Sistemas e Apps | Whodo</title>
-        <meta name="description" content="Desenvolvimento de sites, sistemas de gestão, aplicativos mobile e automação de processos. Soluções digitais sob medida para empresas de todos os portes." />
-        <link rel="canonical" href="https://whodo.com.br/servicos" />
+        <title>Funcionalidades | Instagram, Meta Ads e Email Marketing | Whodo</title>
+        <meta name="description" content="Agende posts no Instagram, gerencie campanhas de Meta Ads, dispare email marketing e acompanhe resultados. Tudo em uma única plataforma." />
+        <link rel="canonical" href="https://whodo.com.br/features" />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://whodo.com.br/servicos" />
-        <meta property="og:title" content="Desenvolvimento de Software sob medida | Whodo" />
-        <meta property="og:description" content="Desenvolvimento de sites, sistemas de gestão, aplicativos mobile e automação de processos. Soluções digitais sob medida para empresas de todos os portes." />
+        <meta property="og:url" content="https://whodo.com.br/features" />
+        <meta property="og:title" content="Funcionalidades | Whodo — Plataforma de Marketing Digital" />
+        <meta property="og:description" content="Agende posts no Instagram, gerencie campanhas de Meta Ads, dispare email marketing e acompanhe resultados. Tudo em uma única plataforma." />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Whodo" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Desenvolvimento de Software sob medida | Whodo" />
-        <meta name="twitter:description" content="Desenvolvimento de sites, sistemas de gestão, aplicativos mobile e automação de processos. Soluções digitais sob medida para empresas de todos os portes." />
-        <script type="application/ld+json">{JSON.stringify(serviceLd)}</script>
+        <meta name="twitter:title" content="Funcionalidades | Whodo — Plataforma de Marketing Digital" />
+        <meta name="twitter:description" content="Agende posts no Instagram, gerencie campanhas de Meta Ads, dispare email marketing e acompanhe resultados." />
+        <script type="application/ld+json">{JSON.stringify(softwareLd)}</script>
         <script type="application/ld+json">{JSON.stringify(breadcrumbLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(faqLd)}</script>
       </Helmet>
 
       <Header />
@@ -239,32 +262,27 @@ export default function Services() {
         className="svc-track"
         style={isMobile ? undefined : { transform: `translateY(-${activeSection * 100}vh)` }}
       >
-        {/* ── Seção 1: Hero ── */}
+        {/* Section 1: Hero */}
         <section className="svc-section" ref={setSectionRef(0)}>
           <div className="svc-hero-grid" aria-hidden="true" />
           <div className="svc-hero-glow" ref={svcGlowRef} aria-hidden="true" />
           <div className="svc-hero-inner">
             <div className="svc-hero-content">
-              <p className="svc-tagline svc-anim">Soluções sob medida</p>
+              <p className="svc-tagline svc-anim">Plataforma completa de marketing</p>
               <h1 className="svc-hero-title svc-anim" style={{ transitionDelay: '0.1s' }}>
-                Transformamos desafios em{' '}
-                <span className="text-gradient">resultados digitais</span>
+                Tudo que você precisa para{' '}
+                <span className="text-gradient">escalar seu marketing</span>
               </h1>
               <p className="svc-hero-desc svc-anim" style={{ transitionDelay: '0.2s' }}>
-                Desenvolvemos soluções completas — do diagnóstico à entrega.
-                Sites, sistemas, aplicativos e automações para empresas de todos os portes.
+                Instagram, Meta Ads, Email Marketing e Blog — integrados em uma única
+                plataforma para você gerenciar, automatizar e medir resultados.
               </p>
               <div className="svc-hero-actions svc-anim" style={{ transitionDelay: '0.3s' }}>
-                <a
-                  href="https://wa.me/5516999493490?text=Oi!%20Vi%20a%20p%C3%A1gina%20de%20servi%C3%A7os%20e%20quero%20marcar%20uma%20conversa."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="svc-btn-primary"
-                >
-                  Solicitar consultoria
-                </a>
+                <Link to="/login" className="svc-btn-primary">
+                  Comece Grátis
+                </Link>
                 <button className="svc-btn-ghost" onClick={() => goToSection(1)}>
-                  Ver serviços
+                  Ver funcionalidades
                 </button>
               </div>
             </div>
@@ -275,69 +293,28 @@ export default function Services() {
           </button>
         </section>
 
-        {/* ── Seção 2: Serviços ── */}
+        {/* Section 2: Features */}
         <section className="svc-section svc-section-services" ref={setSectionRef(1)}>
           <div className="svc-services-inner">
             <div className="svc-services-header">
-              <p className="svc-services-tagline svc-anim">O que desenvolvemos</p>
+              <p className="svc-services-tagline svc-anim">Funcionalidades</p>
               <h2 className="svc-services-title svc-anim" style={{ transitionDelay: '0.1s' }}>
-                Cada negócio tem um desafio.{' '}
-                <span className="text-gradient">Nós construímos a solução.</span>
+                Ferramentas integradas para{' '}
+                <span className="text-gradient">cada canal.</span>
               </h2>
               <p className="svc-services-subtitle svc-anim" style={{ transitionDelay: '0.2s' }}>
-                Do escopo pontual ao projeto completo com equipe dedicada — a estrutura se adapta à sua necessidade.
+                Do agendamento de posts ao disparo de e-mails — gerencie tudo sem sair da plataforma.
               </p>
             </div>
 
             <div className="svc-services-list">
-              {[
-                {
-                  num: '01',
-                  title: 'Presença Digital',
-                  desc: 'Sites institucionais, lojas virtuais e landing pages para posicionar sua marca e gerar resultados online.',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8" /><path d="M12 17v4" />
-                    </svg>
-                  ),
-                },
-                {
-                  num: '02',
-                  title: 'Sistemas de Gestão',
-                  desc: 'Plataformas sob medida para organizar operações, centralizar dados e dar visibilidade ao negócio.',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><line x1="4" y1="22" x2="4" y2="15" />
-                    </svg>
-                  ),
-                },
-                {
-                  num: '03',
-                  title: 'Aplicativos Mobile',
-                  desc: 'Apps nativos para iOS e Android com foco em experiência do usuário e performance.',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="5" y="2" width="14" height="20" rx="2" /><path d="M12 18h.01" />
-                    </svg>
-                  ),
-                },
-                {
-                  num: '04',
-                  title: 'Automação de Processos',
-                  desc: 'Integração entre sistemas e fluxos inteligentes que eliminam tarefas repetitivas.',
-                  icon: (
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
-                    </svg>
-                  ),
-                },
-              ].map((svc, i) => (
-                <div key={svc.num} className="svc-service-row svc-anim" style={{ transitionDelay: `${0.15 + i * 0.1}s` }}>
-                  <span className="svc-service-num">{svc.num}</span>
-                  <div className="svc-service-icon">{svc.icon}</div>
+              {FEATURES.map((feat, i) => (
+                <div key={feat.num} className="svc-service-row svc-anim" style={{ transitionDelay: `${0.15 + i * 0.1}s` }}>
+                  <span className="svc-service-num">{feat.num}</span>
+                  <div className="svc-service-icon">{feat.icon}</div>
                   <div className="svc-service-text">
-                    <h3>{svc.title}</h3>
-                    <p>{svc.desc}</p>
+                    <h3>{feat.title}</h3>
+                    <p>{feat.desc}</p>
                   </div>
                 </div>
               ))}
@@ -345,19 +322,14 @@ export default function Services() {
           </div>
         </section>
 
-        {/* ── Seção 3: Processo + CTA + Footer ── */}
+        {/* Section 3: How it works + CTA + Footer */}
         <section className="svc-section svc-section-cta" ref={setSectionRef(2)}>
           <div className="svc-cta-content">
             <div className="svc-cta-inner">
               <span className="svc-cta-badge svc-anim">Como funciona</span>
 
               <div className="svc-process svc-anim" style={{ transitionDelay: '0.1s' }}>
-                {[
-                  { n: '1', label: 'Diagnóstico', desc: 'Entendemos o cenário e os objetivos' },
-                  { n: '2', label: 'Proposta', desc: 'Escopo, cronograma e investimento claros' },
-                  { n: '3', label: 'Desenvolvimento', desc: 'Entregas semanais com acompanhamento' },
-                  { n: '4', label: 'Entrega', desc: 'Deploy, treinamento e suporte contínuo' },
-                ].map((step) => (
+                {STEPS.map((step) => (
                   <div key={step.n} className="svc-process-step">
                     <span className="svc-process-num">{step.n}</span>
                     <div>
@@ -370,21 +342,21 @@ export default function Services() {
 
               <div className="svc-cta-action svc-anim" style={{ transitionDelay: '0.25s' }}>
                 <h2 className="svc-cta-title">
-                  Vamos conversar sobre o seu <span className="text-gradient">projeto</span>?
+                  Pronto para acelerar seus{' '}
+                  <span className="text-gradient">resultados</span>?
                 </h2>
                 <p className="svc-cta-desc">
-                  Uma conversa de 15 minutos, sem custo e sem compromisso.
+                  Comece grátis agora. Sem cartão de crédito, sem compromisso.
                 </p>
-                <a
-                  href="https://wa.me/5516999493490?text=Oi!%20Quero%20marcar%20uma%20conversa%20sobre%20um%20projeto."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="svc-cta-btn"
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                  Agendar conversa
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                </a>
+                <div className="svc-cta-buttons">
+                  <Link to="/login" className="svc-cta-btn-blue">
+                    Criar conta grátis
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </Link>
+                  <Link to="/planos" className="svc-cta-btn-outline">
+                    Ver planos
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

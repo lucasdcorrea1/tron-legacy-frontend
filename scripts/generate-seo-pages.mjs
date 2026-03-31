@@ -121,20 +121,20 @@ function homeBodyContent() {
   return `
     <header><a href="/">Whodo</a></header>
     <main>
-      <h1>Whodo - Transforme suas ideias em soluções digitais</h1>
-      <p>Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença.</p>
+      <h1>Whodo - A plataforma que acelera seu marketing digital</h1>
+      <p>Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar.</p>
       <section>
-        <h2>Nossos Serviços</h2>
+        <h2>O que o Whodo faz por você</h2>
         <ul>
-          <li>Desenvolvimento de Websites profissionais</li>
-          <li>Sistemas Web sob medida</li>
-          <li>Aplicativos Mobile</li>
-          <li>Automação e Inteligência Artificial</li>
+          <li>Agendamento de posts para redes sociais</li>
+          <li>Respostas automáticas inteligentes</li>
+          <li>Gestão de campanhas no Instagram e Meta Ads</li>
+          <li>Email Marketing integrado</li>
         </ul>
       </section>
       <section>
-        <h2>Por que escolher a Whodo?</h2>
-        <p>Combinamos design moderno com tecnologia de ponta para criar soluções digitais que geram resultados reais para o seu negócio.</p>
+        <h2>Por que escolher o Whodo?</h2>
+        <p>Tudo que você precisa para alavancar seu marketing digital em uma única plataforma. Comece grátis, escale quando quiser.</p>
       </section>
     </main>
     <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
@@ -144,23 +144,23 @@ function servicesBodyContent() {
   return `
     <header><a href="/">Whodo</a></header>
     <main>
-      <h1>Serviços de Desenvolvimento de Software</h1>
-      <p>Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita.</p>
+      <h1>Funcionalidades da Plataforma Whodo</h1>
+      <p>Agendamento de posts, respostas automáticas, Instagram, Meta Ads e Email Marketing. Tudo em um só lugar.</p>
       <section>
-        <h2>Websites Profissionais</h2>
-        <p>Sites modernos, responsivos e otimizados para SEO. Landing pages, sites institucionais e e-commerce.</p>
+        <h2>Agendamento de Posts</h2>
+        <p>Planeje e agende publicações para suas redes sociais com antecedência.</p>
       </section>
       <section>
-        <h2>Sistemas Web</h2>
-        <p>Plataformas e dashboards sob medida para gerenciar seu negócio com eficiência.</p>
+        <h2>Respostas Automáticas</h2>
+        <p>Configure regras inteligentes para responder automaticamente seus seguidores e leads.</p>
       </section>
       <section>
-        <h2>Aplicativos Mobile</h2>
-        <p>Apps nativos e multiplataforma para iOS e Android.</p>
+        <h2>Instagram e Meta Ads</h2>
+        <p>Gerencie suas campanhas de anúncios diretamente pela plataforma.</p>
       </section>
       <section>
-        <h2>Automação e IA</h2>
-        <p>Automatize processos repetitivos e integre inteligência artificial ao seu fluxo de trabalho.</p>
+        <h2>Email Marketing</h2>
+        <p>Crie e dispare campanhas de email para engajar sua base de contatos.</p>
       </section>
     </main>
     <footer><p>&copy; ${new Date().getFullYear()} Whodo Group LTDA - Todos os direitos reservados.</p></footer>`;
@@ -206,8 +206,8 @@ async function main() {
 
   // 1. Home page - update the root index.html with better meta tags
   const homeMeta = generateMetaTags({
-    title: 'Whodo - Transforme suas ideias em soluções digitais',
-    description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio. Websites, apps e sistemas que fazem a diferença.',
+    title: 'Whodo - A plataforma que acelera seu marketing digital',
+    description: 'Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar.',
     url: `${SITE_URL}/`,
     image: `${SITE_URL}/teste-image-home.png`,
     type: 'website',
@@ -216,7 +216,7 @@ async function main() {
       '@type': 'Organization',
       name: 'Whodo',
       url: SITE_URL,
-      description: 'Desenvolvemos tecnologia sob medida para impulsionar seu negócio.',
+      description: 'Plataforma de marketing digital: agende posts, automatize respostas e gerencie campanhas.',
       logo: {
         '@type': 'ImageObject',
         url: `${SITE_URL}/favicon.svg`,
@@ -239,14 +239,14 @@ async function main() {
 
   // 2. Services page
   const servicesMeta = generateMetaTags({
-    title: 'Serviços de Desenvolvimento de Software | Whodo',
-    description: 'Desenvolvimento de sites, sistemas web, apps mobile e automação sob medida. Consultoria gratuita.',
-    url: `${SITE_URL}/servicos`,
+    title: 'Funcionalidades da Plataforma | Whodo',
+    description: 'Agendamento de posts, respostas automáticas, Instagram, Meta Ads e Email Marketing. Conheça tudo que o Whodo oferece.',
+    url: `${SITE_URL}/features`,
     type: 'website',
     jsonLd: {
       '@context': 'https://schema.org',
-      '@type': 'Service',
-      serviceType: 'Desenvolvimento de Software',
+      '@type': 'SoftwareApplication',
+      applicationCategory: 'Marketing',
       provider: {
         '@type': 'Organization',
         name: 'Whodo',
@@ -260,11 +260,11 @@ async function main() {
       '@type': 'BreadcrumbList',
       itemListElement: [
         { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Serviços', item: `${SITE_URL}/servicos` },
+        { '@type': 'ListItem', position: 2, name: 'Features', item: `${SITE_URL}/features` },
       ],
     },
   });
-  writePage('servicos/index.html', injectMetaTags(indexHtml, servicesMeta, servicesBodyContent()));
+  writePage('features/index.html', injectMetaTags(indexHtml, servicesMeta, servicesBodyContent()));
 
   // 3. Blog listing page
   const blogMeta = generateMetaTags({
@@ -409,7 +409,7 @@ function generateSitemap(posts) {
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>${SITE_URL}/servicos</loc>
+    <loc>${SITE_URL}/features</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>

@@ -54,7 +54,6 @@ const FacebookScheduling = lazy(() => import('./pages/FacebookScheduling'));
 const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
 const Legal = lazy(() => import('./pages/Legal'));
 const MetaAdsCampaignForm = lazy(() => import('./pages/MetaAdsCampaignForm'));
-const Plans = lazy(() => import('./pages/Plans'));
 const Onboarding = lazy(() => import('./pages/Onboarding'));
 const OrgSettings = lazy(() => import('./pages/OrgSettings'));
 const MetaCallback = lazy(() => import('./pages/MetaCallback'));
@@ -90,7 +89,7 @@ export default function App() {
           <Route path="/blog/:slug" element={<PostView />} />
           <Route path="/privacidade" element={<Legal />} />
           <Route path="/exclusao-dados" element={<Legal />} />
-          <Route path="/planos" element={<Plans />} />
+          <Route path="/planos" element={<Navigate to="/onboarding" replace />} />
           <Route path="/meta/callback" element={<MetaCallback />} />
           <Route path="/3d" element={<Store3D />} />
           <Route path="/3d/produto/:slug" element={<ProductDetail3D />} />

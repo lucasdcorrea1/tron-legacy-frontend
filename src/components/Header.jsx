@@ -82,11 +82,11 @@ export default function Header() {
             Home
           </Link>
           <Link
-            to="/servicos"
-            className={`site-nav-link ${isActive('/servicos') ? 'active' : ''}`}
+            to="/features"
+            className={`site-nav-link ${isActive('/features') ? 'active' : ''}`}
             onClick={closeMenus}
           >
-            Serviços
+            Plataforma
           </Link>
           <Link
             to="/blog"
