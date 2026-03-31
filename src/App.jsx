@@ -24,6 +24,19 @@ function PageTracker() {
   return null;
 }
 
+// Prevent AdSense auto-ads on non-editorial pages (Google policy compliance)
+function AdController() {
+  const location = useLocation();
+  useEffect(() => {
+    const isContentPage =
+      location.pathname === '/blog' || location.pathname.startsWith('/blog/');
+
+    window.adsbygoogle = window.adsbygoogle || [];
+    window.adsbygoogle.pauseAdRequests = isContentPage ? 0 : 1;
+  }, [location.pathname]);
+  return null;
+}
+
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Login'));
 const Admin = lazy(() => import('./pages/Admin'));
@@ -37,6 +50,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const Profile = lazy(() => import('./pages/Profile'));
 const EmailMarketing = lazy(() => import('./pages/EmailMarketing'));
 const InstagramPage = lazy(() => import('./pages/InstagramPage'));
+const FacebookScheduling = lazy(() => import('./pages/FacebookScheduling'));
 const CTAAnalytics = lazy(() => import('./pages/CTAAnalytics'));
 const Legal = lazy(() => import('./pages/Legal'));
 const MetaAdsCampaignForm = lazy(() => import('./pages/MetaAdsCampaignForm'));
@@ -63,6 +77,7 @@ export default function App() {
       <ToastProvider>
       <BrowserRouter>
         <PageTracker />
+        <AdController />
         <Suspense fallback={null}><CartDrawer /></Suspense>
         <Suspense fallback={<AdminLayoutSkeleton />}>
         <Routes>
@@ -70,7 +85,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/servicos" element={<Services />} />
+          <Route path="/features" element={<Services />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<PostView />} />
           <Route path="/privacidade" element={<Legal />} />
@@ -142,6 +157,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <InstagramPage />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/facebook"
+            element={
+              <PrivateRoute>
+                <FacebookScheduling />
               </PrivateRoute>
             }
           />

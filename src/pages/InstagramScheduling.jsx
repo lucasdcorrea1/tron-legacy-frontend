@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
-import { instagram, integratedPublish, metaAds, ai as aiApi, API_URL } from '../services/api';
+import { instagram, integratedPublish, metaAds, ai as aiApi, facebook, API_URL } from '../services/api';
 import './InstagramScheduling.css';
 
 const STEPS = [
@@ -160,6 +160,8 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
   const [scheduleTime, setScheduleTime] = useState('');
   const [publishNow, setPublishNow] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [postToFacebook, setPostToFacebook] = useState(false);
+  const [facebookConfigured, setFacebookConfigured] = useState(false);
 
   // Campaign state
   const [campaignEnabled, setCampaignEnabled] = useState(false);
@@ -502,6 +504,13 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
       setConfigured(false);
       onConfigChange?.(false);
     }
+    // Check Facebook config
+    try {
+      const fbData = await facebook.getConfig();
+      setFacebookConfigured(fbData.configured);
+    } catch {
+      setFacebookConfigured(false);
+    }
   };
 
   const loadSchedules = async () => {
@@ -607,6 +616,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
           media_type: getMediaType(),
           image_ids: images.map(img => img.id),
           scheduled_at: scheduledAt,
+          post_to_facebook: postToFacebook,
         });
       }
 
@@ -696,6 +706,7 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
     setScheduleDate('');
     setScheduleTime('');
     setPublishNow(false);
+    setPostToFacebook(false);
     setCampaignEnabled(false);
     setCampaign({
       name: '',
@@ -1201,6 +1212,31 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   </div>
                 )}
 
+                {/* Facebook crosspost toggle */}
+                {facebookConfigured && (
+                  <div className="ig-campaign-toggle" style={{ marginBottom: '0.75rem' }}>
+                    <label className="ig-toggle-label">
+                      <span className="ig-toggle-switch">
+                        <input
+                          type="checkbox"
+                          checked={postToFacebook}
+                          onChange={(e) => setPostToFacebook(e.target.checked)}
+                        />
+                        <span className="ig-toggle-slider" style={{ background: postToFacebook ? '#4267B2' : undefined }} />
+                      </span>
+                      <span className="ig-toggle-text">
+                        <strong style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                          </svg>
+                          Publicar tambem no Facebook
+                        </strong>
+                        <span>Enviar o mesmo post para sua pagina do Facebook</span>
+                      </span>
+                    </label>
+                  </div>
+                )}
+
                 {/* Campaign toggle */}
                 <div className="ig-campaign-toggle">
                   <label className="ig-toggle-label">
@@ -1640,6 +1676,17 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                           )}
                         </span>
                       </div>
+                      {postToFacebook && (
+                        <div className="ig-review-info-row">
+                          <span className="ig-review-info-label">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                            Facebook
+                          </span>
+                          <span className="ig-review-info-value">
+                            <span className="ig-review-badge" style={{ background: 'rgba(66, 103, 178, 0.15)', color: '#4267B2' }}>Ativado</span>
+                          </span>
+                        </div>
+                      )}
                       {campaignEnabled && (
                         <div className="ig-review-info-row">
                           <span className="ig-review-info-label">

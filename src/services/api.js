@@ -592,6 +592,54 @@ export const metaAds = {
   deleteAlert: (id) => api.delete(`/api/v1/admin/meta-ads/alerts/${id}`),
 };
 
+export const facebook = {
+  getConfig: () => api.get('/api/v1/admin/facebook/config'),
+  saveConfig: (data) => api.put('/api/v1/admin/facebook/config', data),
+  deleteConfig: () => api.delete('/api/v1/admin/facebook/config'),
+  listPages: () => api.get('/api/v1/admin/facebook/pages'),
+  testConnection: () => api.get('/api/v1/admin/facebook/test'),
+  getFeed: (limit = 12) => {
+    const query = new URLSearchParams();
+    query.append('limit', limit);
+    return api.get(`/api/v1/admin/facebook/feed?${query.toString()}`);
+  },
+  list: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.status) query.append('status', params.status);
+    const queryString = query.toString();
+    return api.get(`/api/v1/admin/facebook/schedules${queryString ? `?${queryString}` : ''}`);
+  },
+  getById: (id) => api.get(`/api/v1/admin/facebook/schedules/${id}`),
+  create: (data) => api.post('/api/v1/admin/facebook/schedules', data),
+  update: (id, data) => api.put(`/api/v1/admin/facebook/schedules/${id}`, data),
+  delete: (id) => api.delete(`/api/v1/admin/facebook/schedules/${id}`),
+  uploadImage: async (file) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const response = await fetchWithAuth(`${API_URL}/api/v1/admin/facebook/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.message || `Erro no upload (${response.status})`);
+      }
+
+      return response.json();
+    } catch (error) {
+      if (error.name === 'TypeError') {
+        throw new Error('Erro de conexão com o servidor');
+      }
+      throw error;
+    }
+  },
+};
+
 export const integratedPublish = {
   list: (params = {}) => {
     const query = new URLSearchParams();

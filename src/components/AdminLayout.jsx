@@ -52,6 +52,11 @@ const Icons = {
       <circle cx="17.5" cy="6.5" r="1.5" />
     </svg>
   ),
+  facebook: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </svg>
+  ),
   megaphone: (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 11l18-5v12L3 13v-2z" />
@@ -130,6 +135,7 @@ const Icons_3d = (
 
 const adminItems = [
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
+  { path: '/admin/facebook', icon: Icons.facebook, label: 'Facebook', minPlan: 'starter' },
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro', superOnly: true },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter', superOnly: true },
   { path: '/admin/3d-store', icon: Icons_3d, label: '3D Store', superOnly: true },
