@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
+import { validatePassword } from '../utils/password';
 import './Login.css';
 
 export default function Login() {
@@ -25,19 +26,23 @@ export default function Login() {
       setError('Email inválido');
       return false;
     }
-    if (password.length < 6) {
-      setError('Senha deve ter no mínimo 6 caracteres');
-      return false;
-    }
     if (mode === 'register') {
       if (!name.trim()) {
         setError('Nome é obrigatório');
+        return false;
+      }
+      const pwErr = validatePassword(password);
+      if (pwErr) {
+        setError(pwErr);
         return false;
       }
       if (password !== confirmPassword) {
         setError('As senhas não coincidem');
         return false;
       }
+    } else if (password.length < 1) {
+      setError('Senha é obrigatória');
+      return false;
     }
     return true;
   };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
+import { validatePassword } from '../utils/password';
 import './Login.css';
 
 export default function ResetPassword() {
@@ -88,9 +89,10 @@ function ResetPasswordForm({ token, navigate }) {
     e.preventDefault();
     if (status === 'loading') return;
 
-    if (password.length < 6) {
+    const pwErr = validatePassword(password);
+    if (pwErr) {
       setStatus('error');
-      setMessage('Senha deve ter no mínimo 6 caracteres');
+      setMessage(pwErr);
       return;
     }
     if (password !== confirmPassword) {

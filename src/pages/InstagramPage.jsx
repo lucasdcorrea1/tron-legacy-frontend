@@ -697,13 +697,22 @@ export default function InstagramPage() {
       .catch(() => setAdAccounts([]));
   }, [hasAdAccount, currentOrg?.id]);
 
-  // Load IG profiles when configured
+  // Load IG profiles when configured — filter to org's configured account
   useEffect(() => {
     if (!configured) return;
     instagram.listAccounts()
       .then(data => {
-        const profiles = data?.data || [];
-        setIgProfiles(profiles);
+        const allProfiles = data?.data || [];
+        const configuredId = data?.configured_account_id;
+        // Only show the org's configured profile (prevent cross-org leaks)
+        const filtered = configuredId
+          ? allProfiles.filter(p => p.ig_account_id === configuredId)
+          : allProfiles;
+        setIgProfiles(filtered.length > 0 ? filtered : allProfiles);
+        // Auto-select the configured profile
+        if (configuredId && !selectedIgAccountId) {
+          setSelectedIgAccountId(configuredId);
+        }
       })
       .catch(() => setIgProfiles([]));
   }, [configured, currentOrg?.id]);

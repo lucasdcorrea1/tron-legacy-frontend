@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { useToast } from '../components/Toast';
 import PaymentForm from '../components/PaymentForm';
+import { validatePassword } from '../utils/password';
 import './Signup.css';
 
 const PLANS = {
@@ -102,8 +103,9 @@ export default function Signup() {
   const handleCreateAccount = async (e) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !password) return;
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.');
+    const pwErr = validatePassword(password);
+    if (pwErr) {
+      setError(pwErr);
       return;
     }
 
