@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { blog } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import AdminLayout from '../components/AdminLayout';
 import PostFormModal from '../components/PostFormModal';
 import './PostList.css';
@@ -9,6 +10,7 @@ import './PostList.css';
 export default function PostList() {
   const { profile } = useAuth();
   const { hasOrgRole } = useOrg();
+  const confirm = useConfirm();
   const isSuperuser = profile?.role === 'superuser';
   const isOrgAdmin = hasOrgRole('owner', 'admin');
   const [posts, setPosts] = useState([]);
@@ -44,7 +46,8 @@ export default function PostList() {
   };
 
   const handleDelete = async (id, title) => {
-    if (!window.confirm(`Tem certeza que deseja excluir "${title}"?`)) return;
+    const ok = await confirm({ title: 'Excluir post', message: `Tem certeza que deseja excluir "${title}"?`, confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
 
     try {
       await blog.delete(id);

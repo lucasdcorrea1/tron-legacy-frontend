@@ -166,10 +166,10 @@
 .ck3d-field input,
 .ck3d-field select {
   padding: 0.625rem 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-input-bg);
+  border: 1px solid var(--admin-input-border);
   border-radius: 8px;
-  color: #fafafa;
+  color: var(--admin-text);
   font-size: 0.9375rem;
   transition: border-color 0.2s;
   width: 100%;
@@ -178,21 +178,12 @@
 .ck3d-field input:focus,
 .ck3d-field select:focus {
   outline: none;
-  border-color: #8b5cf6;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-glow);
 }
 
 .ck3d-field select {
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a1a1aa' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  padding-right: 2rem;
-}
-
-.ck3d-field select option {
-  background: #1a1d23;
-  color: #fafafa;
+  padding-right: 2.25rem;
 }
 
 /* Textarea */

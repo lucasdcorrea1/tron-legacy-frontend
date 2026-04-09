@@ -13,7 +13,7 @@
 .mads-form-header h1 {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0;
   background: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
   -webkit-background-clip: text;
@@ -24,7 +24,7 @@
 .mads-back-btn {
   background: none;
   border: none;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 0.3rem 0.5rem;
@@ -32,7 +32,7 @@
 }
 
 .mads-back-btn:hover {
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   background: #2d3139;
 }
 
@@ -50,8 +50,8 @@
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.82rem;
-  color: #71717a;
-  background: #1a1d23;
+  color: var(--admin-text-muted);
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   cursor: default;
   flex: 1;
@@ -59,7 +59,7 @@
 }
 
 .mads-step.active {
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   border-color: #3b82f6;
   background: #162044;
 }
@@ -105,7 +105,7 @@
 
 /* Form sections */
 .mads-form-section {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.5rem;
@@ -114,7 +114,7 @@
 .mads-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--admin-text);
   margin: 0 0 1rem;
 }
 
@@ -132,7 +132,7 @@
   display: block;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin-bottom: 0.35rem;
 }
 
@@ -144,7 +144,7 @@
   background: #101114;
   border: 1px solid #3f3f46;
   border-radius: 8px;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s;
@@ -197,13 +197,13 @@
 .mads-objective-card strong {
   display: block;
   font-size: 0.85rem;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin-bottom: 0.2rem;
 }
 
 .mads-objective-card span {
   font-size: 0.72rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 /* Checkbox group */
@@ -218,7 +218,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.85rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   cursor: pointer;
 }
 
@@ -235,7 +235,7 @@
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
   font-size: 0.82rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .mads-chip {
@@ -243,7 +243,7 @@
   background: #2d3139;
   border: 1px solid #3f3f46;
   border-radius: 20px;
-  color: #e4e4e7;
+  color: var(--admin-text);
   font-size: 0.78rem;
   cursor: pointer;
   transition: background 0.15s;
@@ -256,7 +256,7 @@
 /* Interest search */
 .mads-search-hint {
   font-size: 0.78rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   padding: 0.25rem 0;
 }
 
@@ -275,7 +275,7 @@
   justify-content: space-between;
   padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
-  color: #e4e4e7;
+  color: var(--admin-text);
   cursor: pointer;
   transition: background 0.1s;
 }
@@ -286,7 +286,7 @@
 
 .mads-audience-size {
   font-size: 0.72rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .mads-tags {
@@ -329,7 +329,7 @@
   background: #101114;
   border: 2px solid #2d3139;
   border-radius: 8px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.15s;
@@ -337,7 +337,7 @@
 
 .mads-format-btn.active {
   border-color: #3b82f6;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   background: #162044;
 }
 
@@ -347,7 +347,7 @@
   border-radius: 10px;
   padding: 2rem;
   text-align: center;
-  color: #71717a;
+  color: var(--admin-text-muted);
   cursor: pointer;
   transition: border-color 0.2s;
 }
@@ -387,7 +387,7 @@
 .mads-review-card h4 {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin: 0 0 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -403,12 +403,12 @@
 }
 
 .mads-review-row span {
-  color: #71717a;
+  color: var(--admin-text-muted);
   flex-shrink: 0;
 }
 
 .mads-review-row strong {
-  color: #e4e4e7;
+  color: var(--admin-text);
   text-align: right;
   word-break: break-word;
 }
@@ -468,7 +468,7 @@
 
 .mads-btn.secondary {
   background: #2d3139;
-  color: #e4e4e7;
+  color: var(--admin-text);
   border: 1px solid #3f3f46;
 }
 
@@ -494,7 +494,7 @@
 /* Posts step */
 .mads-posts-hint {
   font-size: 0.82rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin: 0 0 1rem;
 }
 
@@ -560,7 +560,7 @@
   display: block;
   font-size: 0.88rem;
   font-weight: 600;
-  color: #e4e4e7;
+  color: var(--admin-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -570,13 +570,13 @@
   display: flex;
   gap: 0.75rem;
   font-size: 0.72rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
   margin-top: 0.2rem;
 }
 
 .mads-post-status {
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .mads-post-status.pub {

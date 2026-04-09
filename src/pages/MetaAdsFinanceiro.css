@@ -1,6 +1,6 @@
 /* Opportunity Score section */
 .mads-opp-section {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.25rem;
@@ -43,13 +43,13 @@
 .mads-opp-info .mads-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--admin-text);
   margin: 0 0 0.35rem;
 }
 
 .mads-opp-desc {
   font-size: 0.82rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin: 0;
   line-height: 1.4;
 }
@@ -62,7 +62,7 @@
 .mads-recs-title {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin: 0 0 0.6rem;
@@ -104,7 +104,7 @@
   border-radius: 20px;
   white-space: nowrap;
   background: rgba(161, 161, 170, 0.12);
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .mads-rec-badge.high {
@@ -126,13 +126,13 @@
   flex: 1;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #e4e4e7;
+  color: var(--admin-text);
   text-transform: capitalize;
 }
 
 .mads-rec-expand {
   font-size: 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 600;
   width: 20px;
   text-align: center;
@@ -146,7 +146,7 @@
 
 .mads-rec-body {
   font-size: 0.8rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin: 0 0 0.5rem;
   line-height: 1.45;
 }
@@ -183,7 +183,7 @@
 
 /* Account finance overview */
 .mads-acct-finance {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.25rem;
@@ -200,7 +200,7 @@
 .mads-acct-finance-header .mads-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--admin-text);
   margin: 0;
   flex: 1;
 }
@@ -287,7 +287,7 @@
 
 .mads-acct-spend-bar-text {
   font-size: 0.7rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-align: right;
 }
 
@@ -307,7 +307,7 @@
 .mads-fin-period {
   display: flex;
   gap: 0.25rem;
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 10px;
   padding: 0.2rem;
@@ -324,7 +324,7 @@
 }
 
 .mads-fin-card {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.15rem;
@@ -352,7 +352,7 @@
 .mads-fin-card-label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -360,7 +360,7 @@
 .mads-fin-card-value {
   font-size: 1.3rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
 }
 
 .mads-fin-card.spend .mads-fin-card-value { color: #fbbf24; }
@@ -370,12 +370,12 @@
 
 .mads-fin-card-sub {
   font-size: 0.72rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 /* Chart section */
 .mads-fin-chart-section {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.25rem;
@@ -385,7 +385,7 @@
 .mads-fin-chart-section .mads-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--admin-text);
   margin: 0 0 1rem;
 }
 
@@ -414,7 +414,7 @@
   margin-top: -12px;
   padding: 6px 10px;
   background: #18181b;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
   pointer-events: none;
   display: flex;
@@ -427,7 +427,7 @@
 
 .mads-chart-tooltip-date {
   font-size: 0.65rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 500;
 }
 
@@ -445,7 +445,7 @@
 .mads-fin-table-section .mads-section-title {
   font-size: 1rem;
   font-weight: 700;
-  color: #e4e4e7;
+  color: var(--admin-text);
   margin: 0 0 1rem;
 }
 
@@ -460,13 +460,13 @@
 }
 
 .mads-fin-totals-row {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
 }
 
 .mads-fin-totals-row td {
   border-top: 2px solid #2d3139;
   border-bottom: none;
-  color: #e4e4e7;
+  color: var(--admin-text);
 }
 
 @media (max-width: 768px) {

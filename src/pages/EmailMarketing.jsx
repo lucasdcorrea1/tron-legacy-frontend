@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import { emailMarketing } from '../services/api';
 import './EmailMarketing.css';
 
@@ -14,6 +15,7 @@ const STEPS = [
 
 export default function EmailMarketing() {
   const toast = useToast();
+  const confirm = useConfirm();
   const iframeRef = useRef(null);
 
   const [tab, setTab] = useState('send'); // 'send' | 'subscribers'
@@ -83,7 +85,8 @@ export default function EmailMarketing() {
   };
 
   const handleDeleteSubscriber = async (id, email) => {
-    if (!window.confirm(`Remover ${email} da lista?`)) return;
+    const ok = await confirm({ title: 'Remover inscrito', message: `Remover ${email} da lista?`, confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
     try {
       await emailMarketing.deleteSubscriber(id);
       setSubscribers((prev) => prev.filter((s) => s.id !== id));

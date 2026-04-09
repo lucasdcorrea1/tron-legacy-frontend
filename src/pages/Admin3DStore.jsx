@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { products3d, categories3d, admin3d, imageUrl } from '../services/api3d';
+import { useConfirm } from '../components/ConfirmModal';
 import AdminLayout from '../components/AdminLayout';
 import './Admin3DStore.css';
 
@@ -50,6 +51,7 @@ export default function Admin3DStore() {
 // ── Products Tab ────────────────────────────────────────────────────
 
 function ProductsTab() {
+  const confirm = useConfirm();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -135,7 +137,8 @@ function ProductsTab() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Deletar este produto?')) return;
+    const ok = await confirm({ title: 'Deletar produto', message: 'Deletar este produto?', confirmText: 'Deletar', variant: 'danger' });
+    if (!ok) return;
     try {
       await admin3d.products.delete(id);
       fetchProducts();
@@ -331,6 +334,7 @@ function ProductsTab() {
 // ── Categories Tab ──────────────────────────────────────────────────
 
 function CategoriesTab() {
+  const confirm = useConfirm();
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -387,7 +391,8 @@ function CategoriesTab() {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Deletar esta categoria?')) return;
+    const ok = await confirm({ title: 'Deletar categoria', message: 'Deletar esta categoria?', confirmText: 'Deletar', variant: 'danger' });
+    if (!ok) return;
     try {
       await admin3d.categories.delete(id);
       fetchCategories();

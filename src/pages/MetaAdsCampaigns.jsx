@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { metaAds, integratedPublish, API_URL } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsCampaigns.css';
 
@@ -233,6 +234,7 @@ const getSpendColor = (percent) => {
 
 export default function MetaAdsCampaigns({ adAccountId }) {
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [campaigns, setCampaigns] = useState([]);
   const [insights, setInsights] = useState({});
   const [campaignAds, setCampaignAds] = useState({});
@@ -434,7 +436,8 @@ export default function MetaAdsCampaigns({ adAccountId }) {
   };
 
   const handleArchive = async (campaign) => {
-    if (!window.confirm(`Arquivar campanha "${campaign.name}"?`)) return;
+    const ok = await confirm({ title: 'Arquivar campanha', message: `Arquivar campanha "${campaign.name}"?`, confirmText: 'Arquivar', variant: 'warning' });
+    if (!ok) return;
     try {
       await metaAds.updateCampaignStatus(campaign.id, 'ARCHIVED');
       setCampaigns(prev =>
@@ -446,7 +449,8 @@ export default function MetaAdsCampaigns({ adAccountId }) {
   };
 
   const handleDelete = async (campaign) => {
-    if (!window.confirm(`Excluir campanha "${campaign.name}"? Essa acao nao pode ser desfeita.`)) return;
+    const ok = await confirm({ title: 'Excluir campanha', message: `Excluir campanha "${campaign.name}"? Essa acao nao pode ser desfeita.`, confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
     try {
       await metaAds.deleteCampaign(campaign.id);
       setCampaigns(prev => prev.filter(c => c.id !== campaign.id));

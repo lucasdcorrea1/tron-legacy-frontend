@@ -118,6 +118,7 @@ export function AuthProvider({ children }) {
       register,
       logout,
       updateProfile,
+      saveAuthData,
       loading: false,
       isAuthenticated
     }}>

@@ -1,0 +1,360 @@
+/* ── Payment Method Tabs ──────────────────────────────── */
+
+.payment-form {
+  width: 100%;
+}
+
+.payment-tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.payment-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--admin-text-muted, #71717a);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.payment-tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--admin-text-heading, #fafafa);
+  font-weight: 600;
+}
+
+.payment-tab:hover:not(.active) {
+  color: var(--admin-text-secondary, #a1a1aa);
+}
+
+/* ── Card Form ───────────────────────────────────────── */
+
+.payment-card-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payment-card-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.payment-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-field label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-secondary, #a1a1aa);
+}
+
+.payment-field input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--admin-text-heading, #fafafa);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.payment-field input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.payment-field input::placeholder {
+  color: var(--admin-text-muted, #52525b);
+}
+
+.payment-card-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-muted, #71717a);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── PIX Section ─────────────────────────────────────── */
+
+.payment-pix-prompt {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.payment-pix-prompt p {
+  color: var(--admin-text-muted, #71717a);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.payment-pix-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.payment-pix-qr {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.payment-pix-qr img {
+  width: 200px;
+  height: 200px;
+  display: block;
+}
+
+.payment-pix-copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-pix-copy label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-secondary, #a1a1aa);
+}
+
+.payment-pix-copy-row {
+  display: flex;
+  gap: 8px;
+}
+
+.payment-pix-copy input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--admin-text-heading, #fafafa);
+  box-sizing: border-box;
+  font-family: monospace;
+}
+
+.payment-pix-copy button {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--admin-text-heading, #fafafa);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.payment-pix-copy button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ── Boleto Section ──────────────────────────────────── */
+
+.payment-boleto-prompt {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.payment-boleto-prompt p {
+  color: var(--admin-text-muted, #71717a);
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+}
+
+.payment-boleto-result {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.payment-boleto-result p {
+  color: var(--admin-text-muted, #71717a);
+  font-size: 0.85rem;
+  margin: 0 0 16px;
+}
+
+.payment-boleto-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #818cf8;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.payment-boleto-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #6366f1;
+}
+
+/* ── Shared Submit Button ────────────────────────────── */
+
+.payment-submit {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.payment-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+}
+
+.payment-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.payment-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: payment-spin 0.6s linear infinite;
+}
+
+@keyframes payment-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Polling / Waiting State ─────────────────────────── */
+
+.payment-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px 0;
+  text-align: center;
+}
+
+.payment-waiting-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: payment-spin 0.8s linear infinite;
+}
+
+.payment-waiting h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--admin-text-heading, #fafafa);
+}
+
+.payment-waiting p {
+  font-size: 0.85rem;
+  color: var(--admin-text-muted, #71717a);
+  margin: 0;
+}
+
+/* ── Success State ───────────────────────────────────── */
+
+.payment-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 0;
+  text-align: center;
+}
+
+.payment-success-icon {
+  color: #22c55e;
+}
+
+.payment-success h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--admin-text-heading, #fafafa);
+}
+
+.payment-success p {
+  font-size: 0.9rem;
+  color: var(--admin-text-muted, #71717a);
+  margin: 0;
+}
+
+/* ── Error ───────────────────────────────────────────── */
+
+.payment-error {
+  background: rgba(239, 68, 68, 0.08);
+  color: #f87171;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── CPF/CNPJ inline field ───────────────────────────── */
+
+.payment-cpf-section {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .payment-card-row {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-pix-qr img {
+    width: 160px;
+    height: 160px;
+  }
+}

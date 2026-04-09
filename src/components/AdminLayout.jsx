@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
+import { useTheme } from '../context/ThemeContext';
 import UserAvatar from './UserAvatar';
 import OrgSwitcher from './OrgSwitcher';
 import './AdminLayout.css';
@@ -103,6 +104,24 @@ const Icons = {
       <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
   ),
+  sun: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  ),
+  moon: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
+  ),
 };
 
 const Icons_settings = (
@@ -121,8 +140,6 @@ const Icons_lock = (
 
 const menuItems = [
   { path: '/admin', icon: Icons.dashboard, label: 'Dashboard', exact: true },
-  { path: '/admin/posts', icon: Icons.posts, label: 'Posts' },
-  { path: '/admin/profile', icon: Icons.profile, label: 'Perfil' },
 ];
 
 const Icons_3d = (
@@ -133,13 +150,40 @@ const Icons_3d = (
   </svg>
 );
 
-const adminItems = [
+const Icons_financeiro = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="12" y1="1" x2="12" y2="23" />
+    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+  </svg>
+);
+
+const Icons_contabil = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="2" width="16" height="20" rx="2" />
+    <line x1="8" y1="6" x2="16" y2="6" />
+    <line x1="8" y1="10" x2="16" y2="10" />
+    <line x1="8" y1="14" x2="12" y2="14" />
+    <line x1="8" y1="18" x2="10" y2="18" />
+  </svg>
+);
+
+const toolItems = [
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
   { path: '/admin/facebook', icon: Icons.facebook, label: 'Facebook', minPlan: 'starter' },
   { path: '/admin/email-marketing', icon: Icons.email, label: 'Email Marketing', minPlan: 'pro', superOnly: true },
   { path: '/admin/cta-analytics', icon: Icons.blog, label: 'CTA Clicks', exact: true, minPlan: 'starter', superOnly: true },
   { path: '/admin/3d-store', icon: Icons_3d, label: '3D Store', superOnly: true },
-  { path: '/admin/users', icon: Icons.users, label: 'Usuários' },
+  { path: '/admin/financeiro', icon: Icons_financeiro, label: 'Financeiro', superOnly: true },
+  { path: '/admin/users', icon: Icons.users, label: 'Usuários', superOnly: true },
+  { path: '/admin/contabil', icon: Icons_contabil, label: 'Contabilidade', minPlan: 'starter' },
+];
+
+const contentItems = [
+  { path: '/admin/posts', icon: Icons.posts, label: 'Posts' },
+];
+
+const managementItems = [
+  { path: '/admin/profile', icon: Icons.profile, label: 'Configurações' },
 ];
 
 const PLAN_RANK = { free: 0, starter: 1, pro: 2, enterprise: 3 };
@@ -149,10 +193,11 @@ export default function AdminLayout({ children }) {
   const navigate = useNavigate();
   const { profile, logout } = useAuth();
   const { currentOrg, subscription, hasOrgRole } = useOrg();
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const currentPlan = subscription?.plan_id || 'free';
+  const currentPlan = (subscription?.status === 'active' ? subscription?.plan_id : 'free') || 'free';
   const isAdmin = hasOrgRole('owner', 'admin');
   const isSuperuser = profile?.role === 'superuser' || profile?.role === 'superadmin';
 
@@ -170,6 +215,46 @@ export default function AdminLayout({ children }) {
     setMobileMenuOpen(false);
   };
 
+  // ── Sidebar branding based on org settings ──
+  const sidebarMode = currentOrg?.settings?.sidebar_display || 'platform';
+  const orgLogo = currentOrg?.logo_url;
+  const orgName = currentOrg?.name;
+  const orgInitial = orgName?.charAt(0)?.toUpperCase() || 'W';
+
+  const renderSidebarBrand = () => {
+    switch (sidebarMode) {
+      case 'logo':
+        return orgLogo
+          ? <img src={orgLogo} alt={orgName} className="logo-img" />
+          : <span className="logo-icon">{orgInitial}</span>;
+      case 'name':
+        return <span className="logo-text">{orgName || 'whodo'}</span>;
+      case 'logo_and_name':
+        return (
+          <>
+            {orgLogo
+              ? <img src={orgLogo} alt={orgName} className="logo-img" />
+              : <span className="logo-icon">{orgInitial}</span>}
+            <span className="logo-text">{orgName || 'whodo'}</span>
+          </>
+        );
+      default: // 'platform'
+        return (
+          <>
+            <span className="logo-icon">W</span>
+            <span className="logo-text">whodo</span>
+          </>
+        );
+    }
+  };
+
+  const renderTopbarBrand = () => {
+    if (sidebarMode === 'platform' || !orgLogo) {
+      return <span className="logo-icon">{sidebarMode === 'platform' ? 'W' : orgInitial}</span>;
+    }
+    return <img src={orgLogo} alt={orgName} className="logo-img" />;
+  };
+
   return (
     <div className={`admin-layout ${mobileMenuOpen ? 'mobile-open' : ''}`}>
       {/* Mobile Overlay */}
@@ -181,8 +266,7 @@ export default function AdminLayout({ children }) {
       <aside className="admin-sidebar">
         <div className="sidebar-header">
           <Link to="/" className="sidebar-logo" onClick={closeMobileMenu}>
-            <span className="logo-icon">W</span>
-            <span className="logo-text">whodo</span>
+            {renderSidebarBrand()}
           </Link>
           <button
             className="sidebar-close"
@@ -198,7 +282,7 @@ export default function AdminLayout({ children }) {
 
         <nav className="sidebar-nav">
           <div className="nav-section">
-            <span className="nav-section-title">Menu</span>
+            <span className="nav-section-title">Geral</span>
             {menuItems.map(item => (
               <Link
                 key={item.path}
@@ -214,13 +298,13 @@ export default function AdminLayout({ children }) {
 
           {isAdmin && (
             <div className="nav-section">
-              <span className="nav-section-title">Admin</span>
-              {adminItems.filter(item => !item.superOnly || isSuperuser).map(item => {
+              <span className="nav-section-title">Ferramentas</span>
+              {toolItems.filter(item => !item.superOnly || isSuperuser).map(item => {
                 const locked = item.minPlan && (PLAN_RANK[currentPlan] ?? 0) < (PLAN_RANK[item.minPlan] ?? 0);
                 return (
                   <Link
                     key={item.path}
-                    to={locked ? '/admin/profile' : item.path}
+                    to={locked ? '/admin/checkout' : item.path}
                     className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''} ${locked ? 'nav-locked' : ''}`}
                     onClick={closeMobileMenu}
                   >
@@ -232,14 +316,39 @@ export default function AdminLayout({ children }) {
               })}
             </div>
           )}
+
+          <div className="nav-section">
+            <span className="nav-section-title">Conteúdo</span>
+            {contentItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+          </div>
+
+          <div className="nav-section">
+            <span className="nav-section-title">Gestão</span>
+            {managementItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`nav-item ${isActive(item.path, item.exact) ? 'active' : ''}`}
+                onClick={closeMobileMenu}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Link>
+            ))}
+          </div>
         </nav>
 
         <div className="sidebar-footer">
-          <Link to="/" className="nav-item blog-link" onClick={closeMobileMenu}>
-            <span className="nav-icon">{Icons.blog}</span>
-            <span className="nav-label">Ver Blog</span>
-          </Link>
-
           {/* Mobile user info */}
           <div className="mobile-user-info">
             <div className="mobile-user-header">
@@ -268,11 +377,18 @@ export default function AdminLayout({ children }) {
               {Icons.menu}
             </button>
             <Link to="/" className="topbar-logo">
-              <span className="logo-icon">W</span>
+              {renderTopbarBrand()}
             </Link>
           </div>
 
           <div className="topbar-right">
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+            >
+              {theme === 'dark' ? Icons.sun : Icons.moon}
+            </button>
             <div className="user-dropdown">
               <button
                 className="user-dropdown-trigger"

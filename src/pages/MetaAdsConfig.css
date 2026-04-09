@@ -1,5 +1,5 @@
 .mads-config-section {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
   padding: 1.5rem;
@@ -9,12 +9,12 @@
 .mads-config-section h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0 0 0.5rem;
 }
 
 .mads-config-hint {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.82rem;
   margin: 0 0 1.25rem;
   line-height: 1.5;
@@ -60,7 +60,7 @@
   display: block;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin-bottom: 0.35rem;
 }
 
@@ -70,7 +70,7 @@
   background: #101114;
   border: 1px solid #3f3f46;
   border-radius: 8px;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s;
@@ -122,7 +122,7 @@
 
 .mads-btn.secondary {
   background: #2d3139;
-  color: #e4e4e7;
+  color: var(--admin-text);
   border: 1px solid #3f3f46;
 }
 
@@ -143,10 +143,10 @@
   cursor: pointer;
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
-.mads-btn-text:hover { color: #e4e4e7; }
+.mads-btn-text:hover { color: var(--admin-text); }
 .mads-btn-text.danger { color: #f87171; }
 .mads-btn-text.danger:hover { color: #ef4444; background: rgba(239,68,68,0.1); }
 .mads-btn-text.success { color: #4ade80; }
@@ -193,7 +193,7 @@
   background: #101114;
   border: 1px solid #3f3f46;
   border-radius: 8px;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   font-size: 0.82rem;
 }
 
@@ -229,12 +229,12 @@
   gap: 0.75rem;
   flex-wrap: wrap;
   font-size: 0.82rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .mads-alert-type {
   font-weight: 600;
-  color: #e4e4e7;
+  color: var(--admin-text);
 }
 
 .mads-alert-threshold {

@@ -97,7 +97,7 @@ async function request(endpoint, options = {}) {
     let message;
     try {
       const parsed = JSON.parse(text);
-      message = parsed.message;
+      message = parsed.message || parsed.error;
     } catch {
       message = text || `Erro ${response.status}`;
     }
@@ -134,6 +134,7 @@ export const api = {
   get: (endpoint) => request(endpoint, { method: 'GET' }),
   post: (endpoint, data) => request(endpoint, { method: 'POST', body: JSON.stringify(data) }),
   put: (endpoint, data) => request(endpoint, { method: 'PUT', body: JSON.stringify(data) }),
+  patch: (endpoint, data) => request(endpoint, { method: 'PATCH', body: JSON.stringify(data) }),
   delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
 };
 
@@ -288,11 +289,34 @@ export const users = {
 
 export const platform = {
   orgsWithMembers: () => api.get('/api/v1/platform/orgs-with-members'),
+  listOrgs: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString();
+    return api.get(`/api/v1/platform/orgs${qs ? `?${qs}` : ''}`);
+  },
+  stats: () => api.get('/api/v1/platform/stats'),
+  updatePlan: (orgId, planId) => api.put(`/api/v1/platform/orgs/${orgId}/plan`, { plan_id: planId }),
+  listSubscriptions: () => api.get('/api/v1/platform/subscriptions'),
+  updateSubscriptionStatus: (orgId, status) => api.put(`/api/v1/platform/orgs/${orgId}/subscription-status`, { status }),
+  webhookLogs: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.event) query.append('event', params.event);
+    if (params.result) query.append('result', params.result);
+    if (params.search) query.append('search', params.search);
+    const qs = query.toString();
+    return api.get(`/api/v1/platform/webhook-logs${qs ? `?${qs}` : ''}`);
+  },
+  webhookStats: () => api.get('/api/v1/platform/webhook-stats'),
 };
 
 export const auth = {
   login: (credentials) => api.post('/api/v1/auth/login', credentials),
   register: (data) => api.post('/api/v1/auth/register', data),
+  registerAndSubscribe: (data) => api.post('/api/v1/auth/register-and-subscribe', data),
   me: () => api.get('/api/v1/auth/me'),
   refresh: () => refreshAccessToken(),
   logout: async () => {
@@ -707,7 +731,23 @@ export const orgs = {
   updateMemberPermissions: (uid, permissions) => api.put(`/api/v1/orgs/current/members/${uid}/permissions`, { permissions }),
   removeMember: (uid) => api.delete(`/api/v1/orgs/current/members/${uid}`),
   myInvitations: () => api.get('/api/v1/invitations/mine'),
-  acceptInvitation: (id) => api.post(`/api/v1/invitations/${id}/accept`),
+  acceptInvitation: (id) => api.post(`/api/v1/invitations/accept/${id}`),
+
+  // Logo
+  uploadLogo: async (file) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/orgs/current/logo`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) {
+      const err = await response.text().catch(() => 'Erro no upload');
+      throw new Error(err);
+    }
+    return response.json();
+  },
+  removeLogo: () => api.delete('/api/v1/orgs/current/logo'),
 };
 
 // ── Subscription ───────────────────────────────────────────────────
@@ -716,6 +756,117 @@ export const subscription = {
   getUsage: () => api.get('/api/v1/orgs/current/usage'),
   checkout: (data) => api.post('/api/v1/orgs/current/subscription/checkout', data),
   cancel: () => api.post('/api/v1/orgs/current/subscription/cancel'),
+};
+
+// ── Billing (superuser only) ──────────────────────────────────────
+export const billing = {
+  getBalance: () => api.get('/api/v1/admin/billing/balance'),
+};
+
+// ── Contabil Module ─────────────────────────────────────────────────
+export const contabil = {
+  // Dashboard
+  getDashboardSummary: () => api.get('/api/v1/admin/contabil/dashboard/summary'),
+  getDashboardRevenue: () => api.get('/api/v1/admin/contabil/dashboard/revenue'),
+
+  // Clients
+  listClients: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.search) query.append('search', params.search);
+    if (params.taxRegime) query.append('taxRegime', params.taxRegime);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/contabil/clients${qs ? `?${qs}` : ''}`);
+  },
+  getClient: (id) => api.get(`/api/v1/admin/contabil/clients/${id}`),
+  createClient: (data) => api.post('/api/v1/admin/contabil/clients', data),
+  updateClient: (id, data) => api.put(`/api/v1/admin/contabil/clients/${id}`, data),
+  deleteClient: (id) => api.delete(`/api/v1/admin/contabil/clients/${id}`),
+
+  // Bills
+  listBills: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.competence) query.append('competence', params.competence);
+    if (params.status) query.append('status', params.status);
+    if (params.clientId) query.append('clientId', params.clientId);
+    if (params.search) query.append('search', params.search);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/contabil/bills${qs ? `?${qs}` : ''}`);
+  },
+  getBill: (id) => api.get(`/api/v1/admin/contabil/bills/${id}`),
+  generateBills: (competence) => api.post('/api/v1/admin/contabil/bills/generate', { competence }),
+  updateBill: (id, data) => api.put(`/api/v1/admin/contabil/bills/${id}`, data),
+  updateBillStatus: (id, status) => api.put(`/api/v1/admin/contabil/bills/${id}/status`, { status }),
+  markBillAsPaid: (id, paymentMethod) => api.patch(`/api/v1/admin/contabil/bills/${id}/paid`, { paymentMethod }),
+
+  // Services
+  listServices: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.page) query.append('page', params.page);
+    if (params.limit) query.append('limit', params.limit);
+    if (params.clientId) query.append('clientId', params.clientId);
+    if (params.sector) query.append('sector', params.sector);
+    if (params.status) query.append('status', params.status);
+    if (params.startDate) query.append('startDate', params.startDate);
+    if (params.endDate) query.append('endDate', params.endDate);
+    if (params.search) query.append('search', params.search);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/contabil/services${qs ? `?${qs}` : ''}`);
+  },
+  createService: (data) => api.post('/api/v1/admin/contabil/services', data),
+  updateService: (id, data) => api.put(`/api/v1/admin/contabil/services/${id}`, data),
+  deleteService: (id) => api.delete(`/api/v1/admin/contabil/services/${id}`),
+
+  // Import
+  importClientsPreview: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/contabil/import/clients/preview`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Erro no preview');
+    return response.json();
+  },
+  importClients: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/contabil/import/clients`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Erro na importacao');
+    return response.json();
+  },
+  importServicesPreview: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/contabil/import/services/preview`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Erro no preview');
+    return response.json();
+  },
+  importServices: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/contabil/import/services`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Erro na importacao');
+    return response.json();
+  },
+
+  // User mappings
+  listMappings: () => api.get('/api/v1/admin/contabil/mappings'),
+  createMapping: (data) => api.post('/api/v1/admin/contabil/mappings', data),
+  updateMapping: (id, data) => api.put(`/api/v1/admin/contabil/mappings/${id}`, data),
+  deleteMapping: (id) => api.delete(`/api/v1/admin/contabil/mappings/${id}`),
 };
 
 export const profile = {

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { integratedPublish, instagram, metaAds, ai as aiApi, API_URL } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import './MetaAdsIntegratedPublish.css';
 
@@ -44,6 +45,7 @@ const formatDate = (dateStr) => {
 };
 
 export default function MetaAdsIntegratedPublish() {
+  const confirm = useConfirm();
   // View: 'list' or 'wizard'
   const [view, setView] = useState('list');
 
@@ -197,7 +199,8 @@ export default function MetaAdsIntegratedPublish() {
 
   // Delete item
   const handleDeleteItem = async (item) => {
-    if (!window.confirm('Excluir esta publicacao agendada?')) return;
+    const ok = await confirm({ title: 'Excluir publicacao', message: 'Excluir esta publicacao agendada?', confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
     try {
       await integratedPublish.delete(item._id || item.id);
       setItems(prev => prev.filter(i => (i._id || i.id) !== (item._id || item.id)));
@@ -361,7 +364,8 @@ export default function MetaAdsIntegratedPublish() {
   };
 
   const handleDeleteTemplate = async (id) => {
-    if (!window.confirm('Excluir este template?')) return;
+    const ok = await confirm({ title: 'Excluir template', message: 'Excluir este template?', confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
     try {
       await metaAds.deleteTemplate(id);
       setTemplates(prev => prev.filter(t => (t._id || t.id) !== id));
@@ -371,7 +375,8 @@ export default function MetaAdsIntegratedPublish() {
   };
 
   const handleDeletePreset = async (id) => {
-    if (!window.confirm('Excluir este preset?')) return;
+    const ok = await confirm({ title: 'Excluir preset', message: 'Excluir este preset?', confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
     try {
       await metaAds.deletePreset(id);
       setPresets(prev => prev.filter(p => (p._id || p.id) !== id));

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { users, orgs, platform } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import './Users.css';
@@ -165,6 +165,7 @@ function PlatformView() {
 
 function OrgMembersView() {
   const { hasOrgRole, usage, refreshUsage, subscription } = useOrg();
+  const confirm = useConfirm();
   const [userList, setUserList] = useState([]);
   const [invitations, setInvitations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -212,7 +213,8 @@ function OrgMembersView() {
   };
 
   const handleRemoveMember = async (uid, name) => {
-    if (!window.confirm(`Remover ${name || 'este membro'}?`)) return;
+    const ok = await confirm({ title: 'Remover membro', message: `Remover ${name || 'este membro'}?`, confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
     try {
       await orgs.removeMember(uid);
       setSuccess('Membro removido');
@@ -396,17 +398,21 @@ function OrgMembersView() {
 
 export default function Users() {
   const { profile } = useAuth();
-  const { hasOrgRole } = useOrg();
-  const navigate = useNavigate();
-  const isSuperuser = profile?.role === 'superuser';
+  const isSuperuser = profile?.role === 'superuser' || profile?.role === 'superadmin';
 
-  useEffect(() => {
-    if (!isSuperuser && !hasOrgRole('owner', 'admin', 'member')) navigate('/admin');
-  }, []);
+  if (!isSuperuser) {
+    return (
+      <AdminLayout>
+        <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--admin-text-secondary)' }}>
+          Acesso restrito a Super Administradores.
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
-      {isSuperuser ? <PlatformView /> : <OrgMembersView />}
+      <PlatformView />
     </AdminLayout>
   );
 }

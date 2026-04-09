@@ -13,12 +13,12 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 
@@ -36,25 +36,25 @@
 .empty-state {
   padding: 4rem 2rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 16px;
 }
 
 .empty-icon {
   font-size: 3rem;
   margin-bottom: 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .empty-state h3 {
   font-size: 1.25rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin-bottom: 0.5rem;
 }
 
 .empty-state p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-bottom: 1.5rem;
 }
 
@@ -62,13 +62,13 @@
 .loading-state {
   padding: 3rem;
   text-align: center;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 /* Table */
 .posts-table {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 16px;
   overflow: hidden;
 }
@@ -78,13 +78,13 @@
   grid-template-columns: 1fr 150px 120px 100px 100px;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-hover);
+  border-bottom: 1px solid var(--admin-border);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .table-row {
@@ -92,7 +92,7 @@
   grid-template-columns: 1fr 150px 120px 100px 100px;
   gap: 1rem;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--admin-border);
   align-items: center;
   transition: background 0.2s;
 }
@@ -104,7 +104,7 @@
 }
 
 .col-author {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.875rem;
 }
 
@@ -113,12 +113,12 @@
 }
 
 .table-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background-color: var(--admin-bg-hover);
 }
 
 .col-title {
   font-weight: 500;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .col-title.clickable {
@@ -131,7 +131,7 @@
 
 .col-category,
 .col-date {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.875rem;
 }
 
@@ -216,8 +216,8 @@
 }
 
 .post-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 0.75rem;
@@ -226,7 +226,7 @@
 }
 
 .post-card:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background-color: var(--admin-bg-hover);
   border-color: rgba(37, 99, 235, 0.3);
 }
 
@@ -241,14 +241,14 @@
 .post-card-header h3 {
   font-size: 0.9375rem;
   font-weight: 500;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .post-card-meta {
   display: flex;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-bottom: 0.75rem;
 }
 
@@ -276,24 +276,24 @@
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--admin-border);
 }
 
 .pagination-btn {
   padding: 0.625rem 1.25rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 8px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .pagination-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-active);
   border-color: rgba(37, 99, 235, 0.3);
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .pagination-btn:disabled {
@@ -302,7 +302,7 @@
 }
 
 .pagination-info {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 

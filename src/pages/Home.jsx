@@ -317,7 +317,7 @@ export default function Home() {
                 <Link to="/login" className="btn-primary">
                   Comece Grátis
                 </Link>
-                <Link to="/onboarding" className="btn-ghost">
+                <Link to="/assinar/pro" className="btn-ghost">
                   Ver Planos
                 </Link>
               </div>
@@ -342,8 +342,115 @@ export default function Home() {
           </button>
         </section>
 
-        {/* Tela 2 - Blog */}
-        <section className="section-snap section-blog" ref={setSectionRef(1)}>
+        {/* Tela 2 - Planos */}
+        <section className="section-snap section-cta-footer" ref={setSectionRef(1)}>
+          <div className="cta-footer-content">
+            <div className="cta-inner">
+              <span className="audit-badge animate-item">Planos</span>
+              <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
+                Invista no crescimento<br />
+                do seu <span className="text-gradient">negócio</span>
+              </h2>
+              <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
+                Comece grátis. Escale sem limites. Cancele quando quiser.
+              </p>
+
+              <div className="home-plans animate-item" style={{ transitionDelay: '0.2s' }}>
+                <div className="home-plan-card">
+                  <div className="home-plan-header">
+                    <h3>Free</h3>
+                    <p className="home-plan-desc">Para experimentar</p>
+                  </div>
+                  <div className="home-plan-pricing">
+                    <span className="home-plan-amount">R$0</span>
+                    <span className="home-plan-period">/mês</span>
+                  </div>
+                  <Link to="/login" className="home-plan-btn">Começar grátis</Link>
+                  <div className="home-plan-divider" />
+                  <ul className="home-plan-features">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>1 membro</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>10 posts agendados</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>3 regras auto-resposta</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Blog ilimitado</li>
+                  </ul>
+                </div>
+
+                <div className="home-plan-card">
+                  <div className="home-plan-header">
+                    <h3>Starter</h3>
+                    <p className="home-plan-desc">Para começar a crescer</p>
+                  </div>
+                  <div className="home-plan-pricing">
+                    <span className="home-plan-amount">R$49</span>
+                    <span className="home-plan-period">/mês</span>
+                  </div>
+                  <Link to="/assinar/starter" className="home-plan-btn">Assinar Starter</Link>
+                  <div className="home-plan-divider" />
+                  <ul className="home-plan-features">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>3 membros da equipe</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>50 posts agendados</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Instagram + Meta Ads</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Auto-Boost + CTA Analytics</li>
+                  </ul>
+                </div>
+
+                <div className="home-plan-card popular">
+                  <span className="home-plan-badge">Mais escolhido</span>
+                  <div className="home-plan-header">
+                    <h3>Pro</h3>
+                    <p className="home-plan-desc">Para escalar de verdade</p>
+                  </div>
+                  <div className="home-plan-pricing">
+                    <span className="home-plan-amount">R$149</span>
+                    <span className="home-plan-period">/mês</span>
+                  </div>
+                  <Link to="/assinar/pro" className="home-plan-btn primary">
+                    Assinar Pro
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  </Link>
+                  <div className="home-plan-divider" />
+                  <ul className="home-plan-features">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>10 membros da equipe</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Posts e campanhas ilimitados</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Instagram + Meta Ads</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Email Marketing completo</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todas as ferramentas</li>
+                  </ul>
+                </div>
+
+                <div className="home-plan-card">
+                  <div className="home-plan-header">
+                    <h3>Enterprise</h3>
+                    <p className="home-plan-desc">Para grandes operações</p>
+                  </div>
+                  <div className="home-plan-pricing">
+                    <span className="home-plan-amount">R$399</span>
+                    <span className="home-plan-period">/mês</span>
+                  </div>
+                  <Link to="/assinar/enterprise" className="home-plan-btn">Assinar Enterprise</Link>
+                  <div className="home-plan-divider" />
+                  <ul className="home-plan-features">
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Membros ilimitados</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Pro incluso</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte prioritário</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>SLA dedicado</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="home-plans-trust animate-item" style={{ transitionDelay: '0.25s' }}>
+                <span>Sem fidelidade</span>
+                <span className="trust-dot" />
+                <span>PIX, boleto ou cartão</span>
+                <span className="trust-dot" />
+                <span>Cancele quando quiser</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Tela 3 - Blog */}
+        <section className="section-snap section-blog" ref={setSectionRef(2)}>
           <div className="section-inner">
             <div className="section-header section-header--compact">
               <h2 className="section-title animate-item">Blog</h2>
@@ -411,8 +518,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tela 3 - Clientes */}
-        <section className="section-snap section-clients" ref={setSectionRef(2)}>
+        {/* Tela 4 - Clientes + Footer */}
+        <section className="section-snap section-clients" ref={setSectionRef(3)}>
           <div className="section-inner">
             <div className="section-header">
               <span className="clients-badge animate-item">Parceiros</span>
@@ -453,78 +560,6 @@ export default function Home() {
                 Comece agora
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Tela 4 - CTA + Footer */}
-        <section className="section-snap section-cta-footer" ref={setSectionRef(3)}>
-          <div className="cta-footer-content">
-            <div className="cta-inner">
-              <span className="audit-badge animate-item">Planos</span>
-              <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
-                Invista no crescimento<br />
-                do seu <span className="text-gradient">negócio</span>
-              </h2>
-              <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Comece grátis. Escale sem limites. Cancele quando quiser.
-              </p>
-
-              <div className="home-plans animate-item" style={{ transitionDelay: '0.2s' }}>
-                <div className="home-plan-card">
-                  <div className="home-plan-top">
-                    <h3>Free</h3>
-                    <div className="home-plan-price"><span>R$0</span><small>/mês</small></div>
-                  </div>
-                  <ul>
-                    <li>1 membro</li>
-                    <li>10 posts agendados</li>
-                    <li>3 regras auto-resposta</li>
-                    <li>Blog ilimitado</li>
-                  </ul>
-                  <Link to="/login" className="home-plan-btn">Começar grátis</Link>
-                </div>
-
-                <div className="home-plan-card popular">
-                  <span className="home-plan-badge">Mais escolhido</span>
-                  <div className="home-plan-top">
-                    <h3>Pro</h3>
-                    <div className="home-plan-price"><span>R$149</span><small>/mês</small></div>
-                  </div>
-                  <ul>
-                    <li>10 membros da equipe</li>
-                    <li>Posts e campanhas ilimitados</li>
-                    <li>Instagram + Meta Ads</li>
-                    <li>Email Marketing completo</li>
-                  </ul>
-                  <Link to="/onboarding" className="home-plan-btn primary">
-                    Começar agora
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                  </Link>
-                </div>
-
-                <div className="home-plan-card">
-                  <div className="home-plan-top">
-                    <h3>Enterprise</h3>
-                    <div className="home-plan-price"><span>R$399</span><small>/mês</small></div>
-                  </div>
-                  <ul>
-                    <li>Membros ilimitados</li>
-                    <li>Tudo do Pro incluso</li>
-                    <li>Suporte prioritário</li>
-                    <li>SLA dedicado</li>
-                  </ul>
-                  <Link to="/onboarding" className="home-plan-btn">Falar com vendas</Link>
-                </div>
-              </div>
-
-              <div className="home-plans-trust animate-item" style={{ transitionDelay: '0.25s' }}>
-                <span>Sem fidelidade</span>
-                <span className="trust-dot" />
-                <span>PIX, boleto ou cartão</span>
-                <span className="trust-dot" />
-                <span>Cancele quando quiser</span>
-              </div>
             </div>
           </div>
           <footer className="footer-compact">

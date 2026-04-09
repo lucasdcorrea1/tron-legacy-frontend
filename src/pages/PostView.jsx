@@ -4,6 +4,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { blog, API_URL, getImageUrl } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
 import AdSlot from '../components/AdSlot';
@@ -21,6 +22,7 @@ import sql from 'highlight.js/lib/languages/sql';
 import yaml from 'highlight.js/lib/languages/yaml';
 import markdown from 'highlight.js/lib/languages/markdown';
 import 'highlight.js/styles/github-dark.css';
+import DOMPurify from 'dompurify';
 import AuthorHoverCard from '../components/AuthorHoverCard';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import './PostView.css';
@@ -62,6 +64,7 @@ export default function PostView() {
   const navigate = useNavigate();
   const { isAuthenticated, profile } = useAuth();
   const { hasOrgRole } = useOrg();
+  const confirm = useConfirm();
   const viewRecorded = useRef(false);
 
   const [post, setPost] = useState(null);
@@ -263,7 +266,8 @@ export default function PostView() {
   };
 
   const handleDeleteComment = async (commentId) => {
-    if (!window.confirm('Excluir este comentário?')) return;
+    const ok = await confirm({ title: 'Excluir comentario', message: 'Excluir este comentario?', confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
 
     try {
       await blog.deleteComment(slug, commentId);
@@ -380,6 +384,10 @@ export default function PostView() {
     if (isHtmlContent(html)) {
       html = resolveImageUrls(html);
       html = fixLinks(html);
+      html = DOMPurify.sanitize(html, {
+        ADD_TAGS: ['iframe'],
+        ADD_ATTR: ['target', 'rel', 'allow', 'allowfullscreen', 'frameborder'],
+      });
       return (
         <div dangerouslySetInnerHTML={{ __html: html }} />
       );

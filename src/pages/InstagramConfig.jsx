@@ -344,6 +344,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   };
 
   const handleOAuthMessage = useCallback((event) => {
+    if (event.origin !== window.location.origin) return;
     if (event.data?.type !== 'META_OAUTH_RESULT') return;
     if (event.data.success) {
       if (event.data.needs_selection && event.data.ig_accounts?.length > 1) {

@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useOrg } from '../context/OrgContext';
 import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import { profile as profileApi, ai as aiApi, API_URL } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
-import { GeneralTab, MembersTab, BillingTab } from './OrgSettings';
+import { GeneralTab, AppearanceTab, MembersTab, BillingTab } from './OrgSettings';
 import './Profile.css';
 import './OrgSettings.css';
 
@@ -19,6 +20,7 @@ export default function Profile() {
   const { profile: authProfile, updateProfile } = useAuth();
   const { hasOrgRole } = useOrg();
   const toast = useToast();
+  const confirm = useConfirm();
   const isAdmin = hasOrgRole('owner', 'admin');
   const fileInputRef = useRef(null);
   const coverInputRef = useRef(null);
@@ -51,13 +53,10 @@ export default function Profile() {
   const [aiApiKey, setAiApiKey] = useState('');
   const [savingAi, setSavingAi] = useState(false);
 
-  // Settings
+  // Settings (localization only — theme/colors moved to org Aparência)
   const [language, setLanguage] = useState('pt-BR');
   const [dateFormat, setDateFormat] = useState('DD/MM/YYYY');
   const [currency, setCurrency] = useState('BRL');
-  const [themeMode, setThemeMode] = useState('light');
-  const [primaryColor, setPrimaryColor] = useState('#0ea5e9');
-  const [accentColor, setAccentColor] = useState('#3b82f6');
 
   useEffect(() => {
     fetchProfile();
@@ -95,11 +94,6 @@ export default function Profile() {
         setLanguage(data.settings.language || 'pt-BR');
         setDateFormat(data.settings.date_format || 'DD/MM/YYYY');
         setCurrency(data.settings.currency || 'BRL');
-        if (data.settings.theme) {
-          setThemeMode(data.settings.theme.mode || 'light');
-          setPrimaryColor(data.settings.theme.primary_color || '#0ea5e9');
-          setAccentColor(data.settings.theme.accent_color || '#3b82f6');
-        }
       }
 
       // Load AI config
@@ -142,7 +136,8 @@ export default function Profile() {
   };
 
   const handleRemoveAvatar = async () => {
-    if (!window.confirm('Remover avatar?')) return;
+    const ok = await confirm({ title: 'Remover avatar', message: 'Remover avatar?', confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
 
     try {
       await profileApi.removeAvatar();
@@ -176,38 +171,22 @@ export default function Profile() {
     setSaving(true);
 
     try {
-      await profileApi.update({
-        name,
-        bio,
-        social_links: { instagram, twitter, linkedin, github, website },
-      });
+      await Promise.all([
+        profileApi.update({
+          name,
+          bio,
+          social_links: { instagram, twitter, linkedin, github, website },
+        }),
+        profileApi.updateSettings({
+          language,
+          date_format: dateFormat,
+          currency,
+        }),
+      ]);
       updateProfile({ name, bio });
       toast.success('Perfil atualizado com sucesso!', 'Salvo');
     } catch (err) {
       toast.error(err.message || 'Erro ao salvar perfil');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleSaveSettings = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-
-    try {
-      await profileApi.updateSettings({
-        language,
-        date_format: dateFormat,
-        currency,
-        theme: {
-          mode: themeMode,
-          primary_color: primaryColor,
-          accent_color: accentColor,
-        },
-      });
-      toast.success('Configurações salvas com sucesso!', 'Preferências');
-    } catch (err) {
-      toast.error(err.message || 'Erro ao salvar configurações');
     } finally {
       setSaving(false);
     }
@@ -237,7 +216,8 @@ export default function Profile() {
   };
 
   const handleDeleteAIConfig = async () => {
-    if (!window.confirm('Remover configuracao de IA?')) return;
+    const ok = await confirm({ title: 'Remover configuracao de IA', message: 'Remover configuracao de IA?', confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
     try {
       await aiApi.deleteConfig();
       setAiConfigured(false);
@@ -257,123 +237,109 @@ export default function Profile() {
     );
   }
 
+  const navItems = [
+    { id: 'profile', label: 'Meu Perfil' },
+    { id: 'ai', label: 'Inteligência Artificial' },
+    ...(isAdmin ? [
+      { divider: true },
+      { id: 'org', label: 'Empresa' },
+      { id: 'appearance', label: 'Aparência' },
+      { id: 'members', label: 'Membros' },
+    ] : []),
+    { divider: true },
+    { id: 'billing', label: 'Plano & Faturamento' },
+  ];
+
   return (
     <AdminLayout>
-      <div className="profile-page">
-        <div className="page-header">
-          <h1>Meu Perfil</h1>
-          <p>Gerencie suas informações e preferências</p>
+      <div className="settings-page">
+        <div className="settings-page-header">
+          <h1>Configurações</h1>
         </div>
 
-        <div className="profile-layout">
-          {/* Cover Banner */}
-          <div className="profile-cover-banner">
-            {coverImage ? (
-              <img src={getImageUrl(coverImage)} alt="Capa" className="cover-image" />
-            ) : (
-              <div className="cover-image-placeholder" />
-            )}
-            <label className="cover-upload-btn">
-              {uploadingCover ? 'Enviando...' : 'Alterar capa'}
-              <input
-                ref={coverInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                onChange={handleCoverImageUpload}
-                disabled={uploadingCover}
-                hidden
-              />
-            </label>
-          </div>
+        <div className="settings-layout">
+          {/* Sidebar nav */}
+          <aside className="settings-sidebar">
+            {/* User mini-card */}
+            <div className="settings-user-card">
+              <div className="settings-avatar-wrap">
+                {avatar ? (
+                  <img src={getImageUrl(avatar)} alt="Avatar" className="settings-avatar-img" />
+                ) : (
+                  <div className="settings-avatar-placeholder">
+                    {name?.charAt(0)?.toUpperCase() || 'U'}
+                  </div>
+                )}
+                {uploadingAvatar && <div className="avatar-uploading">...</div>}
+              </div>
+              <div className="settings-user-info">
+                <strong>{name || 'Usuário'}</strong>
+                <span>{profileData?.role || authProfile?.role}</span>
+              </div>
+              <div className="settings-avatar-actions">
+                <label className="btn-secondary btn-sm">
+                  {uploadingAvatar ? '...' : 'Foto'}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleAvatarUpload}
+                    disabled={uploadingAvatar}
+                    hidden
+                  />
+                </label>
+                {avatar && (
+                  <button type="button" className="btn-danger btn-sm" onClick={handleRemoveAvatar}>
+                    Remover
+                  </button>
+                )}
+              </div>
+            </div>
 
-          {/* Avatar Card */}
-          <div className="profile-card avatar-card">
-            <div className="avatar-wrapper">
-              {avatar ? (
-                <img src={getImageUrl(avatar)} alt="Avatar" className="avatar-image" />
-              ) : (
-                <div className="avatar-placeholder">
-                  {name?.charAt(0)?.toUpperCase() || 'U'}
-                </div>
+            {/* Navigation */}
+            <nav className="settings-nav">
+              {navItems.map((item, i) =>
+                item.divider ? (
+                  <div key={`d${i}`} className="settings-nav-divider" />
+                ) : (
+                  <button
+                    key={item.id}
+                    className={`settings-nav-item ${activeTab === item.id ? 'active' : ''}`}
+                    onClick={() => setActiveTab(item.id)}
+                  >
+                    {item.label}
+                  </button>
+                )
               )}
-              {uploadingAvatar && <div className="avatar-uploading">...</div>}
-            </div>
-            <h3>{name || 'Usuário'}</h3>
-            <span className="user-role">{profileData?.role || authProfile?.role}</span>
-            <div className="avatar-actions">
-              <label className="btn-secondary">
-                {uploadingAvatar ? 'Enviando...' : 'Alterar foto'}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleAvatarUpload}
-                  disabled={uploadingAvatar}
-                  hidden
-                />
-              </label>
-              {avatar && (
-                <button
-                  type="button"
-                  className="btn-danger"
-                  onClick={handleRemoveAvatar}
-                >
-                  Remover
-                </button>
-              )}
-            </div>
-          </div>
+            </nav>
+          </aside>
 
-          {/* Main Content */}
-          <div className="profile-content">
-            {/* Tabs */}
-            <div className="profile-tabs">
-              <button
-                className={`profile-tab ${activeTab === 'profile' ? 'active' : ''}`}
-                onClick={() => setActiveTab('profile')}
-              >
-                Informações
-              </button>
-              <button
-                className={`profile-tab ${activeTab === 'settings' ? 'active' : ''}`}
-                onClick={() => setActiveTab('settings')}
-              >
-                Preferências
-              </button>
-              <button
-                className={`profile-tab ${activeTab === 'ai' ? 'active' : ''}`}
-                onClick={() => setActiveTab('ai')}
-              >
-                IA
-              </button>
-              <span className="profile-tab-divider" />
-              {isAdmin && (
-                <button
-                  className={`profile-tab ${activeTab === 'org' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('org')}
-                >
-                  Empresa
-                </button>
-              )}
-              {isAdmin && (
-                <button
-                  className={`profile-tab ${activeTab === 'members' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('members')}
-                >
-                  Membros
-                </button>
-              )}
-              <button
-                className={`profile-tab ${activeTab === 'billing' ? 'active' : ''}`}
-                onClick={() => setActiveTab('billing')}
-              >
-                Plano
-              </button>
-            </div>
+          {/* Main content */}
+          <main className="settings-main">
 
             {/* Profile Tab */}
             {activeTab === 'profile' && (
               <form onSubmit={handleSaveProfile} className="profile-form">
+                {/* Cover Banner */}
+                <div className="profile-cover-banner">
+                  {coverImage ? (
+                    <img src={getImageUrl(coverImage)} alt="Capa" className="cover-banner-img" />
+                  ) : (
+                    <div className="cover-banner-placeholder" />
+                  )}
+                  <label className="cover-banner-btn">
+                    {uploadingCover ? 'Enviando...' : 'Alterar capa'}
+                    <input
+                      ref={coverInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleCoverImageUpload}
+                      disabled={uploadingCover}
+                      hidden
+                    />
+                  </label>
+                </div>
+
                 <div className="form-group">
                   <label htmlFor="name">Nome</label>
                   <input
@@ -471,15 +437,6 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar Alterações'}
-                </button>
-              </form>
-            )}
-
-            {/* Settings Tab */}
-            {activeTab === 'settings' && (
-              <form onSubmit={handleSaveSettings} className="profile-form">
                 <div className="settings-section">
                   <h4>Localização</h4>
                   <div className="form-row">
@@ -522,51 +479,8 @@ export default function Profile() {
                   </div>
                 </div>
 
-                <div className="settings-section">
-                  <h4>Aparência</h4>
-                  <div className="form-group">
-                    <label htmlFor="themeMode">Tema</label>
-                    <select
-                      id="themeMode"
-                      value={themeMode}
-                      onChange={(e) => setThemeMode(e.target.value)}
-                    >
-                      <option value="light">Claro</option>
-                      <option value="dark">Escuro</option>
-                      <option value="system">Sistema</option>
-                    </select>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label htmlFor="primaryColor">Cor Primária</label>
-                      <div className="color-picker">
-                        <input
-                          type="color"
-                          id="primaryColor"
-                          value={primaryColor}
-                          onChange={(e) => setPrimaryColor(e.target.value)}
-                        />
-                        <span>{primaryColor}</span>
-                      </div>
-                    </div>
-                    <div className="form-group">
-                      <label htmlFor="accentColor">Cor de Destaque</label>
-                      <div className="color-picker">
-                        <input
-                          type="color"
-                          id="accentColor"
-                          value={accentColor}
-                          onChange={(e) => setAccentColor(e.target.value)}
-                        />
-                        <span>{accentColor}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
                 <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? 'Salvando...' : 'Salvar Preferências'}
+                  {saving ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
               </form>
             )}
@@ -575,6 +489,11 @@ export default function Profile() {
             {activeTab === 'org' && isAdmin && (
               <div className="profile-org-section">
                 <GeneralTab />
+              </div>
+            )}
+            {activeTab === 'appearance' && isAdmin && (
+              <div className="profile-org-section">
+                <AppearanceTab />
               </div>
             )}
             {activeTab === 'members' && isAdmin && (
@@ -724,7 +643,7 @@ export default function Profile() {
                 </div>
               </form>
             )}
-          </div>
+          </main>
         </div>
       </div>
     </AdminLayout>

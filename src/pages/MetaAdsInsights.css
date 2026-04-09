@@ -9,7 +9,7 @@
 .mads-insights-levels {
   display: flex;
   gap: 0.25rem;
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 10px;
   padding: 0.2rem;
@@ -21,7 +21,7 @@
   border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
   background: transparent;
   cursor: pointer;
   transition: all 0.15s;
@@ -33,7 +33,7 @@
 }
 
 .mads-level-btn:hover:not(.active) {
-  color: #e4e4e7;
+  color: var(--admin-text);
 }
 
 .mads-insights-dates {
@@ -41,7 +41,7 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 0.82rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .mads-insights-dates input {
@@ -49,7 +49,7 @@
   background: #101114;
   border: 1px solid #3f3f46;
   border-radius: 8px;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   font-size: 0.82rem;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .mads-insight-card {
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 10px;
   padding: 1rem;
@@ -74,7 +74,7 @@
 .mads-insight-label {
   font-size: 0.72rem;
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -82,7 +82,7 @@
 .mads-insight-value {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
 }
 
 .mads-insight-value.spend {
@@ -106,8 +106,8 @@
   padding: 0.7rem 0.75rem;
   text-align: left;
   font-weight: 600;
-  color: #71717a;
-  background: #1a1d23;
+  color: var(--admin-text-muted);
+  background-color: var(--admin-bg-elevated);
   border-bottom: 1px solid #2d3139;
   cursor: pointer;
   user-select: none;
@@ -118,12 +118,12 @@
 }
 
 .mads-table th:hover {
-  color: #e4e4e7;
+  color: var(--admin-text);
 }
 
 .mads-table td {
   padding: 0.6rem 0.75rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   border-bottom: 1px solid #1e2228;
   white-space: nowrap;
 }
@@ -133,7 +133,7 @@
 }
 
 .mads-cell-name {
-  color: #e4e4e7 !important;
+  color: var(--admin-text) !important;
   font-weight: 600;
   max-width: 200px;
   overflow: hidden;
@@ -152,14 +152,14 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 3rem 0;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9rem;
 }
 
 .mads-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .mads-error {
@@ -183,7 +183,7 @@
 
 .mads-btn.secondary {
   background: #2d3139;
-  color: #e4e4e7;
+  color: var(--admin-text);
   border: 1px solid #3f3f46;
 }
 

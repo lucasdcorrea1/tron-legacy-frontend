@@ -24,8 +24,8 @@
 .onboarding-card {
   width: 100%;
   max-width: 460px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 20px;
   padding: 3rem 2.5rem;
   text-align: center;
@@ -54,12 +54,12 @@
 .onboarding-card h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin: 0 0 0.5rem;
 }
 
 .onboarding-subtitle {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9375rem;
   line-height: 1.5;
   margin: 0 0 2rem;
@@ -81,16 +81,16 @@
 .onboarding-form label {
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .onboarding-form input {
   width: 100%;
   padding: 0.875rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-active);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 10px;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.9375rem;
   outline: none;
   transition: all 0.2s;
@@ -100,11 +100,11 @@
 .onboarding-form input:focus {
   border-color: #2563eb;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-  background: rgba(255, 255, 255, 0.07);
+  background-color: var(--admin-bg-active);
 }
 
 .onboarding-form input::placeholder {
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .onboarding-error {
@@ -141,7 +141,7 @@
 
 .onboarding-hint {
   margin: 1.5rem 0 0;
-  color: #52525b;
+  color: var(--admin-text-muted);
   font-size: 0.8125rem;
 }
 

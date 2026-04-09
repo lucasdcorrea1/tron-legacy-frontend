@@ -1,0 +1,187 @@
+/* ======================================================
+   Admin Theme System
+   Scoped to admin panel only — landing page untouched.
+   Toggle via data-admin-theme="dark|light" on <html>.
+   ====================================================== */
+
+/* ---------- DARK THEME (default) ---------- */
+[data-admin-theme="dark"] .admin-layout,
+.admin-layout {
+  --admin-bg:            #161b26;
+  --admin-bg-elevated:   #1c2233;
+  --admin-bg-surface:    #232c3d;
+  --admin-bg-hover:      rgba(255, 255, 255, 0.05);
+  --admin-bg-active:     rgba(255, 255, 255, 0.08);
+
+  --admin-sidebar-bg:    linear-gradient(180deg, #221a56 0%, #1a1450 100%);
+  --admin-sidebar-border: rgba(130, 99, 255, 0.12);
+
+  --admin-topbar-bg:     rgba(22, 27, 38, 0.92);
+  --admin-topbar-border: rgba(255, 255, 255, 0.07);
+
+  --admin-text:          #e8ecf1;
+  --admin-text-secondary:#94a0b4;
+  --admin-text-muted:    #5c6780;
+  --admin-text-heading:  #f4f6f9;
+
+  --admin-border:        rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(255, 255, 255, 0.13);
+
+  --admin-accent:        #5b7cf7;
+  --admin-accent-hover:  #4a6be6;
+  --admin-accent-subtle: rgba(91, 124, 247, 0.12);
+  --admin-accent-text:   #a3b8fd;
+  --admin-accent-glow:   rgba(91, 124, 247, 0.25);
+
+  --admin-nav-item:      rgba(255, 255, 255, 0.55);
+  --admin-nav-hover:     rgba(255, 255, 255, 0.85);
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.06) 100%);
+  --admin-nav-active-text: #ffffff;
+  --admin-nav-active-icon: #a3b8fd;
+  --admin-nav-active-bar: linear-gradient(180deg, #7b9aff 0%, #5b7cf7 100%);
+  --admin-nav-section-title: rgba(255, 255, 255, 0.3);
+
+  --admin-dropdown-bg:   #1e2636;
+  --admin-dropdown-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+
+  --admin-badge-bg:      rgba(91, 124, 247, 0.15);
+  --admin-badge-border:  rgba(91, 124, 247, 0.2);
+  --admin-badge-text:    #7b9aff;
+
+  --admin-danger:        #ef4444;
+  --admin-danger-hover:  rgba(239, 68, 68, 0.1);
+  --admin-danger-border: rgba(239, 68, 68, 0.3);
+  --admin-danger-text:   #f87171;
+
+  --admin-success:       #22c55e;
+  --admin-warning:       #eab308;
+
+  --admin-input-bg:      #1c2233;
+  --admin-input-border:  rgba(255, 255, 255, 0.1);
+  --admin-input-focus:   rgba(91, 124, 247, 0.4);
+
+  --admin-card-bg:       #1c2233;
+  --admin-card-border:   rgba(255, 255, 255, 0.08);
+  --admin-card-shadow:   0 4px 16px rgba(0, 0, 0, 0.15);
+
+  --admin-scrollbar-track: transparent;
+  --admin-scrollbar-thumb: rgba(255, 255, 255, 0.1);
+
+  --admin-select-arrow:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a8599' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --admin-select-hover-bg: #212a3a;
+  --admin-select-hover-border: rgba(255, 255, 255, 0.18);
+
+  --admin-overlay:       rgba(0, 0, 0, 0.5);
+}
+
+/* ---------- LIGHT THEME ---------- */
+[data-admin-theme="light"] .admin-layout {
+  --admin-bg:            #f0f2f5;
+  --admin-bg-elevated:   #f8f9fb;
+  --admin-bg-surface:    #eef0f4;
+  --admin-bg-hover:      rgba(0, 0, 0, 0.03);
+  --admin-bg-active:     rgba(0, 0, 0, 0.06);
+
+  --admin-sidebar-bg:    linear-gradient(180deg, #2a3a8c 0%, #1f2e72 100%);
+  --admin-sidebar-border: rgba(91, 124, 247, 0.2);
+
+  --admin-topbar-bg:     rgba(248, 249, 251, 0.95);
+  --admin-topbar-border: #dce0ea;
+
+  --admin-text:          #2c3444;
+  --admin-text-secondary:#556070;
+  --admin-text-muted:    #8490a4;
+  --admin-text-heading:  #1a2030;
+
+  --admin-border:        #dce0ea;
+  --admin-border-strong: #c4c9d8;
+
+  --admin-accent:        #3652d9;
+  --admin-accent-hover:  #2a44c4;
+  --admin-accent-subtle: rgba(54, 82, 217, 0.08);
+  --admin-accent-text:   #2a44c4;
+  --admin-accent-glow:   rgba(54, 82, 217, 0.18);
+
+  --admin-nav-item:      rgba(255, 255, 255, 0.65);
+  --admin-nav-hover:     rgba(255, 255, 255, 0.9);
+  --admin-nav-active-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.08) 100%);
+  --admin-nav-active-text: #ffffff;
+  --admin-nav-active-icon: #a3b8fd;
+  --admin-nav-active-bar: linear-gradient(180deg, #7b9aff 0%, #5b7cf7 100%);
+  --admin-nav-section-title: rgba(255, 255, 255, 0.35);
+
+  --admin-dropdown-bg:   #f8f9fb;
+  --admin-dropdown-shadow: 0 12px 32px rgba(30, 40, 80, 0.12);
+
+  --admin-badge-bg:      rgba(54, 82, 217, 0.1);
+  --admin-badge-border:  rgba(54, 82, 217, 0.18);
+  --admin-badge-text:    #3652d9;
+
+  --admin-danger:        #dc2626;
+  --admin-danger-hover:  rgba(220, 38, 38, 0.06);
+  --admin-danger-border: rgba(220, 38, 38, 0.2);
+  --admin-danger-text:   #dc2626;
+
+  --admin-success:       #16a34a;
+  --admin-warning:       #ca8a04;
+
+  --admin-input-bg:      #f8f9fb;
+  --admin-input-border:  #c4c9d8;
+  --admin-input-focus:   rgba(54, 82, 217, 0.4);
+
+  --admin-card-bg:       #f8f9fb;
+  --admin-card-border:   #dce0ea;
+  --admin-card-shadow:   0 1px 4px rgba(30, 40, 80, 0.06);
+
+  --admin-scrollbar-track: transparent;
+  --admin-scrollbar-thumb: rgba(0, 0, 0, 0.1);
+
+  --admin-select-arrow:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23556070' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  --admin-select-hover-bg: #e8ebf2;
+  --admin-select-hover-border: #aab2c4;
+
+  --admin-overlay:       rgba(0, 0, 0, 0.25);
+}
+
+/* ── Global Select / Dropdown Base ────────────────────── */
+:where(.admin-layout) select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: var(--admin-input-bg);
+  border: 1px solid var(--admin-input-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  font-family: inherit;
+  font-size: 0.85rem;
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease,
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+  background-image: var(--admin-select-arrow);
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px;
+}
+
+:where(.admin-layout) select:hover {
+  background-color: var(--admin-select-hover-bg);
+  border-color: var(--admin-select-hover-border);
+}
+
+:where(.admin-layout) select:focus {
+  outline: none;
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-glow);
+}
+
+:where(.admin-layout) select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where(.admin-layout) select option {
+  background: var(--admin-dropdown-bg);
+  color: var(--admin-text);
+}

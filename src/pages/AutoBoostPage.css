@@ -11,7 +11,7 @@
 .ab-page .page-header h1 {
   font-size: 1.85rem;
   font-weight: 800;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
@@ -21,7 +21,7 @@
 }
 
 .ab-page .page-header p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -35,7 +35,7 @@
 }
 
 .ab-rules-count {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.85rem;
 }
 
@@ -46,8 +46,8 @@
 
 /* ─── Rule card ─── */
 .ab-rule-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 14px;
   padding: 1.25rem;
   transition: all 0.25s ease;
@@ -72,7 +72,7 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
 }
 
 /* Toggle switch */
@@ -141,19 +141,19 @@
   grid-template-columns: 1fr 1fr;
   gap: 0.35rem;
   font-size: 0.82rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin-bottom: 0.75rem;
 }
 
 .ab-rule-details span {
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 /* Rule actions */
 .ab-rule-actions {
   display: flex;
   gap: 0.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--admin-border);
   padding-top: 0.75rem;
 }
 
@@ -182,9 +182,9 @@
 
 .ab-btn-ghost {
   padding: 0.45rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  color: #a1a1aa;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text-secondary);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
@@ -194,8 +194,8 @@
 }
 
 .ab-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #e4e4e7;
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text);
 }
 
 .ab-btn-danger {
@@ -222,7 +222,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.9rem;
   text-align: center;
 }
@@ -240,26 +240,16 @@
 }
 
 .ab-select {
-  padding: 0.5rem 0.85rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.5rem 2.25rem 0.5rem 0.85rem;
   border-radius: 9px;
-  color: #d4d4d8;
   font-size: 0.82rem;
-  font-family: inherit;
-  cursor: pointer;
   min-width: 160px;
-}
-
-.ab-select:focus {
-  outline: none;
-  border-color: rgba(37, 99, 235, 0.4);
 }
 
 .ab-logs-table-wrap {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--admin-border);
 }
 
 .ab-logs-table {
@@ -269,33 +259,33 @@
 }
 
 .ab-logs-table thead {
-  background: rgba(255, 255, 255, 0.03);
+  background-color: var(--admin-bg-hover);
 }
 
 .ab-logs-table th {
   text-align: left;
   padding: 0.75rem 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 600;
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .ab-logs-table td {
   padding: 0.7rem 1rem;
-  color: #d4d4d8;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  color: var(--admin-text-secondary);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .ab-logs-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background-color: var(--admin-bg-hover);
 }
 
 .ab-log-date {
   white-space: nowrap;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.78rem;
 }
 
@@ -309,7 +299,7 @@
 }
 
 .ab-muted {
-  color: #52525b;
+  color: var(--admin-text-muted);
   font-family: monospace;
   font-size: 0.78rem;
 }
@@ -342,7 +332,7 @@
 
 .ab-error-msg {
   display: block;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.72rem;
   margin-top: 0.25rem;
   max-width: 200px;
@@ -364,8 +354,8 @@
 }
 
 .ab-modal {
-  background: #1a1d23;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 16px;
   width: 100%;
   max-width: 560px;
@@ -380,12 +370,12 @@
 }
 
 .ab-modal-sm h3 {
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0 0 0.5rem;
 }
 
 .ab-modal-sm p {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.88rem;
   margin: 0 0 1.25rem;
 }
@@ -401,13 +391,13 @@
   margin: 0;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
 }
 
 .ab-modal-close {
   background: none;
   border: none;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0;
@@ -415,7 +405,7 @@
 }
 
 .ab-modal-close:hover {
-  color: #e4e4e7;
+  color: var(--admin-text);
 }
 
 /* ─── Form ─── */
@@ -440,7 +430,7 @@
 .ab-form-group label {
   font-size: 0.78rem;
   font-weight: 600;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -448,32 +438,37 @@
 .ab-form-group input,
 .ab-form-group select {
   padding: 0.6rem 0.85rem;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-input-bg);
+  border: 1px solid var(--admin-input-border);
   border-radius: 9px;
-  color: #e4e4e7;
+  color: var(--admin-text);
   font-size: 0.88rem;
   font-family: inherit;
   transition: border-color 0.2s;
 }
 
+.ab-form-group select {
+  padding-right: 2.25rem;
+}
+
 .ab-form-group input:focus,
 .ab-form-group select:focus {
   outline: none;
-  border-color: rgba(37, 99, 235, 0.5);
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-glow);
 }
 
 .ab-form-group input::placeholder {
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .ab-form-section-title {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin-top: 0.5rem;
   padding-bottom: 0.35rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .ab-form-actions {

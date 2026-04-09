@@ -9,7 +9,7 @@
 .mads-page .page-header h1 {
   font-size: 1.85rem;
   font-weight: 800;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0 0 0.35rem;
   letter-spacing: -0.02em;
   background: linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%);
@@ -19,7 +19,7 @@
 }
 
 .mads-page .page-header p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -34,32 +34,32 @@
   justify-content: center;
   gap: 0.75rem;
   padding: 3rem 0;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9rem;
 }
 
 .mads-not-configured {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: #1a1d23;
+  background-color: var(--admin-bg-elevated);
   border: 1px solid #2d3139;
   border-radius: 12px;
 }
 
 .mads-not-configured-icon {
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-bottom: 1rem;
 }
 
 .mads-not-configured h2 {
   font-size: 1.2rem;
   font-weight: 700;
-  color: #f4f4f5;
+  color: var(--admin-text-heading);
   margin: 0 0 0.5rem;
 }
 
 .mads-not-configured p {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9rem;
   max-width: 480px;
   margin: 0 auto;
@@ -67,5 +67,5 @@
 }
 
 .mads-not-configured strong {
-  color: #e4e4e7;
+  color: var(--admin-text);
 }

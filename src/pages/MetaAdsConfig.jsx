@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { metaAds } from '../services/api';
+import { useConfirm } from '../components/ConfirmModal';
 import './MetaAdsConfig.css';
 
 export default function MetaAdsConfig({ configuredProp, onConfigChange }) {
+  const confirm = useConfirm();
   const [adAccountId, setAdAccountId] = useState('');
   const [accessToken, setAccessToken] = useState('');
   const [businessId, setBusinessId] = useState('');
@@ -80,7 +82,8 @@ export default function MetaAdsConfig({ configuredProp, onConfigChange }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Remover configuracao de Meta Ads?')) return;
+    const ok = await confirm({ title: 'Remover Meta Ads', message: 'Remover configuracao de Meta Ads?', confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
     try {
       await metaAds.deleteConfig();
       onConfigChange?.(false);

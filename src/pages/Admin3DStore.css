@@ -10,12 +10,12 @@
 .s3d-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin-bottom: 0.25rem;
 }
 
 .s3d-header p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 
@@ -23,7 +23,7 @@
 .s3d-tabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--admin-border-strong);
   margin-bottom: 1.5rem;
 }
 
@@ -32,7 +32,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -40,7 +40,7 @@
 }
 
 .s3d-tab:hover {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .s3d-tab.active {
@@ -58,7 +58,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 
@@ -83,9 +83,9 @@
 .s3d-btn-outline {
   padding: 0.5rem 1rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.8125rem;
   font-weight: 500;
   cursor: pointer;
@@ -93,24 +93,24 @@
 }
 
 .s3d-btn-outline:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fafafa;
+  border-color: var(--admin-border-strong);
+  color: var(--admin-text-heading);
 }
 
 .s3d-btn-sm {
   padding: 0.375rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-active);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 6px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .s3d-btn-sm:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fafafa;
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text-heading);
 }
 
 .s3d-btn-sm.danger {
@@ -124,8 +124,8 @@
 
 /* Form */
 .s3d-form {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -134,7 +134,7 @@
 .s3d-form h3 {
   font-size: 1rem;
   font-weight: 600;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin-bottom: 1.25rem;
 }
 
@@ -158,7 +158,7 @@
 .s3d-field label {
   font-size: 0.75rem;
   font-weight: 500;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -167,10 +167,10 @@
 .s3d-field select,
 .s3d-field textarea {
   padding: 0.625rem 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.875rem;
   transition: border-color 0.2s;
 }
@@ -191,11 +191,6 @@
   cursor: pointer;
 }
 
-.s3d-field select option {
-  background: #1a1d23;
-  color: #fafafa;
-}
-
 .s3d-checkbox {
   display: flex;
   align-items: center;
@@ -203,7 +198,7 @@
   cursor: pointer;
   font-size: 0.875rem !important;
   text-transform: none !important;
-  color: #fafafa !important;
+  color: var(--admin-text-heading) !important;
 }
 
 .s3d-checkbox input[type="checkbox"] {
@@ -218,7 +213,7 @@
   gap: 0.75rem;
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--admin-border);
 }
 
 /* Images */
@@ -235,7 +230,7 @@
   height: 64px;
   border-radius: 8px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--admin-border-strong);
 }
 
 .s3d-image-item img {
@@ -298,7 +293,7 @@
 .s3d-table-wrap {
   overflow-x: auto;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--admin-border);
 }
 
 .s3d-table {
@@ -311,18 +306,18 @@
   text-align: left;
   font-size: 0.7rem;
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .s3d-table td {
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  color: #e4e4e7;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--admin-text);
+  border-bottom: 1px solid var(--admin-border);
   white-space: nowrap;
 }
 
@@ -331,7 +326,7 @@
 }
 
 .s3d-table tr:hover td {
-  background: rgba(255, 255, 255, 0.02);
+  background-color: var(--admin-bg-hover);
 }
 
 .s3d-table tr.s3d-inactive td {
@@ -373,7 +368,7 @@
 
 .s3d-slug {
   font-size: 0.75rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .s3d-actions {
@@ -406,9 +401,9 @@
 .s3d-empty {
   padding: 3rem;
   text-align: center;
-  color: #71717a;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--admin-text-muted);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 12px;
 }
 
@@ -419,16 +414,8 @@
 }
 
 .s3d-order-filters select {
-  padding: 0.5rem 0.75rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: #fafafa;
+  padding: 0.5rem 2.25rem 0.5rem 0.75rem;
   font-size: 0.8125rem;
-}
-
-.s3d-order-filters select option {
-  background: #1a1d23;
 }
 
 .s3d-orders-list {
@@ -438,8 +425,8 @@
 }
 
 .s3d-order-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -452,14 +439,14 @@
 }
 
 .s3d-order-header strong {
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.9375rem;
 }
 
 .s3d-order-date {
   display: block;
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-top: 0.25rem;
 }
 
@@ -472,7 +459,7 @@
 .s3d-order-items {
   margin-bottom: 0.75rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .s3d-order-item {
@@ -480,12 +467,12 @@
   justify-content: space-between;
   padding: 0.25rem 0;
   font-size: 0.8125rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .s3d-order-address {
   font-size: 0.8125rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
@@ -501,7 +488,7 @@
   display: flex;
   gap: 1.5rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--admin-border);
 }
 
 .s3d-control-group {
@@ -512,21 +499,14 @@
 
 .s3d-control-group label {
   font-size: 0.75rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 500;
 }
 
 .s3d-control-group select {
-  padding: 0.375rem 0.625rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.375rem 2.25rem 0.375rem 0.625rem;
   border-radius: 6px;
-  color: #fafafa;
   font-size: 0.8125rem;
-}
-
-.s3d-control-group select option {
-  background: #1a1d23;
 }
 
 /* Responsive */

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useRef } from 'react';
 import './Toast.css';
 
 const ToastContext = createContext(null);
@@ -39,9 +39,12 @@ const Icons = {
   ),
 };
 
-function Toast({ id, type = 'success', title, message, onClose }) {
+function Toast({ id, type = 'success', title, message, duration, onClose, exiting }) {
   return (
-    <div className={`toast toast-${type}`}>
+    <div
+      className={`toast toast-${type}${exiting ? ' toast-exiting' : ''}`}
+      style={{ '--toast-duration': `${duration / 1000}s` }}
+    >
       <div className="toast-icon">{Icons[type]}</div>
       <div className="toast-content">
         {title && <div className="toast-title">{title}</div>}
@@ -57,24 +60,29 @@ function Toast({ id, type = 'success', title, message, onClose }) {
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
+  const timersRef = useRef({});
+
+  const removeToast = useCallback((id) => {
+    clearTimeout(timersRef.current[id]);
+    setToasts(prev =>
+      prev.map(t => (t.id === id ? { ...t, exiting: true } : t))
+    );
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+      delete timersRef.current[id];
+    }, 280);
+  }, []);
 
   const addToast = useCallback(({ type = 'success', title, message, duration = 4000 }) => {
     const id = Date.now() + Math.random();
-
-    setToasts(prev => [...prev, { id, type, title, message }]);
+    setToasts(prev => [...prev, { id, type, title, message, duration, exiting: false }]);
 
     if (duration > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, duration);
+      timersRef.current[id] = setTimeout(() => removeToast(id), duration);
     }
 
     return id;
-  }, []);
-
-  const removeToast = useCallback((id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const toast = {
     success: (message, title) => addToast({ type: 'success', title, message }),

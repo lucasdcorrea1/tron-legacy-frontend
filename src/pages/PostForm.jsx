@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import { useToast } from '../components/Toast';
+import { useConfirm } from '../components/ConfirmModal';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import RichTextEditor from '../components/RichTextEditor';
@@ -10,6 +11,7 @@ import './PostForm.css';
 export function PostFormContent({ slug, onSuccess }) {
   const isEditing = !!slug;
   const toast = useToast();
+  const confirm = useConfirm();
   const fileInputRef = useRef(null);
 
   const [title, setTitle] = useState('');
@@ -147,7 +149,8 @@ export function PostFormContent({ slug, onSuccess }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Tem certeza que deseja excluir este post?')) return;
+    const ok = await confirm({ title: 'Excluir post', message: 'Tem certeza que deseja excluir este post?', confirmText: 'Excluir', variant: 'danger' });
+    if (!ok) return;
 
     setLoading(true);
     try {

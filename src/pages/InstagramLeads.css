@@ -11,12 +11,12 @@
 .leads-page .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin: 0 0 0.25rem;
 }
 
 .leads-page .page-header p {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -31,8 +31,8 @@
 
 .leads-stat-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(145deg, var(--admin-bg-hover) 0%, transparent 100%);
+  border: 1px solid var(--admin-border);
   border-radius: 16px;
   padding: 1.25rem;
   text-align: center;
@@ -54,7 +54,7 @@
 
 .leads-stat-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--admin-border-strong);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
@@ -65,14 +65,14 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   line-height: 1;
   margin-bottom: 0.35rem;
 }
 
 .leads-stat-label {
   font-size: 0.72rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -98,11 +98,11 @@
 .leads-search {
   flex: 1;
   min-width: 200px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 10px;
   padding: 0.6rem 1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.85rem;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -114,20 +114,8 @@
 }
 
 .leads-filter-select {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
-  padding: 0.6rem 0.75rem;
-  color: #d4d4d8;
-  font-size: 0.85rem;
-  font-family: inherit;
-  cursor: pointer;
-  appearance: none;
-}
-
-.leads-filter-select option {
-  background: #1a1d23;
-  color: #fafafa;
+  padding: 0.6rem 2.25rem 0.6rem 0.75rem;
 }
 
 .leads-btn {
@@ -152,13 +140,13 @@
 }
 
 .leads-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: #d4d4d8;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text-secondary);
+  border: 1px solid var(--admin-border-strong);
 }
 
 .leads-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-active);
 }
 
 .leads-btn-sm {
@@ -175,8 +163,8 @@
 }
 
 .leads-card {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.01) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: linear-gradient(145deg, var(--admin-bg-hover) 0%, transparent 100%);
+  border: 1px solid var(--admin-border);
   border-radius: 16px;
   padding: 1.25rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -198,7 +186,7 @@
 .leads-username {
   font-size: 1rem;
   font-weight: 600;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .leads-username-at {
@@ -208,8 +196,8 @@
 
 .leads-interaction-count {
   font-size: 0.78rem;
-  color: #a1a1aa;
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--admin-text-secondary);
+  background-color: var(--admin-bg-hover);
   padding: 0.15rem 0.6rem;
   border-radius: 8px;
 }
@@ -228,14 +216,14 @@
 }
 
 .leads-card-label {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-weight: 600;
   flex-shrink: 0;
   min-width: 80px;
 }
 
 .leads-card-value {
-  color: #d4d4d8;
+  color: var(--admin-text-secondary);
 }
 
 /* Source badges */
@@ -277,9 +265,9 @@
 }
 
 .leads-tag-add-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  color: #71717a;
+  background-color: var(--admin-bg-active);
+  border: 1px dashed var(--admin-border-strong);
+  color: var(--admin-text-muted);
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
   font-size: 0.75rem;
@@ -324,8 +312,8 @@
 }
 
 .leads-modal {
-  background: #1a1d23;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 16px;
   padding: 2rem;
   max-width: 420px;
@@ -335,7 +323,7 @@
 .leads-modal h3 {
   margin: 0 0 1rem;
   font-size: 1.1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .leads-modal-input-row {
@@ -346,11 +334,11 @@
 
 .leads-modal-input-row input {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 10px;
   padding: 0.6rem 1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.85rem;
   font-family: inherit;
 }
@@ -409,7 +397,7 @@
   gap: 0.75rem;
   margin-top: 1.25rem;
   font-size: 0.85rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .leads-pagination button {
@@ -417,17 +405,17 @@
   border-radius: 8px;
   font-size: 0.8rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  color: #a1a1aa;
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
+  color: var(--admin-text-secondary);
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s;
 }
 
 .leads-pagination button:hover:not(:disabled) {
-  color: #d4d4d8;
-  border-color: rgba(255, 255, 255, 0.1);
+  color: var(--admin-text-secondary);
+  border-color: var(--admin-border-strong);
 }
 
 .leads-pagination button:disabled {
@@ -441,7 +429,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   gap: 0.75rem;
 }
 
@@ -461,7 +449,7 @@
 .leads-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.9rem;
 }
 

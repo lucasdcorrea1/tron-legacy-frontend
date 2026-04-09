@@ -5,6 +5,7 @@ import { useOrg } from '../context/OrgContext';
 import { blog, orgs } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import UpgradeCTA from '../components/UpgradeCTA';
 import './Admin.css';
 
 export default function Admin() {
@@ -129,6 +130,9 @@ export default function Admin() {
             </div>
           </div>
         </div>
+
+        {/* Upgrade CTA */}
+        <UpgradeCTA />
 
         {/* Quick Actions */}
         <div className="section">

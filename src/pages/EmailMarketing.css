@@ -9,12 +9,12 @@
 .email-marketing .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin: 0 0 0.25rem;
 }
 
 .email-marketing .page-header p {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   margin: 0;
   font-size: 0.9rem;
 }
@@ -34,9 +34,9 @@
   border-radius: 10px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #71717a;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--admin-text-muted);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   transition: all 0.2s;
 }
 
@@ -61,7 +61,7 @@
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-active);
   flex-shrink: 0;
 }
 
@@ -82,8 +82,8 @@
 }
 
 .em-template-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 14px;
   padding: 1.5rem;
   cursor: pointer;
@@ -116,14 +116,14 @@
 .em-template-card h3 {
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-weight: 600;
 }
 
 .em-template-card p {
   margin: 0;
   font-size: 0.85rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   line-height: 1.5;
 }
 
@@ -143,22 +143,22 @@
 .em-form-group label {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #d4d4d8;
+  color: var(--admin-text-secondary);
 }
 
 .em-form-group .label-hint {
   font-weight: 400;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.8rem;
 }
 
 .em-form-group input,
 .em-form-group textarea {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 10px;
   padding: 0.75rem 1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.9rem;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -192,7 +192,7 @@
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--admin-border-strong);
 }
 
 .em-preview-frame iframe {
@@ -202,8 +202,8 @@
 }
 
 .em-preview-summary {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 12px;
   padding: 1.25rem;
 }
@@ -211,7 +211,7 @@
 .em-preview-summary h3 {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-weight: 600;
 }
 
@@ -223,11 +223,11 @@
 }
 
 .em-summary-row .label {
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .em-summary-row .value {
-  color: #d4d4d8;
+  color: var(--admin-text-secondary);
   font-weight: 500;
 }
 
@@ -253,12 +253,12 @@
 .em-success h2 {
   margin: 0 0 0.5rem;
   font-size: 1.5rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .em-success p {
   margin: 0 0 2rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.95rem;
 }
 
@@ -273,7 +273,7 @@
   border-radius: 10px;
   margin-bottom: 1.5rem;
   font-size: 0.85rem;
-  color: #d4d4d8;
+  color: var(--admin-text-secondary);
 }
 
 .em-audience-bar .audience-icon {
@@ -282,7 +282,7 @@
 }
 
 .em-audience-bar strong {
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 /* Action buttons */
@@ -319,13 +319,13 @@
 }
 
 .em-btn-secondary {
-  background: rgba(255, 255, 255, 0.05);
-  color: #d4d4d8;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text-secondary);
+  border: 1px solid var(--admin-border-strong);
 }
 
 .em-btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-active);
 }
 
 .em-btn-danger {
@@ -353,8 +353,8 @@
 }
 
 .em-confirm-dialog {
-  background: #1a1d23;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 16px;
   padding: 2rem;
   max-width: 420px;
@@ -365,12 +365,12 @@
 .em-confirm-dialog h3 {
   margin: 0 0 0.5rem;
   font-size: 1.2rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .em-confirm-dialog p {
   margin: 0 0 1.5rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.9rem;
   line-height: 1.5;
 }
@@ -387,7 +387,7 @@
   align-items: center;
   justify-content: center;
   padding: 3rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   gap: 0.75rem;
 }
 
@@ -409,7 +409,7 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--admin-border);
   padding-bottom: 0.5rem;
 }
 
@@ -421,7 +421,7 @@
   background: none;
   border: none;
   border-radius: 8px;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
@@ -430,8 +430,8 @@
 }
 
 .em-tab:hover {
-  color: #d4d4d8;
-  background: rgba(255, 255, 255, 0.03);
+  color: var(--admin-text-secondary);
+  background-color: var(--admin-bg-hover);
 }
 
 .em-tab.active {
@@ -463,11 +463,11 @@
 
 .em-subs-search {
   flex: 1;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 10px;
   padding: 0.625rem 1rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.875rem;
   font-family: inherit;
   transition: border-color 0.2s;
@@ -479,13 +479,13 @@
 }
 
 .em-subs-search::placeholder {
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .em-subs-empty {
   text-align: center;
   padding: 3rem 1rem;
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.9rem;
 }
 
@@ -500,22 +500,22 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--admin-border);
   font-size: 0.85rem;
   transition: background 0.15s;
 }
 
 .em-subs-row:hover:not(.em-subs-row-header) {
-  background: rgba(255, 255, 255, 0.02);
+  background-color: var(--admin-bg-hover);
 }
 
 .em-subs-row-header {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .em-subs-row-header:hover {
@@ -523,7 +523,7 @@
 }
 
 .em-subs-email {
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -531,11 +531,11 @@
 }
 
 .em-subs-name {
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .em-subs-date {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.8rem;
 }
 
@@ -556,7 +556,7 @@
 }
 
 .em-subs-row.unsubscribed .em-subs-email {
-  color: #71717a;
+  color: var(--admin-text-muted);
   text-decoration: line-through;
 }
 
@@ -564,7 +564,7 @@
   background: none;
   border: none;
   padding: 0.375rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
   cursor: pointer;
   border-radius: 6px;
   transition: all 0.2s;

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrg } from '../context/OrgContext';
+import { useTheme } from '../context/ThemeContext';
+import { useConfirm } from '../components/ConfirmModal';
 import { orgs, subscription as subscriptionApi } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -12,6 +14,7 @@ export function GeneralTab() {
   const [name, setName] = useState(currentOrg?.name || '');
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState('');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const canEdit = hasOrgRole('owner', 'admin');
   const isOwner = hasOrgRole('owner');
 
@@ -23,6 +26,48 @@ export function GeneralTab() {
   useEffect(() => {
     setName(currentOrg?.name || '');
   }, [currentOrg]);
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    setMsg('');
+    try {
+      await orgs.uploadLogo(file);
+      // Auto-switch sidebar to show logo + name if still on default
+      const currentDisplay = currentOrg?.settings?.sidebar_display || 'platform';
+      if (currentDisplay === 'platform') {
+        await orgs.update({
+          settings: { ...currentOrg?.settings, sidebar_display: 'logo_and_name' },
+        });
+      }
+      await refreshOrg();
+      setMsg('Logo atualizada!');
+    } catch (err) {
+      setMsg(err.message || 'Erro ao enviar logo');
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    setUploadingLogo(true);
+    setMsg('');
+    try {
+      await orgs.removeLogo();
+      // Revert sidebar to platform default since logo is gone
+      await orgs.update({
+        settings: { ...currentOrg?.settings, sidebar_display: 'platform' },
+      });
+      await refreshOrg();
+      setMsg('Logo removida!');
+    } catch (err) {
+      setMsg(err.message || 'Erro ao remover logo');
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -71,6 +116,46 @@ export function GeneralTab() {
           <input type="text" value={currentOrg?.slug || ''} disabled />
           <span className="field-hint">O slug é gerado automaticamente</span>
         </div>
+
+        {/* Logo */}
+        <div className="settings-field">
+          <label>Logo da empresa</label>
+          <div className="org-logo-area">
+            {currentOrg?.logo_url ? (
+              <img src={currentOrg.logo_url} alt="Logo" className="org-logo-preview" />
+            ) : (
+              <div className="org-logo-placeholder">
+                {currentOrg?.name?.charAt(0)?.toUpperCase() || '?'}
+              </div>
+            )}
+            {isOwner && (
+              <div className="org-logo-actions">
+                <label className="settings-btn primary sm" style={{ cursor: uploadingLogo ? 'not-allowed' : 'pointer' }}>
+                  {uploadingLogo ? 'Enviando...' : currentOrg?.logo_url ? 'Trocar logo' : 'Enviar logo'}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/svg+xml"
+                    onChange={handleLogoUpload}
+                    disabled={uploadingLogo}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {currentOrg?.logo_url && (
+                  <button
+                    type="button"
+                    className="settings-btn danger sm"
+                    onClick={handleRemoveLogo}
+                    disabled={uploadingLogo}
+                  >
+                    Remover
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+          <span className="field-hint">JPEG, PNG, WebP ou SVG. Máximo 2MB.</span>
+        </div>
+
         {msg && <div className={`settings-msg ${msg.includes('Erro') ? 'error' : 'success'}`}>{msg}</div>}
         {canEdit && (
           <button type="submit" className="settings-btn primary" disabled={saving}>
@@ -191,8 +276,10 @@ export function MembersTab() {
     } catch { /* ignore */ }
   };
 
+  const confirm = useConfirm();
   const handleRemove = async (uid) => {
-    if (!window.confirm('Remover este membro?')) return;
+    const ok = await confirm({ title: 'Remover membro', message: 'Tem certeza que deseja remover este membro da organização?', confirmText: 'Remover', variant: 'danger' });
+    if (!ok) return;
     try {
       await orgs.removeMember(uid);
       await Promise.all([load(), refreshUsage()]);
@@ -345,16 +432,334 @@ export function MembersTab() {
   );
 }
 
+// ── Default brand colors per theme ──
+const DEFAULT_DARK = {
+  primary_color: '#5b7cf7',
+  sidebar_start: '#221a56',
+  sidebar_end: '#1a1450',
+  bg_color: '#161b26',
+  bg_elevated: '#1c2233',
+  text_color: '#e8ecf1',
+  text_heading: '#f4f6f9',
+  success_color: '#22c55e',
+  danger_color: '#ef4444',
+  warning_color: '#eab308',
+};
+
+const DEFAULT_LIGHT = {
+  primary_color: '#3652d9',
+  sidebar_start: '#2a3a8c',
+  sidebar_end: '#1f2e72',
+  bg_color: '#f0f2f5',
+  bg_elevated: '#f8f9fb',
+  text_color: '#2c3444',
+  text_heading: '#1a2030',
+  success_color: '#16a34a',
+  danger_color: '#dc2626',
+  warning_color: '#ca8a04',
+};
+
+const SIDEBAR_DISPLAY_OPTIONS = [
+  { value: 'platform', label: 'Padrão (W / whodo)' },
+  { value: 'logo', label: 'Apenas logo da empresa' },
+  { value: 'name', label: 'Apenas nome da empresa' },
+  { value: 'logo_and_name', label: 'Logo + nome da empresa' },
+];
+
+function ColorField({ label, value, onChange, defaultVal }) {
+  return (
+    <div className="brand-color-field">
+      <label>{label}</label>
+      <div className="brand-color-input-row">
+        <input
+          type="color"
+          value={value || defaultVal}
+          onChange={(e) => onChange(e.target.value)}
+          className="brand-color-picker"
+        />
+        <input
+          type="text"
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={defaultVal}
+          maxLength={7}
+          className="brand-color-hex"
+        />
+      </div>
+    </div>
+  );
+}
+
+const EMPTY_COLORS = {
+  primary_color: '', sidebar_start: '', sidebar_end: '',
+  bg_color: '', bg_elevated: '', text_color: '', text_heading: '',
+  success_color: '', danger_color: '', warning_color: '',
+};
+
+function ColorSection({ colors, defaults, setColor }) {
+  return (
+    <>
+      <div className="brand-color-group">
+        <span className="brand-color-group-label">Cor principal</span>
+        <ColorField label="Destaque (botões, links)" value={colors.primary_color} onChange={setColor('primary_color')} defaultVal={defaults.primary_color} />
+      </div>
+      <div className="brand-color-group">
+        <span className="brand-color-group-label">Sidebar</span>
+        <div className="brand-color-group-row">
+          <ColorField label="Início gradiente" value={colors.sidebar_start} onChange={setColor('sidebar_start')} defaultVal={defaults.sidebar_start} />
+          <ColorField label="Fim gradiente" value={colors.sidebar_end} onChange={setColor('sidebar_end')} defaultVal={defaults.sidebar_end} />
+        </div>
+      </div>
+      <div className="brand-color-group">
+        <span className="brand-color-group-label">Fundo</span>
+        <div className="brand-color-group-row">
+          <ColorField label="Principal" value={colors.bg_color} onChange={setColor('bg_color')} defaultVal={defaults.bg_color} />
+          <ColorField label="Cards / superfícies" value={colors.bg_elevated} onChange={setColor('bg_elevated')} defaultVal={defaults.bg_elevated} />
+        </div>
+      </div>
+      <div className="brand-color-group">
+        <span className="brand-color-group-label">Texto</span>
+        <div className="brand-color-group-row">
+          <ColorField label="Texto principal" value={colors.text_color} onChange={setColor('text_color')} defaultVal={defaults.text_color} />
+          <ColorField label="Títulos" value={colors.text_heading} onChange={setColor('text_heading')} defaultVal={defaults.text_heading} />
+        </div>
+      </div>
+      <div className="brand-color-group">
+        <span className="brand-color-group-label">Status</span>
+        <div className="brand-color-group-row brand-color-group-3">
+          <ColorField label="Sucesso" value={colors.success_color} onChange={setColor('success_color')} defaultVal={defaults.success_color} />
+          <ColorField label="Perigo" value={colors.danger_color} onChange={setColor('danger_color')} defaultVal={defaults.danger_color} />
+          <ColorField label="Aviso" value={colors.warning_color} onChange={setColor('warning_color')} defaultVal={defaults.warning_color} />
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function AppearanceTab() {
+  const { currentOrg, refreshOrg, hasOrgRole } = useOrg();
+  const { theme, setTheme } = useTheme();
+  const confirm = useConfirm();
+  const canEdit = hasOrgRole('owner');
+
+  const [editingTheme, setEditingTheme] = useState('dark');
+  const [sidebarDisplay, setSidebarDisplay] = useState('platform');
+  const [darkColors, setDarkColors] = useState({ ...EMPTY_COLORS });
+  const [lightColors, setLightColors] = useState({ ...EMPTY_COLORS });
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState('');
+
+  useEffect(() => {
+    const s = currentOrg?.settings;
+    const loadColors = (bc) => ({
+      primary_color: bc?.primary_color || '',
+      sidebar_start: bc?.sidebar_start || '',
+      sidebar_end: bc?.sidebar_end || '',
+      bg_color: bc?.bg_color || '',
+      bg_elevated: bc?.bg_elevated || '',
+      text_color: bc?.text_color || '',
+      text_heading: bc?.text_heading || '',
+      success_color: bc?.success_color || '',
+      danger_color: bc?.danger_color || '',
+      warning_color: bc?.warning_color || '',
+    });
+    setDarkColors(loadColors(s?.brand_colors_dark));
+    setLightColors(loadColors(s?.brand_colors_light));
+    setSidebarDisplay(s?.sidebar_display || 'platform');
+  }, [currentOrg]);
+
+  const activeColors = editingTheme === 'dark' ? darkColors : lightColors;
+  const setActiveColors = editingTheme === 'dark' ? setDarkColors : setLightColors;
+  const activeDefaults = editingTheme === 'dark' ? DEFAULT_DARK : DEFAULT_LIGHT;
+
+  const setColor = (key) => (v) => setActiveColors(c => ({ ...c, [key]: v }));
+
+  const buildPayload = (colors) => {
+    const out = {};
+    for (const [k, v] of Object.entries(colors)) {
+      if (v) out[k] = v;
+    }
+    return Object.keys(out).length > 0 ? out : null;
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    setMsg('');
+    try {
+      await orgs.update({
+        settings: {
+          ...currentOrg?.settings,
+          brand_colors_dark: buildPayload(darkColors),
+          brand_colors_light: buildPayload(lightColors),
+          sidebar_display: sidebarDisplay,
+        },
+      });
+      await refreshOrg();
+      setMsg('Aparência salva!');
+    } catch (err) {
+      setMsg(err.message || 'Erro ao salvar');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleReset = async () => {
+    const ok = await confirm({
+      title: 'Restaurar padrão',
+      message: 'Todas as cores personalizadas (escuro e claro) e a configuração do menu lateral serão redefinidas para o padrão. Deseja continuar?',
+      confirmText: 'Restaurar',
+      variant: 'danger',
+    });
+    if (!ok) return;
+    setSaving(true);
+    setMsg('');
+    try {
+      await orgs.update({
+        settings: {
+          ...currentOrg?.settings,
+          brand_colors_dark: null,
+          brand_colors_light: null,
+          sidebar_display: 'platform',
+        },
+      });
+      setDarkColors({ ...EMPTY_COLORS });
+      setLightColors({ ...EMPTY_COLORS });
+      setSidebarDisplay('platform');
+      await refreshOrg();
+      setMsg('Restaurado ao padrão!');
+    } catch (err) {
+      setMsg(err.message || 'Erro ao restaurar');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const p = (key) => activeColors[key] || activeDefaults[key];
+
+  return (
+    <div className="settings-section">
+      <h3>Aparência</h3>
+
+      {/* User theme toggle */}
+      <div className="brand-color-group" style={{ marginBottom: '1.5rem' }}>
+        <span className="brand-color-group-label">Seu tema</span>
+        <div className="settings-field">
+          <select value={theme} onChange={(e) => setTheme(e.target.value)}>
+            <option value="dark">Escuro</option>
+            <option value="light">Claro</option>
+          </select>
+          <span className="field-hint">Preferência pessoal — cada membro escolhe o seu.</span>
+        </div>
+      </div>
+
+      {canEdit && (
+        <>
+          <p className="appearance-desc">
+            Configure as cores para cada tema. Todos os membros verão as cores abaixo conforme o tema que escolherem.
+          </p>
+
+          {/* Sidebar display */}
+          <div className="brand-color-group">
+            <span className="brand-color-group-label">Menu lateral</span>
+            <div className="settings-field">
+              <label>O que exibir no topo</label>
+              <select value={sidebarDisplay} onChange={(e) => setSidebarDisplay(e.target.value)}>
+                {SIDEBAR_DISPLAY_OPTIONS.map(o => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
+              {sidebarDisplay !== 'platform' && sidebarDisplay !== 'name' && !currentOrg?.logo_url && (
+                <span className="field-hint">Adicione uma logo na aba Empresa para usar esta opção.</span>
+              )}
+            </div>
+          </div>
+
+          {/* Theme variant tabs */}
+          <div className="brand-theme-tabs">
+            <button
+              type="button"
+              className={`brand-theme-tab ${editingTheme === 'dark' ? 'active' : ''}`}
+              onClick={() => setEditingTheme('dark')}
+            >
+              Cores — Escuro
+            </button>
+            <button
+              type="button"
+              className={`brand-theme-tab ${editingTheme === 'light' ? 'active' : ''}`}
+              onClick={() => setEditingTheme('light')}
+            >
+              Cores — Claro
+            </button>
+          </div>
+
+          {/* Preview */}
+          <div className="brand-preview-card">
+            <div className="brand-preview-sidebar" style={{ background: `linear-gradient(180deg, ${p('sidebar_start')} 0%, ${p('sidebar_end')} 100%)` }}>
+              <div className="brand-preview-logo">{currentOrg?.name?.charAt(0) || 'T'}</div>
+              <div className="brand-preview-nav">
+                <div className="brand-preview-nav-item" />
+                <div className="brand-preview-nav-item active" style={{ borderLeftColor: p('primary_color') }} />
+                <div className="brand-preview-nav-item" />
+              </div>
+            </div>
+            <div className="brand-preview-content" style={{ background: p('bg_color') }}>
+              <div className="brand-preview-topbar" style={{ background: p('bg_elevated') }} />
+              <div className="brand-preview-body">
+                <div className="brand-preview-title" style={{ background: p('text_heading'), opacity: 0.3 }} />
+                <div className="brand-preview-btn" style={{ background: p('primary_color') }} />
+                <div className="brand-preview-lines">
+                  <div style={{ background: p('text_color'), opacity: 0.15 }} />
+                  <div style={{ background: p('text_color'), opacity: 0.15 }} />
+                </div>
+                <div className="brand-preview-badges">
+                  <span style={{ background: p('success_color') }} />
+                  <span style={{ background: p('warning_color') }} />
+                  <span style={{ background: p('danger_color') }} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Color pickers */}
+          <form onSubmit={handleSave} className="settings-form brand-colors-form">
+            <ColorSection colors={activeColors} defaults={activeDefaults} setColor={setColor} />
+
+            {msg && <div className={`settings-msg ${msg.includes('Erro') ? 'error' : 'success'}`}>{msg}</div>}
+
+            <div className="brand-actions">
+              <button type="submit" className="settings-btn primary" disabled={saving}>
+                {saving ? 'Salvando...' : 'Salvar aparência'}
+              </button>
+              <button type="button" className="settings-btn" onClick={handleReset} disabled={saving}>
+                Restaurar padrão
+              </button>
+            </div>
+          </form>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function BillingTab() {
   const { subscription, usage, refreshUsage } = useOrg();
   const navigate = useNavigate();
+  const confirm = useConfirm();
   const [canceling, setCanceling] = useState(false);
 
   const plan = subscription?.plan_id || 'free';
   const status = subscription?.status || 'active';
 
   const handleCancel = async () => {
-    if (!window.confirm('Tem certeza que deseja cancelar o plano? Você manterá acesso até o final do período.')) return;
+    const ok = await confirm({
+      title: 'Cancelar plano',
+      message: 'Tem certeza que deseja cancelar o plano? Suas ferramentas pagas serão bloqueadas imediatamente e o acesso será revertido para o plano Free.',
+      confirmText: 'Cancelar plano',
+      cancelText: 'Manter plano',
+      variant: 'danger',
+    });
+    if (!ok) return;
     setCanceling(true);
     try {
       await subscriptionApi.cancel();
@@ -384,7 +789,7 @@ export function BillingTab() {
         </div>
         <div className="billing-plan-actions">
           {plan !== 'enterprise' && (
-            <button className="settings-btn primary sm" onClick={() => navigate('/planos')}>
+            <button className="settings-btn primary sm" onClick={() => navigate('/admin/checkout')}>
               {plan === 'free' ? 'Fazer upgrade' : 'Mudar plano'}
             </button>
           )}
@@ -434,6 +839,7 @@ export default function OrgSettings() {
 
   const tabs = [
     { id: 'general', label: 'Geral' },
+    { id: 'appearance', label: 'Aparência' },
     { id: 'members', label: 'Membros' },
     { id: 'billing', label: 'Plano & Faturamento' },
   ];
@@ -457,6 +863,7 @@ export default function OrgSettings() {
 
         <div className="settings-content">
           {tab === 'general' && <GeneralTab />}
+          {tab === 'appearance' && <AppearanceTab />}
           {tab === 'members' && <MembersTab />}
           {tab === 'billing' && <BillingTab />}
         </div>

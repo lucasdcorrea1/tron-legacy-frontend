@@ -15,12 +15,12 @@
 .page-header h1 {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   margin-bottom: 0.25rem;
 }
 
 .page-header p {
-  color: #71717a;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 
@@ -52,8 +52,8 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 12px;
   margin-bottom: 1rem;
 }
@@ -62,10 +62,10 @@
   flex: 1;
   min-width: 200px;
   padding: 0.625rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-active);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.875rem;
   outline: none;
 }
@@ -76,26 +76,26 @@
 
 .invite-form-bar select {
   padding: 0.625rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--admin-bg-active);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   font-size: 0.875rem;
 }
 
 .cancel-btn {
   padding: 0.625rem 1rem;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   font-size: 0.8125rem;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background-color: var(--admin-bg-active);
 }
 
 .users-upgrade-hint {
@@ -128,16 +128,16 @@
 .search-input {
   flex: 1;
   padding: 0.625rem 0.875rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border-strong);
   border-radius: 8px;
   font-size: 0.8125rem;
-  color: #fafafa;
+  color: var(--admin-text-heading);
   transition: border-color 0.15s;
 }
 
 .search-input::placeholder {
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .search-input:focus {
@@ -168,18 +168,18 @@
 
 .role-filter {
   padding: 0.5rem 0.875rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 6px;
   font-size: 0.75rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .role-filter:hover {
   border-color: rgba(37, 99, 235, 0.3);
-  color: #fafafa;
+  color: var(--admin-text-heading);
 }
 
 .role-filter.active {
@@ -213,14 +213,14 @@
 .users-empty {
   text-align: center;
   padding: 3rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
 }
 
 /* Table */
 .users-table-wrapper {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -234,21 +234,21 @@
 .users-table td {
   padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .users-table th {
-  background: rgba(255, 255, 255, 0.02);
+  background-color: var(--admin-bg-hover);
   font-weight: 600;
   font-size: 0.6875rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .users-table td {
   font-size: 0.8125rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 .users-table tbody tr:last-child td {
@@ -256,7 +256,7 @@
 }
 
 .users-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background-color: var(--admin-bg-hover);
 }
 
 /* User cell */
@@ -290,7 +290,7 @@
 
 .user-name {
   font-weight: 500;
-  color: #e4e4e7;
+  color: var(--admin-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -299,7 +299,7 @@
 /* Org name in platform table */
 .org-name-cell {
   font-size: 0.8125rem;
-  color: #a1a1aa;
+  color: var(--admin-text-secondary);
 }
 
 /* Role Badges */
@@ -330,7 +330,7 @@
 
 .role-viewer {
   background: rgba(161, 161, 170, 0.08);
-  color: #71717a;
+  color: var(--admin-text-muted);
 }
 
 .role-superuser {
@@ -350,18 +350,9 @@
 }
 
 .role-select {
-  padding: 0.375rem 0.5rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.375rem 2rem 0.375rem 0.5rem;
   border-radius: 6px;
   font-size: 0.75rem;
-  color: #fafafa;
-  cursor: pointer;
-}
-
-.role-select:focus {
-  outline: none;
-  border-color: #2563eb;
 }
 
 .role-select:disabled {
@@ -387,7 +378,7 @@
 }
 
 .no-actions {
-  color: #3f3f46;
+  color: var(--admin-text-muted);
   font-size: 0.6875rem;
 }
 
@@ -399,7 +390,7 @@
 .invitations-section h3 {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: #71717a;
+  color: var(--admin-text-muted);
   margin-bottom: 0.5rem;
 }
 
@@ -408,21 +399,21 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
   border-radius: 6px;
   margin-bottom: 0.375rem;
 }
 
 .inv-email {
   font-size: 0.8125rem;
-  color: #e4e4e7;
+  color: var(--admin-text);
   flex: 1;
 }
 
 .inv-date {
   font-size: 0.6875rem;
-  color: #3f3f46;
+  color: var(--admin-text-muted);
 }
 
 .copy-link-btn {
@@ -430,9 +421,9 @@
   font-weight: 600;
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(255, 255, 255, 0.05);
-  color: #a1a1aa;
+  border: 1px solid var(--admin-border-strong);
+  background-color: var(--admin-bg-active);
+  color: var(--admin-text-secondary);
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
@@ -455,8 +446,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #52525b;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--admin-text-muted);
+  border-bottom: 1px solid var(--admin-border);
   margin-top: 1rem;
 }
 
@@ -466,7 +457,7 @@
 
 .user-card {
   padding: 0.75rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .user-card:last-child {
@@ -488,7 +479,7 @@
 
 .user-email {
   font-size: 0.75rem;
-  color: #52525b;
+  color: var(--admin-text-muted);
 }
 
 .user-card-actions {

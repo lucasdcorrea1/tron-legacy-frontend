@@ -39,7 +39,7 @@ export default function MetaCallback() {
 
   function notifyParent(data) {
     if (window.opener) {
-      window.opener.postMessage({ type: 'META_OAUTH_RESULT', ...data }, '*');
+      window.opener.postMessage({ type: 'META_OAUTH_RESULT', ...data }, window.location.origin);
       setTimeout(() => window.close(), 1500);
     }
   }

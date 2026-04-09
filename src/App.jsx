@@ -5,11 +5,14 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { OrgProvider } from './context/OrgContext';
 import { ToastProvider } from './components/Toast';
+import { ConfirmProvider } from './components/ConfirmModal';
+import { ThemeProvider } from './context/ThemeContext';
 import CookieConsent from './components/CookieConsent';
 import PrivateRoute from './components/PrivateRoute';
 import AuthRoute from './components/AuthRoute';
 import { AdminLayoutSkeleton } from './components/LoadingSkeleton';
 import './styles/global.css';
+import './styles/admin-theme.css';
 
 function PageTracker() {
   const location = useLocation();
@@ -66,14 +69,22 @@ const OrderConfirmation3D = lazy(() => import('./pages/OrderConfirmation3D'));
 const OrderHistory3D = lazy(() => import('./pages/OrderHistory3D'));
 const OrderDetail3D = lazy(() => import('./pages/OrderDetail3D'));
 const CartDrawer = lazy(() => import('./components/CartDrawer'));
+const Financeiro = lazy(() => import('./pages/Financeiro'));
+const Contabil = lazy(() => import('./pages/Contabil'));
+const Signup = lazy(() => import('./pages/Signup'));
+const CheckoutSuccess = lazy(() => import('./pages/CheckoutSuccess'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const AcceptInvite = lazy(() => import('./pages/AcceptInvite'));
 
 export default function App() {
   return (
     <HelmetProvider>
     <AuthProvider>
+      <ThemeProvider>
       <CartProvider>
       <OrgProvider>
       <ToastProvider>
+      <ConfirmProvider>
       <BrowserRouter>
         <PageTracker />
         <AdController />
@@ -89,7 +100,10 @@ export default function App() {
           <Route path="/blog/:slug" element={<PostView />} />
           <Route path="/privacidade" element={<Legal />} />
           <Route path="/exclusao-dados" element={<Legal />} />
-          <Route path="/planos" element={<Navigate to="/onboarding" replace />} />
+          <Route path="/assinar/:plan" element={<Signup />} />
+          <Route path="/invite/:token" element={<AcceptInvite />} />
+          <Route path="/checkout/sucesso" element={<CheckoutSuccess />} />
+          <Route path="/planos" element={<Navigate to="/admin/checkout" replace />} />
           <Route path="/meta/callback" element={<MetaCallback />} />
           <Route path="/3d" element={<Store3D />} />
           <Route path="/3d/produto/:slug" element={<ProductDetail3D />} />
@@ -192,10 +206,26 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/checkout"
+            element={
+              <PrivateRoute>
+                <Checkout />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/admin/profile"
             element={
               <PrivateRoute>
                 <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/financeiro"
+            element={
+              <PrivateRoute>
+                <Financeiro />
               </PrivateRoute>
             }
           />
@@ -208,15 +238,33 @@ export default function App() {
             }
           />
           <Route
+            path="/admin/contabil"
+            element={
+              <PrivateRoute>
+                <Contabil />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/contabil/:tab"
+            element={
+              <PrivateRoute>
+                <Contabil />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="/admin/settings"
             element={<Navigate to="/admin/profile" replace />}
           />
         </Routes>
         </Suspense>
       </BrowserRouter>
+      </ConfirmProvider>
       </ToastProvider>
       </OrgProvider>
       </CartProvider>
+      </ThemeProvider>
     </AuthProvider>
     <CookieConsent />
     </HelmetProvider>

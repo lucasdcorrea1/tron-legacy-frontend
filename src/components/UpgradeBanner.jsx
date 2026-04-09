@@ -52,7 +52,7 @@ export default function UpgradeBanner({ feature }) {
         Faça upgrade do seu plano para desbloquear {label} e outras funcionalidades avançadas.
       </p>
       <Link
-        to="/planos"
+        to="/admin/checkout"
         style={{
           display: 'inline-block',
           padding: '0.75rem 2rem',
