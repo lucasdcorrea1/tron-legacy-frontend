@@ -471,6 +471,12 @@ export const instagramAnalytics = {
 };
 
 export const metaAds = {
+  // Config
+  getConfig: () => api.get('/api/v1/admin/meta-ads/config'),
+  saveConfig: (data) => api.put('/api/v1/admin/meta-ads/config', data),
+  deleteConfig: () => api.delete('/api/v1/admin/meta-ads/config'),
+  testConnection: () => api.get('/api/v1/admin/meta-ads/test'),
+
   // Ad Accounts
   listAdAccounts: () => api.get('/api/v1/admin/meta-ads/accounts'),
 
