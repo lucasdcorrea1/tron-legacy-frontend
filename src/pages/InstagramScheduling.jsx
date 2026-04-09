@@ -165,6 +165,10 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
 
   // Campaign state
   const [campaignEnabled, setCampaignEnabled] = useState(false);
+  const [campaignMode, setCampaignMode] = useState('new'); // 'new' | 'existing'
+  const [existingCampaigns, setExistingCampaigns] = useState([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+  const [selectedExistingCampaign, setSelectedExistingCampaign] = useState(null);
   const [campaign, setCampaign] = useState({
     name: '',
     objective: 'OUTCOME_TRAFFIC',
@@ -451,6 +455,17 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
     }
   };
 
+  // Load existing campaigns when toggle is on + mode is existing
+  useEffect(() => {
+    if (!campaignEnabled || campaignMode !== 'existing') return;
+    setLoadingCampaigns(true);
+    setSelectedExistingCampaign(null);
+    metaAds.listCampaigns({ status: 'ACTIVE' })
+      .then(res => setExistingCampaigns(res?.data || res || []))
+      .catch(() => setExistingCampaigns([]))
+      .finally(() => setLoadingCampaigns(false));
+  }, [campaignEnabled, campaignMode]);
+
   // Debounced interest search
   useEffect(() => {
     if (!campaignEnabled || interestSearch.length < 2) {
@@ -594,12 +609,28 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
       }
 
       if (campaignEnabled) {
-        await integratedPublish.create({
+        const isExisting = campaignMode === 'existing' && selectedExistingCampaign;
+        const payload = {
           caption,
           media_type: getMediaType(),
           image_ids: images.map(img => img.id),
           scheduled_at: scheduledAt,
-          campaign: {
+        };
+        if (isExisting) {
+          payload.existing_campaign_id = selectedExistingCampaign.id;
+          payload.campaign = {
+            name: selectedExistingCampaign.name || '',
+            objective: selectedExistingCampaign.objective || 'OUTCOME_ENGAGEMENT',
+            daily_budget: 0,
+            duration_days: Number(campaign.duration_days) || 7,
+            targeting: {
+              ...campaign.targeting,
+              interests: campaign.targeting.interests.map(i => ({ id: i.id, name: i.name })),
+            },
+            creative: campaign.creative,
+          };
+        } else {
+          payload.campaign = {
             ...campaign,
             daily_budget: Math.round(Number(campaign.daily_budget) * 100),
             duration_days: Number(campaign.duration_days),
@@ -608,8 +639,9 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
               interests: campaign.targeting.interests.map(i => ({ id: i.id, name: i.name })),
             },
             creative: campaign.creative,
-          },
-        });
+          };
+        }
+        await integratedPublish.create(payload);
       } else {
         await instagram.create({
           caption,
@@ -708,6 +740,9 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
     setPublishNow(false);
     setPostToFacebook(false);
     setCampaignEnabled(false);
+    setCampaignMode('new');
+    setSelectedExistingCampaign(null);
+    setExistingCampaigns([]);
     setCampaign({
       name: '',
       objective: 'OUTCOME_TRAFFIC',
@@ -743,9 +778,13 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
 
   const getCampaignErrors = () => {
     const errors = [];
-    if (!campaign.name.trim()) errors.push('Nome da campanha obrigatorio');
-    if (!campaign.daily_budget || Number(campaign.daily_budget) < MIN_DAILY_BUDGET)
-      errors.push(`Orcamento minimo R$${MIN_DAILY_BUDGET}/dia`);
+    if (campaignMode === 'existing') {
+      if (!selectedExistingCampaign) errors.push('Selecione uma campanha existente');
+    } else {
+      if (!campaign.name.trim()) errors.push('Nome da campanha obrigatorio');
+      if (!campaign.daily_budget || Number(campaign.daily_budget) < MIN_DAILY_BUDGET)
+        errors.push(`Orcamento minimo R$${MIN_DAILY_BUDGET}/dia`);
+    }
     if (campaign.targeting.interests.length === 0) errors.push('Adicione pelo menos 1 interesse');
     if (campaign.targeting.age_min >= campaign.targeting.age_max) errors.push('Idade min deve ser menor que max');
     if (Number(campaign.duration_days) < 1) errors.push('Duracao minima 1 dia');
@@ -1258,62 +1297,123 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                 {/* Campaign fields */}
                 {campaignEnabled && (
                   <div className="ig-campaign-section">
-                    <div className="ig-form-group">
-                      <label>Nome da campanha *</label>
-                      <input
-                        type="text"
-                        value={campaign.name}
-                        onChange={(e) => setCampaign({ ...campaign, name: e.target.value })}
-                        placeholder="Ex: Lancamento Produto X"
-                      />
-                    </div>
 
-                    <div className="ig-form-group">
-                      <label>Objetivo</label>
-                      <select
-                        value={campaign.objective}
-                        onChange={(e) => setCampaign({ ...campaign, objective: e.target.value })}
+                    {/* Mode toggle: new vs existing */}
+                    <div className="ig-campaign-mode-toggle">
+                      <button
+                        type="button"
+                        className={`ig-campaign-mode-btn ${campaignMode === 'new' ? 'active' : ''}`}
+                        onClick={() => { setCampaignMode('new'); setSelectedExistingCampaign(null); }}
                       >
-                        {OBJECTIVE_OPTIONS.map(o => (
-                          <option key={o.value} value={o.value}>{o.label}</option>
-                        ))}
-                      </select>
+                        Nova Campanha
+                      </button>
+                      <button
+                        type="button"
+                        className={`ig-campaign-mode-btn ${campaignMode === 'existing' ? 'active' : ''}`}
+                        onClick={() => setCampaignMode('existing')}
+                      >
+                        Campanha Existente
+                      </button>
                     </div>
 
-                    <div className="ig-campaign-grid">
-                      <div className="ig-form-group">
-                        <label>Orcamento diario (R$) *</label>
-                        <input
-                          type="number"
-                          step="1"
-                          min={MIN_DAILY_BUDGET}
-                          value={campaign.daily_budget}
-                          onChange={(e) => setCampaign({ ...campaign, daily_budget: e.target.value })}
-                          placeholder={`Min R$${MIN_DAILY_BUDGET}`}
-                          className={campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET ? 'ig-input-error' : ''}
-                        />
-                        {campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET && (
-                          <span className="ig-form-error">Minimo R${MIN_DAILY_BUDGET}/dia</span>
-                        )}
-                        {campaign.daily_budget && Number(campaign.daily_budget) >= MIN_DAILY_BUDGET && (
-                          <span className="ig-form-hint">
-                            Total estimado: R${(Number(campaign.daily_budget) * Number(campaign.duration_days || 1)).toFixed(2)}
-                          </span>
+                    {campaignMode === 'existing' ? (
+                      <div className="ig-existing-campaigns">
+                        {loadingCampaigns ? (
+                          <div className="ig-existing-loading">
+                            <span className="ig-spinner" style={{ width: 16, height: 16 }} /> Carregando campanhas ativas...
+                          </div>
+                        ) : existingCampaigns.length === 0 ? (
+                          <div className="ig-existing-empty">
+                            Nenhuma campanha ativa encontrada no Meta Ads.
+                          </div>
+                        ) : (
+                          <div className="ig-existing-list">
+                            {existingCampaigns.map(c => {
+                              const isSelected = selectedExistingCampaign?.id === c.id;
+                              const objLabel = OBJECTIVE_OPTIONS.find(o => o.value === c.objective)?.label || c.objective;
+                              return (
+                                <button
+                                  key={c.id}
+                                  type="button"
+                                  className={`ig-existing-card ${isSelected ? 'selected' : ''}`}
+                                  onClick={() => setSelectedExistingCampaign(isSelected ? null : c)}
+                                >
+                                  <div className="ig-existing-card-name">{c.name}</div>
+                                  <div className="ig-existing-card-meta">
+                                    <span className="ig-existing-card-obj">{objLabel}</span>
+                                    {c.daily_budget > 0 && (
+                                      <span>R$ {(c.daily_budget / 100).toFixed(2)}/dia</span>
+                                    )}
+                                    <span className="ig-existing-card-status">Ativa</span>
+                                  </div>
+                                  {isSelected && <span className="ig-existing-card-check">{'\u2713'}</span>}
+                                </button>
+                              );
+                            })}
+                          </div>
                         )}
                       </div>
-                      <div className="ig-form-group">
-                        <label>Duracao (dias)</label>
-                        <input
-                          type="number"
-                          min="1"
-                          max="90"
-                          value={campaign.duration_days}
-                          onChange={(e) => setCampaign({ ...campaign, duration_days: e.target.value })}
-                        />
-                      </div>
-                    </div>
+                    ) : (
+                      <>
+                        <div className="ig-form-group">
+                          <label>Nome da campanha *</label>
+                          <input
+                            type="text"
+                            value={campaign.name}
+                            onChange={(e) => setCampaign({ ...campaign, name: e.target.value })}
+                            placeholder="Ex: Lancamento Produto X"
+                          />
+                        </div>
 
-                    {campaign.objective === 'OUTCOME_TRAFFIC' && (
+                        <div className="ig-form-group">
+                          <label>Objetivo</label>
+                          <select
+                            value={campaign.objective}
+                            onChange={(e) => setCampaign({ ...campaign, objective: e.target.value })}
+                          >
+                            {OBJECTIVE_OPTIONS.map(o => (
+                              <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="ig-campaign-grid">
+                          <div className="ig-form-group">
+                            <label>Orcamento diario (R$) *</label>
+                            <input
+                              type="number"
+                              step="1"
+                              min={MIN_DAILY_BUDGET}
+                              value={campaign.daily_budget}
+                              onChange={(e) => setCampaign({ ...campaign, daily_budget: e.target.value })}
+                              placeholder={`Min R$${MIN_DAILY_BUDGET}`}
+                              className={campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET ? 'ig-input-error' : ''}
+                            />
+                            {campaign.daily_budget && Number(campaign.daily_budget) < MIN_DAILY_BUDGET && (
+                              <span className="ig-form-error">Minimo R${MIN_DAILY_BUDGET}/dia</span>
+                            )}
+                            {campaign.daily_budget && Number(campaign.daily_budget) >= MIN_DAILY_BUDGET && (
+                              <span className="ig-form-hint">
+                                Total estimado: R${(Number(campaign.daily_budget) * Number(campaign.duration_days || 1)).toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+                          <div className="ig-form-group">
+                            <label>Duracao (dias)</label>
+                            <input
+                              type="number"
+                              min="1"
+                              max="90"
+                              value={campaign.duration_days}
+                              onChange={(e) => setCampaign({ ...campaign, duration_days: e.target.value })}
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {/* Traffic fields — shown for both modes when applicable */}
+                    {((campaignMode === 'existing' ? selectedExistingCampaign?.objective : campaign.objective) === 'OUTCOME_TRAFFIC') && (
                       <div className="ig-campaign-link-section">
                         <div className="ig-form-group">
                           <label>Link de destino</label>
@@ -1706,25 +1806,50 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
                   <div className="ig-campaign-review">
                     <h4>Campanha Meta Ads</h4>
                     <div className="ig-campaign-review-grid">
-                      <div className="ig-campaign-review-item">
-                        <span className="ig-campaign-review-label">Campanha</span>
-                        <span className="ig-campaign-review-value">{campaign.name}</span>
-                      </div>
-                      <div className="ig-campaign-review-item">
-                        <span className="ig-campaign-review-label">Objetivo</span>
-                        <span className="ig-campaign-review-value">
-                          {OBJECTIVE_OPTIONS.find(o => o.value === campaign.objective)?.label}
-                        </span>
-                      </div>
-                      <div className="ig-campaign-review-item">
-                        <span className="ig-campaign-review-label">Orcamento diario</span>
-                        <span className="ig-campaign-review-value">R$ {Number(campaign.daily_budget).toFixed(2)}</span>
-                      </div>
-                      <div className="ig-campaign-review-item">
-                        <span className="ig-campaign-review-label">Duracao</span>
-                        <span className="ig-campaign-review-value">{campaign.duration_days} dias (total ~R${(Number(campaign.daily_budget) * Number(campaign.duration_days)).toFixed(2)})</span>
-                      </div>
-                      {campaign.objective === 'OUTCOME_TRAFFIC' && (
+                      {campaignMode === 'existing' && selectedExistingCampaign ? (
+                        <>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Modo</span>
+                            <span className="ig-campaign-review-value">Campanha existente</span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Campanha</span>
+                            <span className="ig-campaign-review-value">{selectedExistingCampaign.name}</span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Objetivo</span>
+                            <span className="ig-campaign-review-value">
+                              {OBJECTIVE_OPTIONS.find(o => o.value === selectedExistingCampaign.objective)?.label || selectedExistingCampaign.objective}
+                            </span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Duracao do anuncio</span>
+                            <span className="ig-campaign-review-value">{campaign.duration_days} dias</span>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Campanha</span>
+                            <span className="ig-campaign-review-value">{campaign.name}</span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Objetivo</span>
+                            <span className="ig-campaign-review-value">
+                              {OBJECTIVE_OPTIONS.find(o => o.value === campaign.objective)?.label}
+                            </span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Orcamento diario</span>
+                            <span className="ig-campaign-review-value">R$ {Number(campaign.daily_budget).toFixed(2)}</span>
+                          </div>
+                          <div className="ig-campaign-review-item">
+                            <span className="ig-campaign-review-label">Duracao</span>
+                            <span className="ig-campaign-review-value">{campaign.duration_days} dias (total ~R${(Number(campaign.daily_budget) * Number(campaign.duration_days)).toFixed(2)})</span>
+                          </div>
+                        </>
+                      )}
+                      {((campaignMode === 'existing' ? selectedExistingCampaign?.objective : campaign.objective) === 'OUTCOME_TRAFFIC') && (
                         <div className="ig-campaign-review-item ig-campaign-review-full">
                           <span className="ig-campaign-review-label">Link de destino</span>
                           <span className="ig-campaign-review-value">{campaign.creative?.link_url || '(site principal)'}</span>

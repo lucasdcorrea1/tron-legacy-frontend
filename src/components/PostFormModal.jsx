@@ -37,7 +37,7 @@ export default function PostFormModal({ isOpen, slug, onClose, onSaved }) {
       className={`pfm-overlay ${animating ? 'pfm-enter' : 'pfm-exit'}`}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div className="pfm-modal">
+      <div className="pfm-modal" onClick={(e) => e.stopPropagation()}>
         <button className="pfm-close" onClick={onClose} title="Fechar">
           <span>&times;</span>
         </button>

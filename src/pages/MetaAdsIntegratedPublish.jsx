@@ -158,8 +158,9 @@ export default function MetaAdsIntegratedPublish() {
 
   // Load active campaigns when switching to "existing" mode
   useEffect(() => {
-    if (campaignMode !== 'existing' || existingCampaigns.length > 0) return;
+    if (campaignMode !== 'existing') return;
     setLoadingCampaigns(true);
+    setSelectedCampaign(null);
     metaAds.listCampaigns({ status: 'ACTIVE' })
       .then(res => setExistingCampaigns(res?.data || res || []))
       .catch(() => setExistingCampaigns([]))
