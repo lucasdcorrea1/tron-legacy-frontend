@@ -72,6 +72,10 @@ export default function MetaAdsIntegratedPublish() {
   const [showAiContext, setShowAiContext] = useState(false);
 
   // Step 3: Campaign
+  const [campaignMode, setCampaignMode] = useState('new'); // 'new' or 'existing'
+  const [existingCampaigns, setExistingCampaigns] = useState([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState(null); // { id, name, objective, ... }
   const [campaignName, setCampaignName] = useState('');
   const [objective, setObjective] = useState('OUTCOME_AWARENESS');
   const [dailyBudget, setDailyBudget] = useState('');
@@ -152,6 +156,16 @@ export default function MetaAdsIntegratedPublish() {
     metaAds.listPresets().then(setPresets).catch(() => {});
   }, []);
 
+  // Load active campaigns when switching to "existing" mode
+  useEffect(() => {
+    if (campaignMode !== 'existing' || existingCampaigns.length > 0) return;
+    setLoadingCampaigns(true);
+    metaAds.listCampaigns({ status: 'ACTIVE' })
+      .then(res => setExistingCampaigns(res?.data || res || []))
+      .catch(() => setExistingCampaigns([]))
+      .finally(() => setLoadingCampaigns(false));
+  }, [campaignMode]);
+
   // File handling
   const handleFiles = (files) => {
     const newFiles = Array.from(files).map(file => ({
@@ -230,7 +244,9 @@ export default function MetaAdsIntegratedPublish() {
     switch (step) {
       case 0: return mediaFiles.length > 0;
       case 1: return caption.trim().length > 0;
-      case 2: return campaignName.trim() && dailyBudget && Number(dailyBudget) > 0;
+      case 2: return campaignMode === 'existing'
+        ? selectedCampaign !== null
+        : (campaignName.trim() && dailyBudget && Number(dailyBudget) > 0);
       case 3: return countries.trim().length > 0;
       case 4: return true;
       default: return false;
@@ -254,14 +270,21 @@ export default function MetaAdsIntegratedPublish() {
       const imageIds = uploaded.map(m => m.id).filter(Boolean);
       if (imageIds.length === 0) throw new Error('Nenhuma imagem foi enviada com sucesso.');
 
+      const effectiveObjective = campaignMode === 'existing' && selectedCampaign
+        ? selectedCampaign.objective
+        : objective;
+
       const payload = {
         caption,
         media_type: imageIds.length > 1 ? 'CAROUSEL' : 'IMAGE',
         image_ids: imageIds,
+        ...(campaignMode === 'existing' && selectedCampaign ? {
+          existing_campaign_id: selectedCampaign.id,
+        } : {}),
         campaign: {
-          name: campaignName,
-          objective,
-          daily_budget: Math.round(Number(dailyBudget) * 100),
+          name: campaignMode === 'existing' ? (selectedCampaign?.name || '') : campaignName,
+          objective: effectiveObjective,
+          daily_budget: campaignMode === 'existing' ? 0 : Math.round(Number(dailyBudget) * 100),
           duration_days: parseInt(durationDays) || 7,
           targeting: {
             countries: countries.split(',').map(c => c.trim().toUpperCase()).filter(Boolean),
@@ -272,7 +295,7 @@ export default function MetaAdsIntegratedPublish() {
           },
           creative: {
             call_to_action: cta,
-            ...(objective === 'OUTCOME_TRAFFIC' && linkUrl ? { link_url: linkUrl } : {}),
+            ...(effectiveObjective === 'OUTCOME_TRAFFIC' && linkUrl ? { link_url: linkUrl } : {}),
           },
         },
       };
@@ -422,6 +445,9 @@ export default function MetaAdsIntegratedPublish() {
     setStep(0);
     setMediaFiles([]);
     setCaption('');
+    setCampaignMode('new');
+    setSelectedCampaign(null);
+    setExistingCampaigns([]);
     setCampaignName('');
     setObjective('OUTCOME_AWARENESS');
     setDailyBudget('');
@@ -690,109 +716,206 @@ export default function MetaAdsIntegratedPublish() {
         {step === 2 && (
           <div className="mads-form-section">
             <h3>Configuracao da Campanha</h3>
-            {templates.length > 0 && (
-              <div className="mads-ip-templates-bar">
-                <span className="mads-ip-tpl-label">Templates:</span>
-                {templates.map(t => (
-                  <span key={t._id || t.id} className="mads-ip-tpl-chip" onClick={() => loadTemplate(t)}>
-                    {t.name}
-                    <button
-                      className="mads-ip-tpl-chip-del"
-                      onClick={e => { e.stopPropagation(); handleDeleteTemplate(t._id || t.id); }}
-                    >
-                      &times;
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-            <div className="mads-ip-form-grid">
-              <label className="mads-ip-label">
-                Nome da Campanha
-                <div className="mads-ip-field-with-ai">
-                  <input
-                    className="mads-field"
-                    type="text"
-                    placeholder="Ex: Lancamento Verao 2026"
-                    value={campaignName}
-                    onChange={e => setCampaignName(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="mads-btn-ai-small"
-                    disabled={aiGenerating}
-                    onClick={() => handleAIGenerate('campaign_name')}
-                    title="Sugerir nome com IA"
-                  >
-                    {aiGenerating ? '...' : 'IA'}
-                  </button>
-                </div>
-              </label>
-              <label className="mads-ip-label">
-                Objetivo
-                <select
-                  className="mads-field"
-                  value={objective}
-                  onChange={e => setObjective(e.target.value)}
-                >
-                  {OBJECTIVES.map(o => (
-                    <option key={o.value} value={o.value}>{o.label}</option>
-                  ))}
-                </select>
-              </label>
-              <label className="mads-ip-label">
-                Orcamento Diario (R$)
-                <input
-                  className="mads-field"
-                  type="number"
-                  min="1"
-                  step="0.01"
-                  placeholder="Ex: 20.00"
-                  value={dailyBudget}
-                  onChange={e => setDailyBudget(e.target.value)}
-                />
-              </label>
-              <label className="mads-ip-label">
-                Duracao (dias)
-                <input
-                  className="mads-field"
-                  type="number"
-                  min="1"
-                  max="365"
-                  value={durationDays}
-                  onChange={e => setDurationDays(e.target.value)}
-                />
-              </label>
-              {objective === 'OUTCOME_TRAFFIC' && (
-                <label className="mads-ip-label mads-ip-label-full">
-                  URL de Destino
-                  <input
-                    className="mads-field"
-                    type="url"
-                    placeholder="https://seusite.com/pagina"
-                    value={linkUrl}
-                    onChange={e => setLinkUrl(e.target.value)}
-                  />
-                </label>
-              )}
-              <label className="mads-ip-label">
-                Call to Action
-                <select
-                  className="mads-field"
-                  value={cta}
-                  onChange={e => setCta(e.target.value)}
-                >
-                  {CTA_OPTIONS.map(c => (
-                    <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
-                  ))}
-                </select>
-              </label>
-            </div>
-            <div className="mads-ip-save-row">
-              <button className="mads-action-btn" onClick={handleSaveTemplate}>
-                Salvar como Template
+
+            {/* Toggle: new vs existing */}
+            <div className="mads-ip-campaign-toggle">
+              <button
+                className={`mads-ip-toggle-btn ${campaignMode === 'new' ? 'active' : ''}`}
+                onClick={() => { setCampaignMode('new'); setSelectedCampaign(null); }}
+              >
+                Nova Campanha
+              </button>
+              <button
+                className={`mads-ip-toggle-btn ${campaignMode === 'existing' ? 'active' : ''}`}
+                onClick={() => setCampaignMode('existing')}
+              >
+                Campanha Existente
               </button>
             </div>
+
+            {campaignMode === 'existing' ? (
+              <div className="mads-ip-existing-campaigns">
+                {loadingCampaigns ? (
+                  <div className="mads-ip-interest-loading">
+                    <span className="mads-spinner" style={{ width: 14, height: 14 }} /> Carregando campanhas...
+                  </div>
+                ) : existingCampaigns.length === 0 ? (
+                  <div className="mads-ip-no-campaigns">
+                    Nenhuma campanha ativa encontrada. Crie uma nova campanha.
+                  </div>
+                ) : (
+                  <div className="mads-ip-campaign-list">
+                    {existingCampaigns.map(c => {
+                      const isSelected = selectedCampaign?.id === c.id;
+                      const obj = OBJECTIVES.find(o => o.value === c.objective)?.label || c.objective;
+                      const budget = c.daily_budget ? `R$ ${(c.daily_budget / 100).toFixed(2)}/dia` : '';
+                      return (
+                        <button
+                          key={c.id}
+                          className={`mads-ip-campaign-card ${isSelected ? 'selected' : ''}`}
+                          onClick={() => setSelectedCampaign(isSelected ? null : c)}
+                        >
+                          <div className="mads-ip-campaign-card-name">{c.name}</div>
+                          <div className="mads-ip-campaign-card-meta">
+                            <span className="mads-ip-campaign-card-obj">{obj}</span>
+                            {budget && <span>{budget}</span>}
+                            <span className="mads-ip-campaign-card-status">Ativa</span>
+                          </div>
+                          {isSelected && <span className="mads-ip-campaign-card-check">{'\u2713'}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Duration still needed for ad set */}
+                {selectedCampaign && (
+                  <div className="mads-ip-form-grid" style={{ marginTop: '1rem' }}>
+                    <label className="mads-ip-label">
+                      Duracao do anuncio (dias)
+                      <input
+                        className="mads-field"
+                        type="number"
+                        min="1"
+                        max="365"
+                        value={durationDays}
+                        onChange={e => setDurationDays(e.target.value)}
+                      />
+                    </label>
+                    <label className="mads-ip-label">
+                      Call to Action
+                      <select
+                        className="mads-field"
+                        value={cta}
+                        onChange={e => setCta(e.target.value)}
+                      >
+                        {CTA_OPTIONS.map(c => (
+                          <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
+                        ))}
+                      </select>
+                    </label>
+                    {selectedCampaign.objective === 'OUTCOME_TRAFFIC' && (
+                      <label className="mads-ip-label mads-ip-label-full">
+                        URL de Destino
+                        <input
+                          className="mads-field"
+                          type="url"
+                          placeholder="https://seusite.com/pagina"
+                          value={linkUrl}
+                          onChange={e => setLinkUrl(e.target.value)}
+                        />
+                      </label>
+                    )}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <>
+                {templates.length > 0 && (
+                  <div className="mads-ip-templates-bar">
+                    <span className="mads-ip-tpl-label">Templates:</span>
+                    {templates.map(t => (
+                      <span key={t._id || t.id} className="mads-ip-tpl-chip" onClick={() => loadTemplate(t)}>
+                        {t.name}
+                        <button
+                          className="mads-ip-tpl-chip-del"
+                          onClick={e => { e.stopPropagation(); handleDeleteTemplate(t._id || t.id); }}
+                        >
+                          &times;
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+                <div className="mads-ip-form-grid">
+                  <label className="mads-ip-label">
+                    Nome da Campanha
+                    <div className="mads-ip-field-with-ai">
+                      <input
+                        className="mads-field"
+                        type="text"
+                        placeholder="Ex: Lancamento Verao 2026"
+                        value={campaignName}
+                        onChange={e => setCampaignName(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        className="mads-btn-ai-small"
+                        disabled={aiGenerating}
+                        onClick={() => handleAIGenerate('campaign_name')}
+                        title="Sugerir nome com IA"
+                      >
+                        {aiGenerating ? '...' : 'IA'}
+                      </button>
+                    </div>
+                  </label>
+                  <label className="mads-ip-label">
+                    Objetivo
+                    <select
+                      className="mads-field"
+                      value={objective}
+                      onChange={e => setObjective(e.target.value)}
+                    >
+                      {OBJECTIVES.map(o => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="mads-ip-label">
+                    Orcamento Diario (R$)
+                    <input
+                      className="mads-field"
+                      type="number"
+                      min="1"
+                      step="0.01"
+                      placeholder="Ex: 20.00"
+                      value={dailyBudget}
+                      onChange={e => setDailyBudget(e.target.value)}
+                    />
+                  </label>
+                  <label className="mads-ip-label">
+                    Duracao (dias)
+                    <input
+                      className="mads-field"
+                      type="number"
+                      min="1"
+                      max="365"
+                      value={durationDays}
+                      onChange={e => setDurationDays(e.target.value)}
+                    />
+                  </label>
+                  {objective === 'OUTCOME_TRAFFIC' && (
+                    <label className="mads-ip-label mads-ip-label-full">
+                      URL de Destino
+                      <input
+                        className="mads-field"
+                        type="url"
+                        placeholder="https://seusite.com/pagina"
+                        value={linkUrl}
+                        onChange={e => setLinkUrl(e.target.value)}
+                      />
+                    </label>
+                  )}
+                  <label className="mads-ip-label">
+                    Call to Action
+                    <select
+                      className="mads-field"
+                      value={cta}
+                      onChange={e => setCta(e.target.value)}
+                    >
+                      {CTA_OPTIONS.map(c => (
+                        <option key={c} value={c}>{c.replace(/_/g, ' ')}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+                <div className="mads-ip-save-row">
+                  <button className="mads-action-btn" onClick={handleSaveTemplate}>
+                    Salvar como Template
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -953,12 +1076,26 @@ export default function MetaAdsIntegratedPublish() {
               <div className="mads-ip-review-section">
                 <h4>Campanha</h4>
                 <div className="mads-ip-review-grid">
-                  <span>Nome: <strong>{campaignName}</strong></span>
-                  <span>Objetivo: <strong>{OBJECTIVES.find(o => o.value === objective)?.label}</strong></span>
-                  <span>Orcamento: <strong>R$ {Number(dailyBudget).toFixed(2)}/dia</strong></span>
+                  {campaignMode === 'existing' && selectedCampaign ? (
+                    <>
+                      <span>Modo: <strong>Campanha existente</strong></span>
+                      <span>Nome: <strong>{selectedCampaign.name}</strong></span>
+                      <span>Objetivo: <strong>{OBJECTIVES.find(o => o.value === selectedCampaign.objective)?.label || selectedCampaign.objective}</strong></span>
+                      {selectedCampaign.daily_budget > 0 && (
+                        <span>Orcamento: <strong>R$ {(selectedCampaign.daily_budget / 100).toFixed(2)}/dia</strong></span>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <span>Modo: <strong>Nova campanha</strong></span>
+                      <span>Nome: <strong>{campaignName}</strong></span>
+                      <span>Objetivo: <strong>{OBJECTIVES.find(o => o.value === objective)?.label}</strong></span>
+                      <span>Orcamento: <strong>R$ {Number(dailyBudget).toFixed(2)}/dia</strong></span>
+                    </>
+                  )}
                   <span>Duracao: <strong>{durationDays} dias</strong></span>
                   <span>CTA: <strong>{cta.replace(/_/g, ' ')}</strong></span>
-                  {objective === 'OUTCOME_TRAFFIC' && linkUrl && (
+                  {((campaignMode === 'existing' ? selectedCampaign?.objective : objective) === 'OUTCOME_TRAFFIC') && linkUrl && (
                     <span>URL: <strong>{linkUrl}</strong></span>
                   )}
                 </div>
@@ -1004,6 +1141,8 @@ export default function MetaAdsIntegratedPublish() {
           >
             {submitting ? (
               <><span className="mads-spinner" style={{ width: 16, height: 16 }} /> Publicando...</>
+            ) : campaignMode === 'existing' ? (
+              'Publicar na Campanha'
             ) : (
               'Publicar + Criar Campanha'
             )}

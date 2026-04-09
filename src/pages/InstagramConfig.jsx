@@ -127,6 +127,9 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
   const [feed, setFeed] = useState([]);
   const [feedLoading, setFeedLoading] = useState(false);
 
+  // Connected accounts
+  const [connectedAccounts, setConnectedAccounts] = useState([]);
+
   // Budget alerts
   const [alerts, setAlerts] = useState([]);
   const [alertType, setAlertType] = useState('daily_spend');
@@ -135,6 +138,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
 
   useEffect(() => {
     checkConfig();
+    loadConnectedAccounts();
   }, []);
 
   useEffect(() => {
@@ -160,6 +164,35 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
       setConfigured(false);
       setHasToken(false);
       onConfigChange?.(false);
+    }
+  };
+
+  const loadConnectedAccounts = async () => {
+    try {
+      const data = await instagram.listConnectedAccounts();
+      setConnectedAccounts(data.accounts || []);
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleSetPrimary = async (accountId) => {
+    try {
+      await instagram.saveConfig({ instagram_account_id: accountId });
+      toast.success('Conta principal alterada');
+      await Promise.all([checkConfig(), loadConnectedAccounts()]);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao alterar conta principal');
+    }
+  };
+
+  const handleRemoveAccount = async (accountId) => {
+    try {
+      await instagram.deleteConfig(accountId);
+      toast.success('Conta removida');
+      await Promise.all([checkConfig(), loadConnectedAccounts()]);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao remover conta');
     }
   };
 
@@ -227,7 +260,7 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
       });
       toast.success(`Conta @${account.page_name} configurada!`);
       setIgAccounts([]);
-      await checkConfig();
+      await Promise.all([checkConfig(), loadConnectedAccounts()]);
     } catch (err) {
       toast.error(err.message || 'Erro ao salvar conta selecionada');
     } finally {
@@ -487,6 +520,34 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                 </div>
               </div>
 
+              {/* Connected accounts list */}
+              {connectedAccounts.length > 1 && (
+                <div className="igcfg-connected-accounts">
+                  <h4 className="igcfg-connected-title">Contas conectadas ({connectedAccounts.length})</h4>
+                  <div className="igcfg-accounts-list">
+                    {connectedAccounts.map((acc) => (
+                      <div key={acc.instagram_account_id} className={`igcfg-account-row ${acc.is_primary ? 'primary' : ''}`}>
+                        <div className="igcfg-account-info">
+                          <strong>{acc.username || acc.page_name || acc.instagram_account_id}</strong>
+                          {acc.page_name && acc.username && <span className="igcfg-account-page">{acc.page_name}</span>}
+                          {acc.is_primary && <span className="igcfg-primary-badge">Principal</span>}
+                        </div>
+                        <div className="igcfg-account-actions">
+                          {!acc.is_primary && (
+                            <button className="igcfg-action-btn igcfg-action-btn--secondary igcfg-action-btn--sm" onClick={() => handleSetPrimary(acc.instagram_account_id)}>
+                              Tornar principal
+                            </button>
+                          )}
+                          <button className="igcfg-action-btn igcfg-action-btn--danger igcfg-action-btn--sm" onClick={() => handleRemoveAccount(acc.instagram_account_id)}>
+                            <IconTrash />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Action buttons */}
               <div className="igcfg-actions-row">
                 <button className="igcfg-action-btn igcfg-action-btn--primary" onClick={handleTestConnection} disabled={testLoading}>
@@ -496,9 +557,9 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
                   <IconGrid /> {feedLoading ? 'Carregando...' : 'Ver feed'}
                 </button>
                 <button className="igcfg-action-btn igcfg-action-btn--secondary" onClick={handleConnectFacebook} disabled={oauthLoading}>
-                  <IconFacebook /> {oauthLoading ? 'Abrindo...' : 'Reconectar'}
+                  <IconFacebook /> {oauthLoading ? 'Abrindo...' : connectedAccounts.length > 0 ? 'Conectar outra conta' : 'Reconectar'}
                 </button>
-                {configSource === 'user' && (
+                {configSource === 'user' && connectedAccounts.length <= 1 && (
                   <button className="igcfg-action-btn igcfg-action-btn--danger" onClick={handleDeleteConfig}>
                     <IconTrash /> Remover
                   </button>

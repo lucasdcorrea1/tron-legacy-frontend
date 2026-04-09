@@ -856,3 +856,83 @@
     gap: 0.5rem;
   }
 }
+
+/* ── Connected Accounts List ── */
+.igcfg-connected-accounts {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--admin-border, rgba(255,255,255,0.08));
+}
+
+.igcfg-connected-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--admin-text-secondary, #94a0b4);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 0.75rem;
+}
+
+.igcfg-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.igcfg-account-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: 10px;
+  background: var(--admin-bg-hover, rgba(255,255,255,0.03));
+  border: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.igcfg-account-row.primary {
+  border-color: var(--admin-accent-subtle, rgba(91,124,247,0.2));
+  background: var(--admin-accent-subtle, rgba(91,124,247,0.06));
+}
+
+.igcfg-account-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.igcfg-account-info strong {
+  font-size: 0.85rem;
+  color: var(--admin-text, #e8ecf1);
+}
+
+.igcfg-account-page {
+  font-size: 0.75rem;
+  color: var(--admin-text-muted, #5c6780);
+}
+
+.igcfg-primary-badge {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 100px;
+  background: var(--admin-accent-subtle, rgba(91,124,247,0.15));
+  color: var(--admin-accent-text, #a3b8fd);
+}
+
+.igcfg-account-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.igcfg-action-btn--sm {
+  padding: 0.3rem 0.6rem !important;
+  font-size: 0.7rem !important;
+}

@@ -556,6 +556,134 @@
   font-weight: 700;
 }
 
+/* ── Campaign Mode Toggle ── */
+.mads-ip-campaign-toggle {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background-color: var(--admin-bg-hover);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  width: fit-content;
+}
+
+.mads-ip-toggle-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mads-ip-toggle-btn:hover:not(.active) {
+  color: var(--admin-text-secondary);
+  background: var(--admin-bg-active);
+}
+
+.mads-ip-toggle-btn.active {
+  background: rgba(37, 99, 235, 0.15);
+  color: #60a5fa;
+}
+
+/* ── Existing Campaign List ── */
+.mads-ip-existing-campaigns {
+  display: flex;
+  flex-direction: column;
+}
+
+.mads-ip-no-campaigns {
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--admin-text-muted);
+  font-size: 0.875rem;
+  background: var(--admin-bg-hover);
+  border-radius: 10px;
+  border: 1px dashed var(--admin-border);
+}
+
+.mads-ip-campaign-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.mads-ip-campaign-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
+  background: var(--admin-bg-hover);
+  border: 2px solid var(--admin-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+  position: relative;
+  font-family: inherit;
+}
+
+.mads-ip-campaign-card:hover {
+  border-color: var(--admin-border-strong);
+  background: var(--admin-bg-active);
+}
+
+.mads-ip-campaign-card.selected {
+  border-color: rgba(37, 99, 235, 0.5);
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.mads-ip-campaign-card-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--admin-text-heading);
+}
+
+.mads-ip-campaign-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--admin-text-muted);
+}
+
+.mads-ip-campaign-card-obj {
+  padding: 0.125rem 0.4rem;
+  background: rgba(37, 99, 235, 0.12);
+  color: #60a5fa;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mads-ip-campaign-card-status {
+  color: #4ade80;
+  font-weight: 600;
+}
+
+.mads-ip-campaign-card-check {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2563eb;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 /* ── Templates / Presets Bar ── */
 .mads-ip-templates-bar {
   display: flex;

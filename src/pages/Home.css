@@ -1107,7 +1107,8 @@
    TELA 3 - CLIENTES
    ============================================ */
 .section-clients {
-  padding: 4rem 2rem;
+  justify-content: space-between;
+  padding: 3rem 2rem 0;
   overflow: hidden;
 }
 
@@ -1413,7 +1414,7 @@
 
   /* Clients */
   .section-clients {
-    padding: 4rem 1rem;
+    padding: 3rem 1rem 0;
   }
 
   .clients-carousel {

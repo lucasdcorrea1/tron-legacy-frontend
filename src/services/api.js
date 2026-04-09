@@ -365,7 +365,8 @@ export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
   listAllOrgProfiles: () => api.get('/api/v1/admin/instagram/all-profiles'),
   saveConfig: (data) => api.put('/api/v1/admin/instagram/config', data),
-  deleteConfig: () => api.delete('/api/v1/admin/instagram/config'),
+  deleteConfig: (accountId) => api.delete(`/api/v1/admin/instagram/config${accountId ? `?account_id=${accountId}` : ''}`),
+  listConnectedAccounts: () => api.get('/api/v1/admin/instagram/connected-accounts'),
   listAccounts: () => api.get('/api/v1/admin/instagram/accounts'),
   testConnection: (igAccountId) => {
     const params = igAccountId ? `?instagram_account_id=${igAccountId}` : '';
