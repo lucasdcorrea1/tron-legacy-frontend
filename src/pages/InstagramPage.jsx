@@ -852,6 +852,7 @@ export default function InstagramPage() {
                   configuredProp={configured}
                   onConfigChange={handleConfigChange}
                   initialTab={schedulingInitialTab}
+                  adAccountId={selectedAdAccountId}
                   key={schedulingInitialTab}
                 />
               )}

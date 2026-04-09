@@ -132,7 +132,7 @@ const GEO_PRESETS = [
 
 const ALL_PRESETS = [...GEO_PRESETS];
 
-export function InstagramSchedulingContent({ configuredProp, onConfigChange, initialTab }) {
+export function InstagramSchedulingContent({ configuredProp, onConfigChange, initialTab, adAccountId }) {
   const toast = useToast();
   const fileInputRef = useRef(null);
 
@@ -460,11 +460,13 @@ export function InstagramSchedulingContent({ configuredProp, onConfigChange, ini
     if (!campaignEnabled || campaignMode !== 'existing') return;
     setLoadingCampaigns(true);
     setSelectedExistingCampaign(null);
-    metaAds.listCampaigns({ status: 'ACTIVE' })
+    const params = { status: 'ACTIVE' };
+    if (adAccountId) params.ad_account_id = adAccountId;
+    metaAds.listCampaigns(params)
       .then(res => setExistingCampaigns(res?.data || res || []))
       .catch(() => setExistingCampaigns([]))
       .finally(() => setLoadingCampaigns(false));
-  }, [campaignEnabled, campaignMode]);
+  }, [campaignEnabled, campaignMode, adAccountId]);
 
   // Debounced interest search
   useEffect(() => {
