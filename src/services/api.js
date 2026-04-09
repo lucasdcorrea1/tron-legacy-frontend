@@ -77,16 +77,19 @@ async function request(endpoint, options = {}, _retries = 0) {
     ...options,
   };
 
+  const MAX_RETRIES = 3;
+  const retryDelay = [1500, 3000, 5000]; // escalating delays
+
   let response;
   try {
     response = await fetch(`${API_URL}${endpoint}`, config);
   } catch (err) {
-    // Network error (offline, DNS, etc.) — retry up to 2 times
-    if (_retries < 2) {
-      await new Promise(r => setTimeout(r, 1000 * (_retries + 1)));
+    // Network/CORS error (offline, DNS, cold-start 502 without CORS) — retry
+    if (_retries < MAX_RETRIES) {
+      await new Promise(r => setTimeout(r, retryDelay[_retries] || 3000));
       return request(endpoint, options, _retries + 1);
     }
-    throw new Error('Erro de conexão. Verifique sua internet.');
+    throw new Error('Servidor indisponível. Tente novamente em alguns segundos.');
   }
 
   // On 401, attempt a silent refresh then retry once
@@ -102,9 +105,9 @@ async function request(endpoint, options = {}, _retries = 0) {
     }
   }
 
-  // On 502/503/504 (server down), retry with backoff up to 2 times
-  if ([502, 503, 504].includes(response.status) && _retries < 2) {
-    await new Promise(r => setTimeout(r, 1500 * (_retries + 1)));
+  // On 502/503/504 (server down / cold-start), retry with backoff
+  if ([502, 503, 504].includes(response.status) && _retries < MAX_RETRIES) {
+    await new Promise(r => setTimeout(r, retryDelay[_retries] || 3000));
     return request(endpoint, options, _retries + 1);
   }
 
