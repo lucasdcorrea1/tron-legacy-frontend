@@ -1,5 +1,8 @@
-/* PostFormModal — overlay + slide-up modal */
+/* ============================================
+   PostFormModal — fullscreen-ish overlay modal
+   ============================================ */
 
+/* Overlay */
 .pfm-overlay {
   position: fixed;
   inset: 0;
@@ -7,108 +10,140 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: opacity 280ms ease;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: opacity 250ms ease;
 }
 
-.pfm-overlay.pfm-enter {
-  opacity: 1;
-}
+.pfm-overlay.pfm-enter { opacity: 1; }
+.pfm-overlay.pfm-exit  { opacity: 0; pointer-events: none; }
 
-.pfm-overlay.pfm-exit {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Modal container — inherits admin-layout theme vars */
+/* ── Modal shell ── */
 .pfm-modal {
   position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 960px;
+  max-width: 1000px;
   max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  background: var(--admin-bg-elevated);
+  background: var(--admin-bg);
   border: 1px solid var(--admin-border-strong);
-  border-radius: 16px;
-  box-shadow: 0 32px 64px rgba(0, 0, 0, 0.6);
-  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 280ms ease;
+  border-radius: 14px;
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  transition: transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 250ms ease;
+}
 
-  /* Styled scrollbar */
+.pfm-enter .pfm-modal { transform: translateY(0); opacity: 1; }
+.pfm-exit  .pfm-modal { transform: translateY(30px); opacity: 0; }
+
+/* ── Sticky header bar ── */
+.pfm-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border);
+  background: var(--admin-bg-elevated);
+}
+
+.pfm-header-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--admin-text-heading);
+}
+
+.pfm-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--admin-text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pfm-close:hover {
+  background: var(--admin-bg-active);
+  border-color: var(--admin-border);
+  color: var(--admin-text);
+}
+
+/* ── Scrollable body ── */
+.pfm-scroll {
+  flex: 1;
+  overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: var(--admin-scrollbar-thumb) transparent;
 }
 
-.pfm-modal::-webkit-scrollbar {
-  width: 6px;
-}
-
-.pfm-modal::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.pfm-modal::-webkit-scrollbar-thumb {
+.pfm-scroll::-webkit-scrollbar { width: 5px; }
+.pfm-scroll::-webkit-scrollbar-track { background: transparent; }
+.pfm-scroll::-webkit-scrollbar-thumb {
   background: var(--admin-scrollbar-thumb);
   border-radius: 3px;
 }
 
-.pfm-modal::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.pfm-enter .pfm-modal {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.pfm-exit .pfm-modal {
-  transform: translateY(40px);
-  opacity: 0;
-}
-
-/* Close button */
-.pfm-close {
-  position: sticky;
-  top: 12px;
-  float: right;
-  margin-right: 12px;
-  z-index: 10;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--admin-bg);
-  border: 1px solid var(--admin-border-strong);
-  border-radius: 50%;
-  color: var(--admin-text-secondary);
-  font-size: 1.25rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pfm-close:hover {
-  background-color: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--admin-danger);
-  transform: rotate(90deg);
-}
-
-/* Body */
 .pfm-body {
-  padding: 24px 32px 32px;
+  padding: 1.5rem 1.5rem 2rem;
 }
 
-.pfm-body .postform-page {
-  max-width: 100%;
+/* ── Override PostForm styles inside modal ──
+   The standalone PostForm uses --admin-bg-hover (transparent)
+   for section backgrounds. Inside the modal we need solid colors
+   for proper contrast and readability.
+   ───────────────────────────────────────────── */
+
+/* Hide the page-header inside modal — we have our own */
+.pfm-body .page-header {
+  display: none;
 }
 
-/* Mobile: fullscreen */
+/* Editor + sidebar sections: solid elevated bg */
+.pfm-body .postform-editor,
+.pfm-body .sidebar-section {
+  background: var(--admin-bg-elevated);
+  border-color: var(--admin-border);
+}
+
+/* Inputs: one step deeper */
+.pfm-body .postform-editor input,
+.pfm-body .postform-editor textarea,
+.pfm-body .sidebar-section input,
+.pfm-body .sidebar-section textarea,
+.pfm-body .file-input {
+  background: var(--admin-bg-surface);
+  border-color: var(--admin-border-strong);
+}
+
+/* Rich text editor container */
+.pfm-body .rich-text-editor {
+  background: var(--admin-bg-surface);
+  border-color: var(--admin-border-strong);
+}
+
+.pfm-body .editor-toolbar-wrapper {
+  background: var(--admin-bg-elevated);
+}
+
+.pfm-body .editor-content-area .tiptap {
+  min-height: 280px;
+}
+
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .pfm-overlay {
-    align-items: stretch;
+    padding: 0;
   }
 
   .pfm-modal {
@@ -119,6 +154,16 @@
   }
 
   .pfm-body {
-    padding: 16px;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pfm-body .postform-content {
+    grid-template-columns: 1fr;
+  }
+
+  .pfm-body .postform-sidebar {
+    order: -1;
   }
 }
