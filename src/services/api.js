@@ -64,8 +64,8 @@ function forceLogout() {
   window.location.href = '/login';
 }
 
-// ── Core JSON request helper with 401 retry ──────────────────────────
-async function request(endpoint, options = {}) {
+// ── Core JSON request helper with 401 retry + 503 backoff ─────────────
+async function request(endpoint, options = {}, _retries = 0) {
   const token = localStorage.getItem('token');
 
   const config = {
@@ -77,7 +77,17 @@ async function request(endpoint, options = {}) {
     ...options,
   };
 
-  let response = await fetch(`${API_URL}${endpoint}`, config);
+  let response;
+  try {
+    response = await fetch(`${API_URL}${endpoint}`, config);
+  } catch (err) {
+    // Network error (offline, DNS, etc.) — retry up to 2 times
+    if (_retries < 2) {
+      await new Promise(r => setTimeout(r, 1000 * (_retries + 1)));
+      return request(endpoint, options, _retries + 1);
+    }
+    throw new Error('Erro de conexão. Verifique sua internet.');
+  }
 
   // On 401, attempt a silent refresh then retry once
   if (response.status === 401 && localStorage.getItem('refreshToken')) {
@@ -92,6 +102,12 @@ async function request(endpoint, options = {}) {
     }
   }
 
+  // On 502/503/504 (server down), retry with backoff up to 2 times
+  if ([502, 503, 504].includes(response.status) && _retries < 2) {
+    await new Promise(r => setTimeout(r, 1500 * (_retries + 1)));
+    return request(endpoint, options, _retries + 1);
+  }
+
   if (!response.ok) {
     const text = await response.text();
     let message;
@@ -100,6 +116,9 @@ async function request(endpoint, options = {}) {
       message = parsed.message || parsed.error;
     } catch {
       message = text || `Erro ${response.status}`;
+    }
+    if ([502, 503, 504].includes(response.status)) {
+      throw new Error('Servidor temporariamente indisponível. Tente novamente em instantes.');
     }
     throw new Error(message || `Erro na requisição (${response.status})`);
   }

@@ -37,7 +37,7 @@ const FEATURE_PLAN_MAP = {
 const PLAN_RANK = { free: 0, starter: 1, pro: 2, enterprise: 3 };
 
 export function OrgProvider({ children }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { theme } = useTheme();
   const [currentOrg, setCurrentOrg] = useState(null);
   const [orgList, setOrgList] = useState([]);
@@ -48,6 +48,7 @@ export function OrgProvider({ children }) {
 
   // Load org list and restore last used org
   const init = useCallback(async () => {
+    if (authLoading) return; // Wait for auth to finish validating first
     if (!isAuthenticated) {
       setCurrentOrg(null);
       setOrgList([]);
@@ -93,13 +94,14 @@ export function OrgProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, authLoading]);
 
   useEffect(() => {
+    if (authLoading) return; // Don't init until auth is resolved
     if (initRef.current) return;
     initRef.current = true;
     init();
-  }, [init]);
+  }, [init, authLoading]);
 
   const switchOrg = useCallback(async (orgId) => {
     try {
