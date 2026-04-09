@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 const getInitialState = () => {
   const token = localStorage.getItem('token');
   if (!token) {
-    return { user: null, profile: null };
+    return { user: null, profile: null, hasToken: false };
   }
 
   let user = null;
@@ -27,7 +27,7 @@ const getInitialState = () => {
     // silently ignore corrupt localStorage
   }
 
-  return { user, profile };
+  return { user, profile, hasToken: true };
 };
 
 const initialState = getInitialState();
@@ -35,12 +35,17 @@ const initialState = getInitialState();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(initialState.user);
   const [profile, setProfile] = useState(initialState.profile);
+  // loading = true while we're validating the token on mount
+  const [loading, setLoading] = useState(initialState.hasToken);
 
   const isAuthenticated = !!localStorage.getItem('token');
 
   // Revalidate profile from server on mount to keep role in sync
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
     auth.me().then((data) => {
       const freshProfile = data.profile || data;
       const freshUser = data.user || data;
@@ -54,8 +59,11 @@ export function AuthProvider({ children }) {
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       localStorage.removeItem('profile');
+      localStorage.removeItem('lastOrgId');
       setUser(null);
       setProfile(null);
+    }).finally(() => {
+      setLoading(false);
     });
   }, []);
 
@@ -104,7 +112,11 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    await auth.logout();
+    try { await auth.logout(); } catch { /* ignore */ }
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    localStorage.removeItem('profile');
     localStorage.removeItem('lastOrgId');
     setUser(null);
     setProfile(null);
@@ -119,7 +131,7 @@ export function AuthProvider({ children }) {
       logout,
       updateProfile,
       saveAuthData,
-      loading: false,
+      loading,
       isAuthenticated
     }}>
       {children}

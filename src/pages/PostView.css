@@ -1,5 +1,28 @@
 /* Post View - Matching Home Design */
 .postview-page {
+  /* Define admin-like vars locally so public blog page works without .admin-layout */
+  --admin-bg:             #101114;
+  --admin-bg-elevated:    #181c24;
+  --admin-bg-surface:     #1e2430;
+  --admin-bg-hover:       rgba(255, 255, 255, 0.05);
+  --admin-bg-active:      rgba(255, 255, 255, 0.08);
+  --admin-text:           #e8ecf1;
+  --admin-text-heading:   #f4f6f9;
+  --admin-text-secondary: #94a0b4;
+  --admin-text-muted:     #5c6780;
+  --admin-border:         rgba(255, 255, 255, 0.08);
+  --admin-border-strong:  rgba(255, 255, 255, 0.13);
+  --admin-accent:         #5b7cf7;
+  --admin-accent-subtle:  rgba(91, 124, 247, 0.12);
+  --admin-accent-text:    #a3b8fd;
+  --admin-card-bg:        #181c24;
+  --admin-card-border:    rgba(255, 255, 255, 0.08);
+  --admin-danger:         #ef4444;
+  --admin-success:        #22c55e;
+  --admin-input-bg:       #1e2430;
+  --admin-input-border:   rgba(255, 255, 255, 0.1);
+  --admin-scrollbar-thumb: rgba(255, 255, 255, 0.1);
+
   min-height: 100vh;
   background: #101114;
   color: var(--admin-text-heading);
