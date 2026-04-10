@@ -756,6 +756,8 @@ export const orgs = {
   // Members
   listMembers: () => api.get('/api/v1/orgs/current/members'),
   inviteMember: (data) => api.post('/api/v1/orgs/current/invitations', data),
+  resendInvitation: (id) => api.post(`/api/v1/orgs/current/invitations/${id}/resend`),
+  cancelInvitation: (id) => api.delete(`/api/v1/orgs/current/invitations/${id}`),
   updateMemberRole: (uid, role) => api.put(`/api/v1/orgs/current/members/${uid}/role`, { org_role: role }),
   updateMemberPermissions: (uid, permissions) => api.put(`/api/v1/orgs/current/members/${uid}/permissions`, { permissions }),
   removeMember: (uid) => api.delete(`/api/v1/orgs/current/members/${uid}`),

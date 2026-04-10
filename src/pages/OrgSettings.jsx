@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useOrg } from '../context/OrgContext';
 import { useTheme } from '../context/ThemeContext';
 import { useConfirm } from '../components/ConfirmModal';
+import { useToast } from '../components/Toast';
 import { orgs, subscription as subscriptionApi } from '../services/api';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -277,6 +278,9 @@ export function MembersTab() {
   };
 
   const confirm = useConfirm();
+  const toast = useToast();
+  const [resendingId, setResendingId] = useState(null);
+
   const handleRemove = async (uid) => {
     const ok = await confirm({ title: 'Remover membro', message: 'Tem certeza que deseja remover este membro da organização?', confirmText: 'Remover', variant: 'danger' });
     if (!ok) return;
@@ -291,6 +295,35 @@ export function MembersTab() {
       await orgs.updateMemberRole(uid, newRole);
       await load();
     } catch { /* ignore */ }
+  };
+
+  const handleResendInvite = async (id, email) => {
+    setResendingId(id);
+    try {
+      await orgs.resendInvitation(id);
+      toast.success(`Convite reenviado para ${email}`);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao reenviar convite');
+    } finally {
+      setResendingId(null);
+    }
+  };
+
+  const handleCancelInvite = async (id, email) => {
+    const ok = await confirm({
+      title: 'Cancelar convite',
+      message: `Cancelar o convite enviado para ${email}?`,
+      confirmText: 'Cancelar convite',
+      variant: 'danger',
+    });
+    if (!ok) return;
+    try {
+      await orgs.cancelInvitation(id);
+      toast.success('Convite cancelado');
+      await Promise.all([load(), refreshUsage()]);
+    } catch (err) {
+      toast.error(err.message || 'Erro ao cancelar convite');
+    }
   };
 
   const memberLimit = usage?.limits?.max_members ?? 1;
@@ -423,6 +456,25 @@ export function MembersTab() {
                   <strong>{inv.email}</strong>
                   <span>Convite enviado &middot; {inv.org_role}</span>
                 </div>
+                {canManage && (
+                  <div className="member-actions">
+                    <button
+                      className="settings-btn sm"
+                      onClick={() => handleResendInvite(inv.id, inv.email)}
+                      disabled={resendingId === inv.id}
+                      title="Reenviar email do convite"
+                    >
+                      {resendingId === inv.id ? 'Reenviando...' : 'Reenviar'}
+                    </button>
+                    <button
+                      className="member-remove"
+                      onClick={() => handleCancelInvite(inv.id, inv.email)}
+                      title="Cancelar convite"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

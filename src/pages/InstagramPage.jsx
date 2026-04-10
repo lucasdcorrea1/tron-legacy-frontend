@@ -697,20 +697,16 @@ export default function InstagramPage() {
       .catch(() => setAdAccounts([]));
   }, [hasAdAccount, currentOrg?.id]);
 
-  // Load IG profiles when configured — filter to org's configured account
+  // Load IG profiles when configured — show all but auto-select org's account
   useEffect(() => {
     if (!configured) return;
     instagram.listAccounts()
       .then(data => {
-        const allProfiles = data?.data || [];
+        const profiles = data?.data || [];
+        setIgProfiles(profiles);
+        // Auto-select the org's configured profile
         const configuredId = data?.configured_account_id;
-        // Only show the org's configured profile (prevent cross-org leaks)
-        const filtered = configuredId
-          ? allProfiles.filter(p => p.ig_account_id === configuredId)
-          : allProfiles;
-        setIgProfiles(filtered.length > 0 ? filtered : allProfiles);
-        // Auto-select the configured profile
-        if (configuredId && !selectedIgAccountId) {
+        if (configuredId) {
           setSelectedIgAccountId(configuredId);
         }
       })
