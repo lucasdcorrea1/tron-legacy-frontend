@@ -103,6 +103,75 @@ function useDebounce(value, delay = 400) {
   return debounced;
 }
 
+// ── Bulk selection hook ──────────────────────────────────────────────
+// Persists selection across pagination, resets only when filters change.
+// Provides selectAllMatching to fetch ALL ids matching current filters.
+
+function useBulkSelection({ items, filterKey }) {
+  const [selected, setSelected] = useState(new Set());
+
+  // Reset selection only when filters change (not page)
+  useEffect(() => {
+    setSelected(new Set());
+  }, [filterKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const currentPageIds = items.map(it => it.id);
+  const allCurrentPageSelected = currentPageIds.length > 0 && currentPageIds.every(id => selected.has(id));
+  const someCurrentPageSelected = currentPageIds.some(id => selected.has(id));
+  const indeterminate = someCurrentPageSelected && !allCurrentPageSelected;
+
+  const toggleOne = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleCurrentPage = () => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (allCurrentPageSelected) {
+        currentPageIds.forEach(id => next.delete(id));
+      } else {
+        currentPageIds.forEach(id => next.add(id));
+      }
+      return next;
+    });
+  };
+
+  const selectMany = (ids) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      ids.forEach(id => next.add(id));
+      return next;
+    });
+  };
+
+  const clear = () => setSelected(new Set());
+
+  return {
+    selected,
+    selectedCount: selected.size,
+    allCurrentPageSelected,
+    indeterminate,
+    toggleOne,
+    toggleCurrentPage,
+    selectMany,
+    clear,
+    isSelected: (id) => selected.has(id),
+  };
+}
+
+// Master checkbox component that handles indeterminate state via ref
+function MasterCheckbox({ checked, indeterminate, onChange }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (ref.current) ref.current.indeterminate = indeterminate;
+  }, [indeterminate]);
+  return <input ref={ref} type="checkbox" checked={checked} onChange={onChange} />;
+}
+
 // ── Reusable Form Field ──────────────────────────────────────────────
 
 function Field({ label, children, className = '' }) {
@@ -440,8 +509,15 @@ function ClientsTab() {
   const [loading, setLoading] = useState(true);
   const [editClient, setEditClient] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [totalItems, setTotalItems] = useState(0);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [selectingAll, setSelectingAll] = useState(false);
 
   const debouncedSearch = useDebounce(search);
+
+  const filterKey = `${debouncedSearch}|${taxFilter}`;
+
+  const sel = useBulkSelection({ items: clients, filterKey });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -453,6 +529,7 @@ function ClientsTab() {
       });
       setClients(data?.data || []);
       setTotal(data?.totalPages || 1);
+      setTotalItems(data?.total ?? data?.totalItems ?? data?.data?.length ?? 0);
     } catch (err) {
       toast.error('Erro ao carregar clientes: ' + errMsg(err));
     }
@@ -460,6 +537,23 @@ function ClientsTab() {
   }, [page, debouncedSearch, taxFilter]);
 
   useEffect(() => { load(); }, [load]);
+
+  const handleSelectAllMatching = async () => {
+    setSelectingAll(true);
+    try {
+      const data = await contabil.listClients({
+        page: 1, limit: 10000,
+        search: debouncedSearch || undefined,
+        taxRegime: taxFilter || undefined,
+      });
+      const ids = (data?.data || []).map(c => c.id);
+      sel.selectMany(ids);
+      toast.success(`${ids.length} clientes selecionados`);
+    } catch (err) {
+      toast.error('Erro ao selecionar todos: ' + errMsg(err));
+    }
+    setSelectingAll(false);
+  };
 
   const handleDelete = async (id) => {
     const ok = await confirm({ title: 'Excluir cliente', message: 'Tem certeza que deseja excluir este cliente?', confirmText: 'Excluir', variant: 'danger' });
@@ -471,6 +565,33 @@ function ClientsTab() {
     } catch (err) {
       toast.error(errMsg(err));
     }
+  };
+
+  const handleBulkDelete = async () => {
+    const count = sel.selectedCount;
+    if (count === 0) return;
+    const ok = await confirm({
+      title: `Excluir ${count} cliente${count > 1 ? 's' : ''}`,
+      message: `Tem certeza que deseja excluir ${count} cliente${count > 1 ? 's' : ''}? Esta acao nao pode ser desfeita.`,
+      confirmText: 'Excluir todos',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
+    setBulkLoading(true);
+    const ids = Array.from(sel.selected);
+    const results = await Promise.allSettled(ids.map(id => contabil.deleteClient(id)));
+    const failed = results.filter(r => r.status === 'rejected').length;
+    const ok2 = results.length - failed;
+
+    if (failed === 0) {
+      toast.success(`${ok2} cliente${ok2 > 1 ? 's excluidos' : ' excluido'}`);
+    } else {
+      toast.error(`${ok2} excluido${ok2 > 1 ? 's' : ''}, ${failed} falharam`);
+    }
+    setBulkLoading(false);
+    sel.clear();
+    load();
   };
 
   const handleEdit = async (c) => {
@@ -514,6 +635,31 @@ function ClientsTab() {
         <ClientFormModal client={editClient} onClose={handleFormClose} onSaved={handleFormSaved} />
       )}
 
+      {sel.selectedCount > 0 && (
+        <div className="bulk-actions-bar">
+          <div className="bulk-info">
+            <span className="bulk-count">
+              {sel.selectedCount} selecionado{sel.selectedCount > 1 ? 's' : ''}
+            </span>
+            {sel.allCurrentPageSelected && totalItems > sel.selectedCount && (
+              <button
+                className="bulk-link"
+                onClick={handleSelectAllMatching}
+                disabled={selectingAll}
+              >
+                {selectingAll ? 'Selecionando...' : `Selecionar todos os ${totalItems} clientes`}
+              </button>
+            )}
+          </div>
+          <div className="bulk-actions">
+            <button className="contabil-btn btn-danger" onClick={handleBulkDelete} disabled={bulkLoading}>
+              {Icons.trash} {bulkLoading ? 'Excluindo...' : 'Excluir selecionados'}
+            </button>
+            <button className="contabil-btn" onClick={sel.clear}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="contabil-loading"><div className="spinner" /></div>
       ) : clients.length === 0 ? (
@@ -523,6 +669,13 @@ function ClientsTab() {
           <table className="contabil-table">
             <thead>
               <tr>
+                <th className="checkbox-col">
+                  <MasterCheckbox
+                    checked={sel.allCurrentPageSelected}
+                    indeterminate={sel.indeterminate}
+                    onChange={sel.toggleCurrentPage}
+                  />
+                </th>
                 <th>Codigo</th>
                 <th>Nome</th>
                 <th>Regime</th>
@@ -535,7 +688,10 @@ function ClientsTab() {
             </thead>
             <tbody>
               {clients.map(c => (
-                <tr key={c.id}>
+                <tr key={c.id} className={sel.isSelected(c.id) ? 'row-selected' : ''}>
+                  <td className="checkbox-col">
+                    <input type="checkbox" checked={sel.isSelected(c.id)} onChange={() => sel.toggleOne(c.id)} />
+                  </td>
                   <td className="mono">{c.code}</td>
                   <td>{c.name}</td>
                   <td><span className="badge">{TAX_LABELS[c.taxRegime] || c.taxRegime}</span></td>
@@ -662,6 +818,7 @@ function BillEditModal({ bill, onClose, onSaved }) {
 
 function BillsTab() {
   const toast = useToast();
+  const confirm = useConfirm();
   const [bills, setBills] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -675,8 +832,15 @@ function BillsTab() {
   const [viewBill, setViewBill] = useState(null);
   const [payBill, setPayBill] = useState(null);
   const [editBill, setEditBill] = useState(null);
+  const [totalItems, setTotalItems] = useState(0);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [selectingAll, setSelectingAll] = useState(false);
 
   const debouncedSearch = useDebounce(search);
+
+  const filterKey = `${debouncedSearch}|${competence}|${status}`;
+
+  const sel = useBulkSelection({ items: bills, filterKey });
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -689,6 +853,7 @@ function BillsTab() {
       });
       setBills(data?.data || []);
       setTotal(data?.totalPages || 1);
+      setTotalItems(data?.total ?? data?.totalItems ?? data?.data?.length ?? 0);
     } catch (err) {
       toast.error('Erro ao carregar mensalidades: ' + errMsg(err));
     }
@@ -696,6 +861,75 @@ function BillsTab() {
   }, [page, debouncedSearch, competence, status]);
 
   useEffect(() => { load(); }, [load]);
+
+  const handleSelectAllMatching = async () => {
+    setSelectingAll(true);
+    try {
+      const data = await contabil.listBills({
+        page: 1, limit: 10000,
+        search: debouncedSearch || undefined,
+        competence: competence || undefined,
+        status: status || undefined,
+      });
+      const ids = (data?.data || []).map(b => b.id);
+      sel.selectMany(ids);
+      toast.success(`${ids.length} mensalidades selecionadas`);
+    } catch (err) {
+      toast.error('Erro ao selecionar todos: ' + errMsg(err));
+    }
+    setSelectingAll(false);
+  };
+
+  const handleBulkMarkPaid = async () => {
+    const count = sel.selectedCount;
+    if (count === 0) return;
+    const ok = await confirm({
+      title: `Marcar ${count} como paga${count > 1 ? 's' : ''}`,
+      message: `Marcar ${count} mensalidade${count > 1 ? 's' : ''} como paga${count > 1 ? 's' : ''} via PIX?`,
+      confirmText: 'Confirmar',
+    });
+    if (!ok) return;
+
+    setBulkLoading(true);
+    const ids = Array.from(sel.selected);
+    const results = await Promise.allSettled(ids.map(id => contabil.markBillAsPaid(id, 'PIX')));
+    const failed = results.filter(r => r.status === 'rejected').length;
+    const okCount = results.length - failed;
+    if (failed === 0) {
+      toast.success(`${okCount} mensalidade${okCount > 1 ? 's marcadas' : ' marcada'} como paga${okCount > 1 ? 's' : ''}`);
+    } else {
+      toast.error(`${okCount} ok, ${failed} falharam`);
+    }
+    setBulkLoading(false);
+    sel.clear();
+    load();
+  };
+
+  const handleBulkChangeStatus = async (newStatus) => {
+    const count = sel.selectedCount;
+    if (count === 0) return;
+    const label = STATUS_LABELS[newStatus] || newStatus;
+    const ok = await confirm({
+      title: `Alterar status de ${count}`,
+      message: `Alterar status de ${count} mensalidade${count > 1 ? 's' : ''} para "${label}"?`,
+      confirmText: 'Confirmar',
+    });
+    if (!ok) return;
+
+    setBulkLoading(true);
+    const ids = Array.from(sel.selected);
+    const results = await Promise.allSettled(ids.map(id => contabil.updateBillStatus(id, newStatus)));
+    const failed = results.filter(r => r.status === 'rejected').length;
+    const okCount = results.length - failed;
+    if (failed === 0) {
+      toast.success(`${okCount} status atualizado${okCount > 1 ? 's' : ''}`);
+    } else {
+      toast.error(`${okCount} ok, ${failed} falharam`);
+    }
+    setBulkLoading(false);
+    sel.clear();
+    load();
+  };
 
   const handleGenerate = async () => {
     if (!genComp) return;
@@ -784,6 +1018,37 @@ function BillsTab() {
         <BillEditModal bill={editBill} onClose={() => setEditBill(null)} onSaved={() => { setEditBill(null); load(); }} />
       )}
 
+      {sel.selectedCount > 0 && (
+        <div className="bulk-actions-bar">
+          <div className="bulk-info">
+            <span className="bulk-count">
+              {sel.selectedCount} selecionada{sel.selectedCount > 1 ? 's' : ''}
+            </span>
+            {sel.allCurrentPageSelected && totalItems > sel.selectedCount && (
+              <button
+                className="bulk-link"
+                onClick={handleSelectAllMatching}
+                disabled={selectingAll}
+              >
+                {selectingAll ? 'Selecionando...' : `Selecionar todas as ${totalItems} mensalidades`}
+              </button>
+            )}
+          </div>
+          <div className="bulk-actions">
+            <button className="contabil-btn primary" onClick={handleBulkMarkPaid} disabled={bulkLoading}>
+              {Icons.dollar} {bulkLoading ? 'Processando...' : 'Marcar como pagas'}
+            </button>
+            <button className="contabil-btn" onClick={() => handleBulkChangeStatus('SENT')} disabled={bulkLoading}>
+              Marcar como enviadas
+            </button>
+            <button className="contabil-btn btn-danger" onClick={() => handleBulkChangeStatus('CANCELLED')} disabled={bulkLoading}>
+              Cancelar selecionadas
+            </button>
+            <button className="contabil-btn" onClick={sel.clear}>Limpar</button>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="contabil-loading"><div className="spinner" /></div>
       ) : bills.length === 0 ? (
@@ -793,6 +1058,13 @@ function BillsTab() {
           <table className="contabil-table">
             <thead>
               <tr>
+                <th className="checkbox-col">
+                  <MasterCheckbox
+                    checked={sel.allCurrentPageSelected}
+                    indeterminate={sel.indeterminate}
+                    onChange={sel.toggleCurrentPage}
+                  />
+                </th>
                 <th>Cliente</th>
                 <th>Competencia</th>
                 <th>Vencimento</th>
@@ -803,7 +1075,10 @@ function BillsTab() {
             </thead>
             <tbody>
               {bills.map(b => (
-                <tr key={b.id}>
+                <tr key={b.id} className={sel.isSelected(b.id) ? 'row-selected' : ''}>
+                  <td className="checkbox-col">
+                    <input type="checkbox" checked={sel.isSelected(b.id)} onChange={() => sel.toggleOne(b.id)} />
+                  </td>
                   <td>{b.clientName || '-'}</td>
                   <td>{formatCompetence(b.competence)}</td>
                   <td>{formatDate(b.dueDate)}</td>
@@ -1052,6 +1327,7 @@ function ServicesTab() {
   const toast = useToast();
   const [services, setServices] = useState([]);
   const [total, setTotal] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [sector, setSector] = useState('');
@@ -1060,8 +1336,13 @@ function ServicesTab() {
   const [clients, setClients] = useState([]);
   const [editService, setEditService] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [selectingAll, setSelectingAll] = useState(false);
 
   const debouncedSearch = useDebounce(search);
+
+  const filterKey = `${debouncedSearch}|${sector}|${statusFilter}`;
+  const sel = useBulkSelection({ items: services, filterKey });
 
   const loadClients = useCallback(async () => {
     try {
@@ -1083,6 +1364,7 @@ function ServicesTab() {
       });
       setServices(data?.data || []);
       setTotal(data?.totalPages || 1);
+      setTotalItems(data?.total ?? data?.totalItems ?? data?.data?.length ?? 0);
     } catch (err) {
       toast.error('Erro ao carregar servicos: ' + errMsg(err));
     }
@@ -1091,6 +1373,24 @@ function ServicesTab() {
 
   useEffect(() => { loadClients(); }, [loadClients]);
   useEffect(() => { load(); }, [load]);
+
+  const handleSelectAllMatching = async () => {
+    setSelectingAll(true);
+    try {
+      const data = await contabil.listServices({
+        page: 1, limit: 10000,
+        search: debouncedSearch || undefined,
+        sector: sector || undefined,
+        status: statusFilter || undefined,
+      });
+      const ids = (data?.data || []).map(s => s.id);
+      sel.selectMany(ids);
+      toast.success(`${ids.length} servicos selecionados`);
+    } catch (err) {
+      toast.error('Erro ao selecionar todos: ' + errMsg(err));
+    }
+    setSelectingAll(false);
+  };
 
   const handleDelete = async (id) => {
     const ok = await confirm({ title: 'Excluir servico', message: 'Tem certeza que deseja excluir este servico?', confirmText: 'Excluir', variant: 'danger' });
@@ -1102,6 +1402,32 @@ function ServicesTab() {
     } catch (err) {
       toast.error(errMsg(err));
     }
+  };
+
+  const handleBulkDelete = async () => {
+    const count = sel.selectedCount;
+    if (count === 0) return;
+    const ok = await confirm({
+      title: `Excluir ${count} servico${count > 1 ? 's' : ''}`,
+      message: `Excluir ${count} servico${count > 1 ? 's' : ''}? Esta acao nao pode ser desfeita.`,
+      confirmText: 'Excluir todos',
+      variant: 'danger',
+    });
+    if (!ok) return;
+
+    setBulkLoading(true);
+    const ids = Array.from(sel.selected);
+    const results = await Promise.allSettled(ids.map(id => contabil.deleteService(id)));
+    const failed = results.filter(r => r.status === 'rejected').length;
+    const okCount = results.length - failed;
+    if (failed === 0) {
+      toast.success(`${okCount} servico${okCount > 1 ? 's excluidos' : ' excluido'}`);
+    } else {
+      toast.error(`${okCount} ok, ${failed} falharam`);
+    }
+    setBulkLoading(false);
+    sel.clear();
+    load();
   };
 
   const handleFormClose = () => { setShowForm(false); setEditService(null); };
@@ -1151,6 +1477,31 @@ function ServicesTab() {
         />
       )}
 
+      {sel.selectedCount > 0 && (
+        <div className="bulk-actions-bar">
+          <div className="bulk-info">
+            <span className="bulk-count">
+              {sel.selectedCount} selecionado{sel.selectedCount > 1 ? 's' : ''}
+            </span>
+            {sel.allCurrentPageSelected && totalItems > sel.selectedCount && (
+              <button
+                className="bulk-link"
+                onClick={handleSelectAllMatching}
+                disabled={selectingAll}
+              >
+                {selectingAll ? 'Selecionando...' : `Selecionar todos os ${totalItems} servicos`}
+              </button>
+            )}
+          </div>
+          <div className="bulk-actions">
+            <button className="contabil-btn btn-danger" onClick={handleBulkDelete} disabled={bulkLoading}>
+              {Icons.trash} {bulkLoading ? 'Excluindo...' : 'Excluir selecionados'}
+            </button>
+            <button className="contabil-btn" onClick={sel.clear}>Cancelar</button>
+          </div>
+        </div>
+      )}
+
       {loading ? (
         <div className="contabil-loading"><div className="spinner" /></div>
       ) : services.length === 0 ? (
@@ -1160,6 +1511,13 @@ function ServicesTab() {
           <table className="contabil-table">
             <thead>
               <tr>
+                <th className="checkbox-col">
+                  <MasterCheckbox
+                    checked={sel.allCurrentPageSelected}
+                    indeterminate={sel.indeterminate}
+                    onChange={sel.toggleCurrentPage}
+                  />
+                </th>
                 <th>Cliente</th>
                 <th>Data</th>
                 <th>Setor</th>
@@ -1181,7 +1539,10 @@ function ServicesTab() {
                 if (s.services?.darfIR) svcParts.push(`DARF:${s.services.darfIR}`);
                 if (s.services?.other) svcParts.push(s.services.other);
                 return (
-                  <tr key={s.id}>
+                  <tr key={s.id} className={sel.isSelected(s.id) ? 'row-selected' : ''}>
+                    <td className="checkbox-col">
+                      <input type="checkbox" checked={sel.isSelected(s.id)} onChange={() => sel.toggleOne(s.id)} />
+                    </td>
                     <td>{s.clientName || s.clientCode || '-'}</td>
                     <td>{formatDate(s.serviceDate)}</td>
                     <td><span className="badge">{s.sector}</span></td>
@@ -1225,18 +1586,27 @@ function ImportTab() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const handlePreview = async () => {
-    if (!file) return;
+  const runPreview = async (selectedFile, type) => {
+    if (!selectedFile) return;
     setLoading(true);
     setResult(null);
+    setPreview(null);
     try {
-      const fn = importType === 'clients' ? contabil.importClientsPreview : contabil.importServicesPreview;
-      const data = await fn(file);
+      const fn = type === 'clients' ? contabil.importClientsPreview : contabil.importServicesPreview;
+      const data = await fn(selectedFile);
       setPreview(data);
     } catch (err) {
       toast.error('Erro no preview: ' + errMsg(err));
     }
     setLoading(false);
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+    if (selectedFile) {
+      runPreview(selectedFile, importType);
+    }
   };
 
   const handleImport = async () => {
@@ -1255,19 +1625,26 @@ function ImportTab() {
     setLoading(false);
   };
 
+  const handleTypeChange = (type) => {
+    setImportType(type);
+    setPreview(null);
+    setResult(null);
+    setFile(null);
+  };
+
   return (
     <div className="contabil-section">
       <div className="import-controls">
         <div className="import-type-selector">
           <button
             className={`contabil-btn ${importType === 'clients' ? 'primary' : ''}`}
-            onClick={() => { setImportType('clients'); setPreview(null); setResult(null); setFile(null); }}
+            onClick={() => handleTypeChange('clients')}
           >
             Clientes
           </button>
           <button
             className={`contabil-btn ${importType === 'services' ? 'primary' : ''}`}
-            onClick={() => { setImportType('services'); setPreview(null); setResult(null); setFile(null); }}
+            onClick={() => handleTypeChange('services')}
           >
             Servicos
           </button>
@@ -1277,7 +1654,7 @@ function ImportTab() {
           <input
             type="file"
             accept=".xlsx,.xls"
-            onChange={(e) => { setFile(e.target.files[0]); setPreview(null); setResult(null); }}
+            onChange={handleFileChange}
             id="import-file"
           />
           <label htmlFor="import-file" className="file-label">
@@ -1285,17 +1662,18 @@ function ImportTab() {
           </label>
         </div>
 
-        <div className="import-actions">
-          <button className="contabil-btn" onClick={handlePreview} disabled={!file || loading}>
-            {loading && !preview ? 'Processando...' : 'Visualizar'}
-          </button>
-          {preview && (
+        {preview && (
+          <div className="import-actions">
             <button className="contabil-btn primary" onClick={handleImport} disabled={loading}>
               {loading ? 'Importando...' : 'Confirmar Importacao'}
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
+
+      {loading && !preview && (
+        <div className="contabil-loading"><div className="spinner" /></div>
+      )}
 
       {preview && (
         <div className="import-preview">
@@ -1304,6 +1682,76 @@ function ImportTab() {
             <div className="stat-card accent"><span className="stat-label">Validos</span><span className="stat-value">{preview.validRows ?? preview.valid ?? 0}</span></div>
             <div className="stat-card"><span className="stat-label">Invalidos</span><span className="stat-value text-red">{preview.invalidRows ?? preview.invalid ?? 0}</span></div>
           </div>
+
+          {/* Preview table — shows actual rows that will be imported */}
+          {importType === 'clients' && preview.clients?.length > 0 && (
+            <div className="contabil-table-wrap" style={{ marginTop: '1rem' }}>
+              <table className="contabil-table">
+                <thead>
+                  <tr>
+                    <th>Linha</th>
+                    <th>Codigo</th>
+                    <th>Nome</th>
+                    <th>Regime</th>
+                    <th>Email</th>
+                    <th>Telefone</th>
+                    <th>Valor Base</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {preview.clients.map((c) => (
+                    <tr key={c.rowNumber}>
+                      <td className="mono">{c.rowNumber}</td>
+                      <td className="mono">{c.code || '-'}</td>
+                      <td>{c.name}</td>
+                      <td><span className="badge">{TAX_LABELS[c.taxRegime] || c.taxRegime || '-'}</span></td>
+                      <td>{c.email || '-'}</td>
+                      <td>{c.phone || '-'}</td>
+                      <td className="mono">{formatMoney(c.baseAmount)}</td>
+                      <td className="mono">{formatMoney(c.total)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {importType === 'services' && preview.services?.length > 0 && (
+            <div className="contabil-table-wrap" style={{ marginTop: '1rem' }}>
+              <table className="contabil-table">
+                <thead>
+                  <tr>
+                    <th>Linha</th>
+                    <th>Data</th>
+                    <th>Codigo</th>
+                    <th>Empresa</th>
+                    <th>Setor</th>
+                    <th>NF</th>
+                    <th>DAS</th>
+                    <th>FGTS</th>
+                    <th>INSS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {preview.services.map((s) => (
+                    <tr key={s.rowNumber}>
+                      <td className="mono">{s.rowNumber}</td>
+                      <td>{s.date || '-'}</td>
+                      <td className="mono">{s.code || '-'}</td>
+                      <td>{s.companyName || '-'}</td>
+                      <td><span className="badge">{s.sector || '-'}</span></td>
+                      <td>{s.nf || '-'}</td>
+                      <td className="mono">{s.das || 0}</td>
+                      <td className="mono">{s.fgts || 0}</td>
+                      <td className="mono">{s.inss || 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
           {preview.errors?.length > 0 && (
             <div className="import-errors">
               <h4>Erros encontrados:</h4>

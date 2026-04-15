@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useOrg } from '../context/OrgContext';
-import { users, orgs, platform } from '../services/api';
+import { users, platform } from '../services/api';
 import { useConfirm } from '../components/ConfirmModal';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
@@ -9,12 +8,201 @@ import './Users.css';
 
 const ORG_ROLES = ['owner', 'admin', 'member', 'viewer'];
 const ORG_LABELS = { owner: 'Proprietário', admin: 'Admin', member: 'Membro', viewer: 'Visualizador' };
+const PLATFORM_ROLES = ['superuser', 'admin', 'author', 'user'];
+const PLATFORM_LABELS = { superuser: 'Super Admin', admin: 'Admin', author: 'Autor', user: 'Usuário' };
 
-function PlatformView() {
+const getInitials = (name, email) => {
+  if (name) return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+  return email?.charAt(0).toUpperCase() || '?';
+};
+
+/* ─── Tab: Plataforma ─── */
+function PlatformUsersTab() {
+  const { profile } = useAuth();
+  const confirm = useConfirm();
+  const [userList, setUserList] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [search, setSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
+  const [updatingId, setUpdatingId] = useState(null);
+  const [page, setPage] = useState(1);
+  const limit = 50;
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const params = { page, limit };
+      if (search) params.search = search;
+      if (roleFilter) params.role = roleFilter;
+      const data = await users.list(params);
+      setUserList(data.users || []);
+      setTotal(data.total || 0);
+    } catch (err) {
+      setError(err.message || 'Erro ao carregar usuários');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, search, roleFilter]);
+
+  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { setPage(1); }, [search, roleFilter]);
+
+  const handleRoleChange = async (uid, newRole) => {
+    const label = PLATFORM_LABELS[newRole];
+    const ok = await confirm({
+      title: 'Alterar role de plataforma',
+      message: `Alterar para ${label}?${newRole === 'superuser' ? ' Este usuário terá acesso total à plataforma.' : ''}`,
+      confirmText: 'Confirmar',
+      variant: newRole === 'superuser' ? 'danger' : 'default'
+    });
+    if (!ok) return;
+    setUpdatingId(uid);
+    try {
+      await users.updateRole(uid, newRole);
+      setSuccess(`Role alterada para ${label}`);
+      setTimeout(() => setSuccess(''), 3000);
+      fetchData();
+    } catch (err) {
+      setError(err.message || 'Erro ao alterar role');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
+
+  const formatDate = (d) => new Date(d).toLocaleDateString('pt-BR');
+  const totalPages = Math.ceil(total / limit);
+  const superCount = userList.filter(u => u.role === 'superuser').length;
+
+  return (
+    <>
+      {error && <div className="up-msg up-msg--error">{error}</div>}
+      {success && <div className="up-msg up-msg--success">{success}</div>}
+
+      <div className="up-toolbar">
+        <div className="up-toolbar-left">
+          <div className="up-search-wrap">
+            <svg className="up-search-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <input type="text" placeholder="Buscar por nome ou email..." value={search} onChange={(e) => setSearch(e.target.value)} className="up-search" />
+          </div>
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="up-select">
+            <option value="">Todos os roles</option>
+            {PLATFORM_ROLES.map(r => (
+              <option key={r} value={r}>{PLATFORM_LABELS[r]}</option>
+            ))}
+          </select>
+        </div>
+        <span className="up-result-count">{total} usuário{total !== 1 ? 's' : ''}</span>
+      </div>
+
+      {loading ? (
+        <LoadingSkeleton variant="list" />
+      ) : userList.length === 0 ? (
+        <div className="up-empty"><p>Nenhum usuário encontrado</p></div>
+      ) : (
+        <>
+          {/* Desktop */}
+          <div className="up-table-wrap">
+            <table className="up-table">
+              <thead>
+                <tr>
+                  <th>Usuário</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Criado em</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userList.map(u => {
+                  const isSelf = u.id === profile?.user_id;
+                  return (
+                    <tr key={u.id}>
+                      <td>
+                        <div className="up-user">
+                          {u.avatar ? <img src={u.avatar} alt={u.name} className="up-avatar" /> : <div className="up-initials">{getInitials(u.name, u.email)}</div>}
+                          <span className="up-name">{u.name || '-'}</span>
+                        </div>
+                      </td>
+                      <td className="up-email-cell">{u.email}</td>
+                      <td><span className={`up-role up-role--${u.role}`}>{PLATFORM_LABELS[u.role] || u.role}</span></td>
+                      <td className="up-date-cell">{formatDate(u.created_at)}</td>
+                      <td>
+                        {isSelf ? (
+                          <span className="up-muted">Você</span>
+                        ) : (
+                          <select
+                            value={u.role}
+                            onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                            disabled={updatingId === u.id}
+                            className="up-action-select"
+                          >
+                            {PLATFORM_ROLES.map(r => (
+                              <option key={r} value={r}>{PLATFORM_LABELS[r]}</option>
+                            ))}
+                          </select>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile */}
+          <div className="up-cards">
+            {userList.map(u => {
+              const isSelf = u.id === profile?.user_id;
+              return (
+                <div key={u.id} className="up-card">
+                  <div className="up-card-top">
+                    {u.avatar ? <img src={u.avatar} alt={u.name} className="up-avatar" /> : <div className="up-initials">{getInitials(u.name, u.email)}</div>}
+                    <div className="up-card-info">
+                      <span className="up-name">{u.name || '-'}</span>
+                      <span className="up-card-email">{u.email}</span>
+                    </div>
+                    <span className={`up-role up-role--${u.role}`}>{PLATFORM_LABELS[u.role] || u.role}</span>
+                  </div>
+                  {!isSelf && (
+                    <div className="up-card-actions">
+                      <select value={u.role} onChange={(e) => handleRoleChange(u.id, e.target.value)} disabled={updatingId === u.id} className="up-action-select">
+                        {PLATFORM_ROLES.map(r => (
+                          <option key={r} value={r}>{PLATFORM_LABELS[r]}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="up-pagination">
+              <button className="up-btn-ghost" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>Anterior</button>
+              <span className="up-muted">Página {page} de {totalPages}</span>
+              <button className="up-btn-ghost" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>Próxima</button>
+            </div>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
+/* ─── Tab: Por Empresa ─── */
+function OrgMembersTab() {
   const [orgsList, setOrgsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [selectedOrg, setSelectedOrg] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -31,374 +219,114 @@ function PlatformView() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const getInitials = (name, email) => {
-    if (name) return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-    return email?.charAt(0).toUpperCase() || '?';
-  };
-
-  // Flatten: one row per member, grouped visually by org
-  const rows = [];
+  const q = search.trim().toLowerCase();
+  const visibleOrgs = [];
   for (const org of orgsList) {
-    for (const m of org.members) {
-      rows.push({ ...m, orgName: org.name, orgId: org.id });
+    if (selectedOrg && org.id !== selectedOrg) continue;
+    let members = org.members || [];
+    if (q) members = members.filter(m => m.name?.toLowerCase().includes(q) || m.email?.toLowerCase().includes(q));
+    if (roleFilter) members = members.filter(m => m.org_role === roleFilter);
+    if (members.length > 0) {
+      visibleOrgs.push({ ...org, filteredMembers: members });
     }
   }
 
-  // Filter
-  const filtered = search.trim()
-    ? rows.filter(r => {
-        const q = search.toLowerCase();
-        return r.name?.toLowerCase().includes(q) || r.email?.toLowerCase().includes(q) || r.orgName?.toLowerCase().includes(q);
-      })
-    : rows;
-
-  // Group by org for display
-  const grouped = [];
-  let lastOrg = null;
-  for (const r of filtered) {
-    if (r.orgId !== lastOrg) {
-      grouped.push({ type: 'org', name: r.orgName, id: r.orgId });
-      lastOrg = r.orgId;
-    }
-    grouped.push({ type: 'member', ...r });
-  }
-
-  const orgCount = orgsList.length;
-  const memberCount = filtered.length;
+  const totalFiltered = visibleOrgs.reduce((sum, o) => sum + o.filteredMembers.length, 0);
 
   return (
-    <div className="users-page">
-      <div className="page-header">
-        <div>
-          <h1>Empresas & Membros</h1>
-          <p>{orgCount} empresa{orgCount !== 1 ? 's' : ''} &middot; {memberCount} membro{memberCount !== 1 ? 's' : ''}</p>
+    <>
+      {error && <div className="up-msg up-msg--error">{error}</div>}
+
+      <div className="up-toolbar">
+        <div className="up-toolbar-left">
+          <div className="up-search-wrap">
+            <svg className="up-search-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
+            <input type="text" placeholder="Buscar por nome ou email..." value={search} onChange={(e) => setSearch(e.target.value)} className="up-search" />
+          </div>
+          <select value={selectedOrg} onChange={(e) => setSelectedOrg(e.target.value)} className="up-select">
+            <option value="">Todas as empresas</option>
+            {orgsList.map(o => (
+              <option key={o.id} value={o.id}>{o.name} ({o.members?.length || 0})</option>
+            ))}
+          </select>
+          <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)} className="up-select">
+            <option value="">Todos os roles</option>
+            {ORG_ROLES.map(r => (
+              <option key={r} value={r}>{ORG_LABELS[r]}</option>
+            ))}
+          </select>
         </div>
+        <span className="up-result-count">{totalFiltered} resultado{totalFiltered !== 1 ? 's' : ''}</span>
       </div>
-
-      <div className="users-filters">
-        <form onSubmit={(e) => e.preventDefault()} className="search-form">
-          <input
-            type="text"
-            placeholder="Buscar empresa, nome ou email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="search-input"
-          />
-        </form>
-      </div>
-
-      {error && <div className="users-error">{error}</div>}
 
       {loading ? (
         <LoadingSkeleton variant="list" />
-      ) : filtered.length === 0 ? (
-        <div className="users-empty">Nenhum resultado encontrado</div>
+      ) : visibleOrgs.length === 0 ? (
+        <div className="up-empty"><p>Nenhum resultado encontrado</p></div>
       ) : (
-        <>
-          {/* Desktop */}
-          <div className="users-table-wrapper">
-            <table className="users-table">
-              <thead>
-                <tr>
-                  <th>Membro</th>
-                  <th>Email</th>
-                  <th>Empresa</th>
-                  <th>Role</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((r, i) => (
-                  <tr key={`${r.user_id}-${r.orgId}-${i}`}>
-                    <td className="user-cell">
-                      {r.avatar ? (
-                        <img src={r.avatar} alt={r.name} className="user-avatar" />
-                      ) : (
-                        <div className="user-initials">{getInitials(r.name, r.email)}</div>
-                      )}
-                      <span className="user-name">{r.name || '-'}</span>
-                    </td>
-                    <td>{r.email}</td>
-                    <td><span className="org-name-cell">{r.orgName}</span></td>
-                    <td>
-                      <span className={`role-badge role-${r.org_role}`}>
-                        {ORG_LABELS[r.org_role] || r.org_role}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="up-groups">
+          {visibleOrgs.map(org => (
+            <div key={org.id} className="up-group">
+              <div className="up-group-header">
+                <span className="up-group-name">{org.name}</span>
+                <span className="up-group-count">{org.filteredMembers.length}</span>
+              </div>
 
-          {/* Mobile */}
-          <div className="users-cards">
-            {grouped.map((item, i) => (
-              item.type === 'org' ? (
-                <div key={`org-${item.id}`} className="mobile-org-divider">
-                  {item.name}
-                </div>
-              ) : (
-                <div key={`${item.user_id}-${item.orgId}-${i}`} className="user-card">
-                  <div className="user-card-header">
-                    {item.avatar ? (
-                      <img src={item.avatar} alt={item.name} className="user-avatar" />
-                    ) : (
-                      <div className="user-initials">{getInitials(item.name, item.email)}</div>
-                    )}
-                    <div className="user-card-info">
-                      <span className="user-name">{item.name || '-'}</span>
-                      <span className="user-email">{item.email}</span>
+              {/* Desktop table */}
+              <div className="up-table-wrap">
+                <table className="up-table">
+                  <thead>
+                    <tr>
+                      <th>Membro</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {org.filteredMembers.map((m, i) => (
+                      <tr key={`${m.user_id}-${i}`}>
+                        <td>
+                          <div className="up-user">
+                            {m.avatar ? <img src={m.avatar} alt={m.name} className="up-avatar" /> : <div className="up-initials">{getInitials(m.name, m.email)}</div>}
+                            <span className="up-name">{m.name || '-'}</span>
+                          </div>
+                        </td>
+                        <td className="up-email-cell">{m.email}</td>
+                        <td><span className={`up-role up-role--${m.org_role}`}>{ORG_LABELS[m.org_role] || m.org_role}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <div className="up-cards">
+                {org.filteredMembers.map((m, i) => (
+                  <div key={`${m.user_id}-${i}`} className="up-card">
+                    <div className="up-card-top">
+                      {m.avatar ? <img src={m.avatar} alt={m.name} className="up-avatar" /> : <div className="up-initials">{getInitials(m.name, m.email)}</div>}
+                      <div className="up-card-info">
+                        <span className="up-name">{m.name || '-'}</span>
+                        <span className="up-card-email">{m.email}</span>
+                      </div>
+                      <span className={`up-role up-role--${m.org_role}`}>{ORG_LABELS[m.org_role] || m.org_role}</span>
                     </div>
-                    <span className={`role-badge role-${item.org_role}`}>
-                      {ORG_LABELS[item.org_role] || item.org_role}
-                    </span>
                   </div>
-                </div>
-              )
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function OrgMembersView() {
-  const { hasOrgRole, usage, refreshUsage, subscription } = useOrg();
-  const confirm = useConfirm();
-  const [userList, setUserList] = useState([]);
-  const [invitations, setInvitations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('');
-  const [updatingId, setUpdatingId] = useState(null);
-  const [showInvite, setShowInvite] = useState(false);
-  const [invEmail, setInvEmail] = useState('');
-  const [invRole, setInvRole] = useState('member');
-  const [inviting, setInviting] = useState(false);
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError('');
-    try {
-      const data = await orgs.listMembers();
-      let members = data.members || [];
-      if (search) {
-        const q = search.toLowerCase();
-        members = members.filter(m => m.name?.toLowerCase().includes(q) || m.email?.toLowerCase().includes(q));
-      }
-      if (roleFilter) members = members.filter(m => m.org_role === roleFilter);
-      setUserList(members);
-      setInvitations((data.invitations || []).filter(i => i.status === 'pending'));
-    } catch (err) {
-      setError(err.message || 'Erro ao carregar usuários');
-    } finally {
-      setLoading(false);
-    }
-  }, [roleFilter, search]);
-
-  useEffect(() => { fetchData(); }, [fetchData]);
-
-  const handleOrgRoleChange = async (uid, newRole) => {
-    setUpdatingId(uid);
-    try {
-      await orgs.updateMemberRole(uid, newRole);
-      setSuccess('Role atualizada');
-      setTimeout(() => setSuccess(''), 3000);
-      fetchData();
-    } catch (err) { setError(err.message || 'Erro ao atualizar role'); }
-    finally { setUpdatingId(null); }
-  };
-
-  const handleRemoveMember = async (uid, name) => {
-    const ok = await confirm({ title: 'Remover membro', message: `Remover ${name || 'este membro'}?`, confirmText: 'Remover', variant: 'danger' });
-    if (!ok) return;
-    try {
-      await orgs.removeMember(uid);
-      setSuccess('Membro removido');
-      setTimeout(() => setSuccess(''), 3000);
-      await Promise.all([fetchData(), refreshUsage()]);
-    } catch (err) { setError(err.message || 'Erro ao remover'); }
-  };
-
-  const handleInvite = async (e) => {
-    e.preventDefault();
-    if (!invEmail.trim()) return;
-    setInviting(true);
-    setError('');
-    try {
-      await orgs.inviteMember({ email: invEmail.trim(), org_role: invRole });
-      setInvEmail('');
-      setShowInvite(false);
-      setSuccess('Convite enviado');
-      setTimeout(() => setSuccess(''), 3000);
-      await Promise.all([fetchData(), refreshUsage()]);
-    } catch (err) { setError(err.message || 'Erro ao convidar'); }
-    finally { setInviting(false); }
-  };
-
-  const getInitials = (name, email) => {
-    if (name) return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
-    return email?.charAt(0).toUpperCase() || '?';
-  };
-
-  const formatDate = (d) => new Date(d).toLocaleDateString('pt-BR');
-  const total = userList.length;
-  const memberLimit = usage?.limits?.max_members ?? 1;
-  const memberCount = usage?.usage?.members ?? 0;
-  const atLimit = memberLimit !== -1 && memberCount >= memberLimit;
-  const canManage = hasOrgRole('owner', 'admin');
-
-  return (
-    <div className="users-page">
-      <div className="page-header">
-        <div>
-          <h1>Membros da Empresa</h1>
-          <p>{total} membro{total !== 1 ? 's' : ''}{memberLimit !== -1 ? ` / ${memberLimit} do plano` : ''}</p>
-        </div>
-        {canManage && (
-          <button className="invite-btn" onClick={() => setShowInvite(true)} disabled={atLimit}>
-            {atLimit ? 'Limite atingido' : '+ Convidar'}
-          </button>
-        )}
-      </div>
-
-      {showInvite && (
-        <form onSubmit={handleInvite} className="invite-form-bar">
-          <input type="email" placeholder="Email do membro" value={invEmail} onChange={(e) => setInvEmail(e.target.value)} autoFocus />
-          <select value={invRole} onChange={(e) => setInvRole(e.target.value)}>
-            <option value="member">Membro</option>
-            <option value="admin">Admin</option>
-            <option value="viewer">Visualizador</option>
-          </select>
-          <button type="submit" className="search-button" disabled={inviting}>{inviting ? 'Enviando...' : 'Enviar convite'}</button>
-          <button type="button" className="cancel-btn" onClick={() => setShowInvite(false)}>Cancelar</button>
-        </form>
-      )}
-
-      {atLimit && (
-        <div className="users-upgrade-hint">
-          Limite de membros do plano <strong>{subscription?.plan_id || 'free'}</strong> atingido.
-        </div>
-      )}
-
-      <div className="users-filters">
-        <form onSubmit={(e) => { e.preventDefault(); fetchData(); }} className="search-form">
-          <input type="text" placeholder="Buscar por nome ou email..." value={search} onChange={(e) => setSearch(e.target.value)} className="search-input" />
-          <button type="submit" className="search-button">Buscar</button>
-        </form>
-        <div className="role-filters">
-          <button className={`role-filter ${roleFilter === '' ? 'active' : ''}`} onClick={() => setRoleFilter('')}>Todos</button>
-          {ORG_ROLES.map(r => (
-            <button key={r} className={`role-filter ${roleFilter === r ? 'active' : ''}`} onClick={() => setRoleFilter(r)}>{ORG_LABELS[r]}</button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
-      </div>
-
-      {error && <div className="users-error">{error}</div>}
-      {success && <div className="users-success">{success}</div>}
-
-      {loading ? (
-        <LoadingSkeleton variant="list" />
-      ) : (
-        <>
-          <div className="users-table-wrapper">
-            <table className="users-table">
-              <thead>
-                <tr>
-                  <th>Usuário</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Entrou em</th>
-                  {canManage && <th>Ações</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {userList.map(u => {
-                  const isOwner = u.org_role === 'owner';
-                  return (
-                    <tr key={u.user_id}>
-                      <td className="user-cell">
-                        {u.avatar ? <img src={u.avatar} alt={u.name} className="user-avatar" /> : <div className="user-initials">{getInitials(u.name, u.email)}</div>}
-                        <span className="user-name">{u.name || '-'}</span>
-                      </td>
-                      <td>{u.email}</td>
-                      <td><span className={`role-badge role-${u.org_role}`}>{ORG_LABELS[u.org_role] || u.org_role}</span></td>
-                      <td>{formatDate(u.joined_at)}</td>
-                      {canManage && (
-                        <td className="actions-cell">
-                          {!isOwner ? (
-                            <div className="org-actions">
-                              <select value={u.org_role} onChange={(e) => handleOrgRoleChange(u.user_id, e.target.value)} disabled={updatingId === u.user_id} className="role-select">
-                                <option value="admin">Admin</option>
-                                <option value="member">Membro</option>
-                                <option value="viewer">Visualizador</option>
-                              </select>
-                              <button className="remove-btn" onClick={() => handleRemoveMember(u.user_id, u.name)}>Remover</button>
-                            </div>
-                          ) : <span className="no-actions">Proprietário</span>}
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="users-cards">
-            {userList.map(u => {
-              const isOwner = u.org_role === 'owner';
-              return (
-                <div key={u.user_id} className="user-card">
-                  <div className="user-card-header">
-                    {u.avatar ? <img src={u.avatar} alt={u.name} className="user-avatar" /> : <div className="user-initials">{getInitials(u.name, u.email)}</div>}
-                    <div className="user-card-info">
-                      <span className="user-name">{u.name || '-'}</span>
-                      <span className="user-email">{u.email}</span>
-                    </div>
-                    <span className={`role-badge role-${u.org_role}`}>{ORG_LABELS[u.org_role] || u.org_role}</span>
-                  </div>
-                  {canManage && !isOwner && (
-                    <div className="user-card-actions">
-                      <select value={u.org_role} onChange={(e) => handleOrgRoleChange(u.user_id, e.target.value)} disabled={updatingId === u.user_id} className="role-select">
-                        <option value="admin">Admin</option>
-                        <option value="member">Membro</option>
-                        <option value="viewer">Visualizador</option>
-                      </select>
-                      <button className="remove-btn" onClick={() => handleRemoveMember(u.user_id, u.name)}>Remover</button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {invitations.length > 0 && (
-            <div className="invitations-section">
-              <h3>Convites pendentes</h3>
-              {invitations.map(inv => (
-                <div key={inv.id} className="invitation-row">
-                  <span className="inv-email">{inv.email}</span>
-                  <span className={`role-badge role-${inv.org_role}`}>{ORG_LABELS[inv.org_role] || inv.org_role}</span>
-                  <span className="inv-date">Enviado {formatDate(inv.created_at)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {userList.length === 0 && <div className="users-empty">Nenhum usuário encontrado</div>}
-        </>
       )}
-    </div>
+    </>
   );
 }
 
+/* ─── Main Component ─── */
 export default function Users() {
   const { profile } = useAuth();
   const isSuperuser = profile?.role === 'superuser' || profile?.role === 'superadmin';
+  const [tab, setTab] = useState('platform');
 
   if (!isSuperuser) {
     return (
@@ -412,7 +340,26 @@ export default function Users() {
 
   return (
     <AdminLayout>
-      <PlatformView />
+      <div className="up">
+        <div className="up-header">
+          <div>
+            <h1 className="up-title">Usuários</h1>
+            <p className="up-subtitle">Gestão de usuários e permissões da plataforma</p>
+          </div>
+        </div>
+
+        <div className="up-tabs">
+          <button className={`up-tab ${tab === 'platform' ? 'up-tab--active' : ''}`} onClick={() => setTab('platform')}>
+            Plataforma
+          </button>
+          <button className={`up-tab ${tab === 'orgs' ? 'up-tab--active' : ''}`} onClick={() => setTab('orgs')}>
+            Por Empresa
+          </button>
+        </div>
+
+        {tab === 'platform' && <PlatformUsersTab />}
+        {tab === 'orgs' && <OrgMembersTab />}
+      </div>
     </AdminLayout>
   );
 }

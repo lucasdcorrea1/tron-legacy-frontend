@@ -459,6 +459,7 @@ export function MembersTab() {
                 {canManage && (
                   <div className="member-actions">
                     <button
+                      type="button"
                       className="settings-btn sm"
                       onClick={() => handleResendInvite(inv.id, inv.email)}
                       disabled={resendingId === inv.id}
@@ -467,7 +468,8 @@ export function MembersTab() {
                       {resendingId === inv.id ? 'Reenviando...' : 'Reenviar'}
                     </button>
                     <button
-                      className="member-remove"
+                      type="button"
+                      className="settings-btn sm danger"
                       onClick={() => handleCancelInvite(inv.id, inv.email)}
                       title="Cancelar convite"
                     >

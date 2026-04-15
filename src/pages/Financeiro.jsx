@@ -14,8 +14,12 @@ const EVENT_LABELS = {
   PAYMENT_OVERDUE: 'Pagamento vencido',
   PAYMENT_DELETED: 'Pagamento excluído',
   PAYMENT_REFUNDED: 'Pagamento estornado',
+  PAYMENT_UPDATED: 'Pagamento atualizado',
+  SUBSCRIPTION_CREATED: 'Assinatura criada',
+  SUBSCRIPTION_UPDATED: 'Assinatura atualizada',
   SUBSCRIPTION_DELETED: 'Assinatura cancelada',
   SUBSCRIPTION_INACTIVATED: 'Assinatura inativada',
+  AUTO_DOWNGRADE: 'Rebaixamento automático',
 };
 
 const RESULT_COLORS = {
@@ -25,11 +29,18 @@ const RESULT_COLORS = {
   ignored: '#f59e0b',
 };
 
+const STATUS_LABELS = {
+  active: 'Ativo',
+  pending: 'Pendente',
+  past_due: 'Inadimplente',
+  canceled: 'Cancelado',
+};
+
 export default function Financeiro() {
   const { profile } = useAuth();
   const isSuperuser = profile?.role === 'superuser' || profile?.role === 'superadmin';
 
-  const [tab, setTab] = useState('subscriptions'); // subscriptions | webhooks
+  const [tab, setTab] = useState('subscriptions');
   const [balance, setBalance] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -42,6 +53,22 @@ export default function Financeiro() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [actionLoading, setActionLoading] = useState(null);
 
+  // Overdue state
+  const [overdueData, setOverdueData] = useState(null);
+  const [overdueLoading, setOverdueLoading] = useState(true);
+  const [graceInput, setGraceInput] = useState({});
+  const [expandedPayments, setExpandedPayments] = useState({});
+  const [orgPayments, setOrgPayments] = useState({});
+
+  // Revenue state
+  const [revenueMetrics, setRevenueMetrics] = useState(null);
+  const [revenueLoading, setRevenueLoading] = useState(true);
+
+  // Jobs state
+  const [jobs, setJobs] = useState([]);
+  const [jobsLoading, setJobsLoading] = useState(true);
+  const [triggeringJob, setTriggeringJob] = useState(null);
+
   // Webhook state
   const [webhookLogs, setWebhookLogs] = useState([]);
   const [webhookStats, setWebhookStats] = useState(null);
@@ -52,6 +79,8 @@ export default function Financeiro() {
   const [whPage, setWhPage] = useState(1);
   const [whTotal, setWhTotal] = useState(0);
   const [expandedLog, setExpandedLog] = useState(null);
+
+  // ── Fetch functions ──────────────────────────────────────────
 
   const fetchBalance = useCallback(async () => {
     setLoading(true);
@@ -75,6 +104,33 @@ export default function Financeiro() {
     finally { setSubsLoading(false); }
   }, []);
 
+  const fetchOverdue = useCallback(async () => {
+    setOverdueLoading(true);
+    try {
+      const data = await platform.overdueSubscriptions();
+      setOverdueData(data);
+    } catch { /* ignore */ }
+    finally { setOverdueLoading(false); }
+  }, []);
+
+  const fetchRevenue = useCallback(async () => {
+    setRevenueLoading(true);
+    try {
+      const data = await platform.revenueMetrics();
+      setRevenueMetrics(data);
+    } catch { /* ignore */ }
+    finally { setRevenueLoading(false); }
+  }, []);
+
+  const fetchJobs = useCallback(async () => {
+    setJobsLoading(true);
+    try {
+      const data = await platform.listJobs();
+      setJobs(data.jobs || []);
+    } catch { /* ignore */ }
+    finally { setJobsLoading(false); }
+  }, []);
+
   const fetchWebhookLogs = useCallback(async () => {
     setWhLoading(true);
     try {
@@ -96,17 +152,24 @@ export default function Financeiro() {
     } catch { /* ignore */ }
   }, []);
 
+  // ── Effects ──────────────────────────────────────────────────
+
   useEffect(() => {
     if (!isSuperuser) return;
     fetchBalance();
     fetchSubscriptions();
     fetchWebhookStats();
-  }, [isSuperuser, fetchBalance, fetchSubscriptions, fetchWebhookStats]);
+    fetchRevenue();
+  }, [isSuperuser, fetchBalance, fetchSubscriptions, fetchWebhookStats, fetchRevenue]);
 
   useEffect(() => {
-    if (!isSuperuser || tab !== 'webhooks') return;
-    fetchWebhookLogs();
-  }, [isSuperuser, tab, fetchWebhookLogs]);
+    if (!isSuperuser) return;
+    if (tab === 'webhooks') fetchWebhookLogs();
+    if (tab === 'overdue') fetchOverdue();
+    if (tab === 'jobs') fetchJobs();
+  }, [isSuperuser, tab, fetchWebhookLogs, fetchOverdue, fetchJobs]);
+
+  // ── Handlers ─────────────────────────────────────────────────
 
   const handleChangePlan = async (orgId, newPlan) => {
     setActionLoading(orgId + '-plan');
@@ -134,6 +197,54 @@ export default function Financeiro() {
     finally { setActionLoading(null); }
   };
 
+  const handleTriggerJob = async (jobId) => {
+    setTriggeringJob(jobId);
+    try {
+      await platform.triggerJob(jobId);
+      // Poll for updated status after a short delay
+      setTimeout(() => fetchJobs(), 1500);
+    } catch { /* ignore */ }
+    finally { setTriggeringJob(null); }
+  };
+
+  const handleExtendGrace = async (orgId) => {
+    const days = parseInt(graceInput[orgId]);
+    if (!days || days < 1) return;
+    setActionLoading(orgId + '-grace');
+    try {
+      await platform.extendGracePeriod(orgId, days);
+      await fetchOverdue();
+      setGraceInput(prev => ({ ...prev, [orgId]: '' }));
+    } catch { /* ignore */ }
+    finally { setActionLoading(null); }
+  };
+
+  const handleSyncOrg = async (orgId) => {
+    setActionLoading(orgId + '-sync');
+    try {
+      await platform.syncOrgBilling(orgId);
+      await fetchOverdue();
+      await fetchSubscriptions();
+    } catch { /* ignore */ }
+    finally { setActionLoading(null); }
+  };
+
+  const handleTogglePayments = async (orgId) => {
+    if (expandedPayments[orgId]) {
+      setExpandedPayments(prev => ({ ...prev, [orgId]: false }));
+      return;
+    }
+    setActionLoading(orgId + '-payments');
+    try {
+      const data = await platform.getOrgPayments(orgId);
+      setOrgPayments(prev => ({ ...prev, [orgId]: data.payments || [] }));
+      setExpandedPayments(prev => ({ ...prev, [orgId]: true }));
+    } catch { /* ignore */ }
+    finally { setActionLoading(null); }
+  };
+
+  // ── Formatters ───────────────────────────────────────────────
+
   const formatCurrency = (value) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
@@ -142,6 +253,13 @@ export default function Financeiro() {
     const d = new Date(dateStr);
     return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }) + ' ' +
       d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatShortDate = (dateStr) => {
+    if (!dateStr) return '-';
+    const d = new Date(dateStr);
+    if (d.getFullYear() < 2000) return '-';
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
   };
 
   const timeAgo = (dateStr) => {
@@ -156,6 +274,18 @@ export default function Financeiro() {
     return `${days}d atrás`;
   };
 
+  const refreshAll = () => {
+    fetchBalance();
+    fetchSubscriptions();
+    fetchWebhookStats();
+    fetchRevenue();
+    if (tab === 'webhooks') fetchWebhookLogs();
+    if (tab === 'overdue') fetchOverdue();
+    if (tab === 'jobs') fetchJobs();
+  };
+
+  // ── Access check ─────────────────────────────────────────────
+
   if (!isSuperuser) {
     return (
       <AdminLayout>
@@ -166,7 +296,8 @@ export default function Financeiro() {
     );
   }
 
-  // Filter subscriptions
+  // ── Derived data ─────────────────────────────────────────────
+
   const filtered = subscriptions.filter(s => {
     if (search) {
       const q = search.toLowerCase();
@@ -179,16 +310,18 @@ export default function Financeiro() {
 
   const stats = {
     total: subscriptions.length,
-    active: subscriptions.filter(s => s.subscription?.status === 'active').length,
-    byPlan: PLAN_OPTIONS.reduce((acc, p) => { acc[p] = subscriptions.filter(s => s.subscription?.plan_id === p).length; return acc; }, {}),
+    active: subscriptions.filter(s => s.subscription?.status === 'active' && s.subscription?.plan_id !== 'free').length,
+    overdueCount: overdueData?.total || subscriptions.filter(s => s.subscription?.status === 'past_due').length,
   };
+
+  // ── Render ───────────────────────────────────────────────────
 
   return (
     <AdminLayout>
       <div className="fin-page">
         <div className="fin-header">
           <h1>Financeiro</h1>
-          <button className="fin-refresh" onClick={() => { fetchBalance(); fetchSubscriptions(); fetchWebhookStats(); if (tab === 'webhooks') fetchWebhookLogs(); }} disabled={loading}>
+          <button className="fin-refresh" onClick={refreshAll} disabled={loading}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="16" height="16">
               <polyline points="23 4 23 10 17 10" />
               <polyline points="1 20 1 14 7 14" />
@@ -218,11 +351,31 @@ export default function Financeiro() {
             )}
             <div className="fin-card-source">Asaas</div>
           </div>
-          <div className="fin-card">
-            <div className="fin-card-label">Empresas</div>
-            <div className="fin-card-value" style={{ fontSize: '2rem', color: '#fafafa' }}>{stats.total}</div>
-            <div className="fin-card-source">{stats.active} ativas</div>
+
+          <div className="fin-card fin-card-mrr">
+            <div className="fin-card-label">MRR</div>
+            {revenueMetrics ? (
+              <>
+                <div className="fin-card-value" style={{ color: '#3b82f6' }}>
+                  {formatCurrency(revenueMetrics.mrr || 0)}
+                </div>
+                <div className="fin-card-source">{revenueMetrics.active_paid || 0} assinantes pagos</div>
+              </>
+            ) : (
+              <div className="fin-card-loading"><div className="fin-spinner" /></div>
+            )}
           </div>
+
+          <div className={`fin-card ${stats.overdueCount > 0 ? 'fin-card-danger' : ''}`}>
+            <div className="fin-card-label">Inadimplentes</div>
+            <div className="fin-card-value" style={{ color: stats.overdueCount > 0 ? '#ef4444' : '#22c55e', fontSize: '2rem' }}>
+              {stats.overdueCount}
+            </div>
+            <div className="fin-card-source">
+              {overdueData?.imminent_count > 0 ? `${overdueData.imminent_count} rebaixamento(s) iminente(s)` : 'Nenhum rebaixamento iminente'}
+            </div>
+          </div>
+
           <div className="fin-card">
             <div className="fin-card-label">Webhook</div>
             {webhookStats ? (
@@ -246,10 +399,20 @@ export default function Financeiro() {
         {/* Tabs */}
         <div className="fin-tabs">
           <button className={`fin-tab ${tab === 'subscriptions' ? 'active' : ''}`} onClick={() => setTab('subscriptions')}>
-            Assinaturas ({stats.total})
+            Assinaturas ({subscriptions.length})
+          </button>
+          <button className={`fin-tab ${tab === 'overdue' ? 'active' : ''}`} onClick={() => setTab('overdue')}>
+            Inadimplentes
+            {stats.overdueCount > 0 && <span className="fin-tab-badge fin-tab-badge-danger">{stats.overdueCount}</span>}
+          </button>
+          <button className={`fin-tab ${tab === 'revenue' ? 'active' : ''}`} onClick={() => setTab('revenue')}>
+            Receita
           </button>
           <button className={`fin-tab ${tab === 'webhooks' ? 'active' : ''}`} onClick={() => setTab('webhooks')}>
             Webhook Logs {webhookStats?.errors > 0 && <span className="fin-tab-badge">{webhookStats.errors}</span>}
+          </button>
+          <button className={`fin-tab ${tab === 'jobs' ? 'active' : ''}`} onClick={() => setTab('jobs')}>
+            Jobs
           </button>
         </div>
 
@@ -266,6 +429,7 @@ export default function Financeiro() {
                 <option value="all">Todos os status</option>
                 <option value="active">Ativo</option>
                 <option value="pending">Pendente</option>
+                <option value="past_due">Inadimplente</option>
                 <option value="canceled">Cancelado</option>
               </select>
             </div>
@@ -283,6 +447,8 @@ export default function Financeiro() {
                       <th>Proprietário</th>
                       <th>Membros</th>
                       <th>Plano</th>
+                      <th>Ciclo</th>
+                      <th>Próx. cobrança</th>
                       <th>Status</th>
                       <th>Ações</th>
                     </tr>
@@ -308,9 +474,15 @@ export default function Financeiro() {
                               {PLAN_OPTIONS.map(p => (<option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>))}
                             </select>
                           </td>
+                          <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>
+                            {sub?.billing_cycle === 'yearly' ? 'Anual' : sub?.billing_cycle === 'monthly' ? 'Mensal' : '-'}
+                          </td>
+                          <td style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+                            {formatShortDate(sub?.next_due_date)}
+                          </td>
                           <td>
                             <span className={`fin-status-badge ${status}`}>
-                              {status === 'active' ? 'Ativo' : status === 'pending' ? 'Pendente' : status === 'canceled' ? 'Cancelado' : status}
+                              {STATUS_LABELS[status] || status}
                             </span>
                           </td>
                           <td>
@@ -328,10 +500,243 @@ export default function Financeiro() {
           </div>
         )}
 
+        {/* ── Overdue Tab ──────────────────────────────────────── */}
+        {tab === 'overdue' && (
+          <div className="fin-subs-section">
+            {overdueLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem 0' }}><div className="fin-spinner" style={{ margin: '0 auto' }} /></div>
+            ) : !overdueData || overdueData.total === 0 ? (
+              <div className="fin-overdue-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" width="40" height="40"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></svg>
+                <p>Nenhuma assinatura inadimplente. Tudo em dia!</p>
+              </div>
+            ) : (
+              <>
+                {overdueData.imminent_count > 0 && (
+                  <div className="fin-overdue-alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
+                    <span>
+                      <strong>{overdueData.total}</strong> assinatura(s) inadimplente(s) &mdash;{' '}
+                      <strong>{overdueData.imminent_count}</strong> será(ão) rebaixada(s) nas próximas 24h
+                    </span>
+                  </div>
+                )}
+
+                <div className="fin-subs-table-wrap">
+                  <table className="fin-subs-table">
+                    <thead>
+                      <tr>
+                        <th>Empresa</th>
+                        <th>Proprietário</th>
+                        <th>Plano</th>
+                        <th>Dias inadimplente</th>
+                        <th>Graça restante</th>
+                        <th>Ações</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {overdueData.overdue.map(item => (
+                        <>
+                          <tr key={item.org_id} className={item.grace_days_left <= 1 ? 'fin-row-urgent' : ''}>
+                            <td>
+                              <div className="fin-org-name">{item.org_name}</div>
+                            </td>
+                            <td>
+                              <div className="fin-owner-name">{item.owner_name}</div>
+                              <div className="fin-owner-email">{item.owner_email}</div>
+                            </td>
+                            <td>
+                              <span style={{ color: PLAN_COLORS[item.plan_id], fontWeight: 600, fontSize: '0.85rem' }}>
+                                {item.plan_id?.charAt(0).toUpperCase() + item.plan_id?.slice(1)}
+                              </span>
+                            </td>
+                            <td className="fin-center">
+                              <span className="fin-overdue-days">{item.days_overdue}d</span>
+                            </td>
+                            <td className="fin-center">
+                              <span className={`fin-grace-left ${item.grace_days_left <= 1 ? 'urgent' : item.grace_days_left <= 2 ? 'warning' : ''}`}>
+                                {item.grace_days_left}d
+                              </span>
+                            </td>
+                            <td>
+                              <div className="fin-overdue-actions">
+                                <div className="fin-grace-extend">
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    max="30"
+                                    placeholder="dias"
+                                    className="fin-grace-input"
+                                    value={graceInput[item.org_id] || ''}
+                                    onChange={e => setGraceInput(prev => ({ ...prev, [item.org_id]: e.target.value }))}
+                                  />
+                                  <button
+                                    className="fin-action-btn success"
+                                    onClick={() => handleExtendGrace(item.org_id)}
+                                    disabled={actionLoading === item.org_id + '-grace' || !graceInput[item.org_id]}
+                                    title="Estender período de graça"
+                                  >
+                                    {actionLoading === item.org_id + '-grace' ? '...' : 'Estender'}
+                                  </button>
+                                </div>
+                                <button
+                                  className="fin-action-btn sync"
+                                  onClick={() => handleSyncOrg(item.org_id)}
+                                  disabled={actionLoading === item.org_id + '-sync'}
+                                  title="Sincronizar com Asaas"
+                                >
+                                  {actionLoading === item.org_id + '-sync' ? '...' : 'Sync'}
+                                </button>
+                                <button
+                                  className="fin-action-btn neutral"
+                                  onClick={() => handleTogglePayments(item.org_id)}
+                                  disabled={actionLoading === item.org_id + '-payments'}
+                                  title="Ver histórico de pagamentos"
+                                >
+                                  {actionLoading === item.org_id + '-payments' ? '...' : expandedPayments[item.org_id] ? 'Ocultar' : 'Pagamentos'}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                          {expandedPayments[item.org_id] && orgPayments[item.org_id] && (
+                            <tr key={item.org_id + '-payments'} className="fin-detail-row">
+                              <td colSpan={6}>
+                                <div className="fin-payments-list">
+                                  <strong style={{ fontSize: '0.78rem', color: 'var(--admin-text-muted)' }}>Histórico de pagamentos (Asaas)</strong>
+                                  {orgPayments[item.org_id].length === 0 ? (
+                                    <p style={{ color: 'var(--admin-text-muted)', fontSize: '0.8rem' }}>Nenhum pagamento encontrado.</p>
+                                  ) : (
+                                    <table className="fin-payments-table">
+                                      <thead>
+                                        <tr>
+                                          <th>ID</th>
+                                          <th>Status</th>
+                                          <th>Valor</th>
+                                          <th>Método</th>
+                                          <th>Link</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {orgPayments[item.org_id].map(p => (
+                                          <tr key={p.id}>
+                                            <td style={{ fontSize: '0.72rem', color: 'var(--admin-text-muted)' }}>{p.id}</td>
+                                            <td>
+                                              <span className={`fin-payment-status ${p.status?.toLowerCase()}`}>{p.status}</span>
+                                            </td>
+                                            <td>{formatCurrency(p.value)}</td>
+                                            <td style={{ fontSize: '0.78rem' }}>{p.billingType}</td>
+                                            <td>
+                                              {p.invoiceUrl ? (
+                                                <a href={p.invoiceUrl} target="_blank" rel="noopener noreferrer" className="fin-payment-link">Fatura</a>
+                                              ) : '-'}
+                                            </td>
+                                          </tr>
+                                        ))}
+                                      </tbody>
+                                    </table>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ── Revenue Tab ──────────────────────────────────────── */}
+        {tab === 'revenue' && (
+          <div className="fin-subs-section">
+            {revenueLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem 0' }}><div className="fin-spinner" style={{ margin: '0 auto' }} /></div>
+            ) : !revenueMetrics ? (
+              <div className="fin-subs-empty">Erro ao carregar métricas de receita.</div>
+            ) : (
+              <>
+                <div className="fin-revenue-grid">
+                  <div className="fin-metric-card">
+                    <div className="fin-metric-label">MRR</div>
+                    <div className="fin-metric-value" style={{ color: '#3b82f6' }}>{formatCurrency(revenueMetrics.mrr)}</div>
+                    <div className="fin-metric-sub">Receita mensal recorrente</div>
+                  </div>
+                  <div className="fin-metric-card">
+                    <div className="fin-metric-label">ARR</div>
+                    <div className="fin-metric-value" style={{ color: '#8b5cf6' }}>{formatCurrency(revenueMetrics.arr)}</div>
+                    <div className="fin-metric-sub">Receita anual recorrente</div>
+                  </div>
+                  <div className="fin-metric-card">
+                    <div className="fin-metric-label">Assinantes pagos</div>
+                    <div className="fin-metric-value" style={{ color: '#22c55e' }}>{revenueMetrics.active_paid}</div>
+                    <div className="fin-metric-sub">Planos ativos (excl. free)</div>
+                  </div>
+                  <div className="fin-metric-card">
+                    <div className="fin-metric-label">Taxa de churn</div>
+                    <div className="fin-metric-value" style={{ color: revenueMetrics.churn_rate > 5 ? '#ef4444' : '#f59e0b' }}>
+                      {revenueMetrics.churn_rate}%
+                    </div>
+                    <div className="fin-metric-sub">{revenueMetrics.churn_last_30d} cancelamento(s) nos últimos 30 dias</div>
+                  </div>
+                </div>
+
+                <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--admin-text-heading)', margin: '2rem 0 1rem' }}>
+                  Receita por plano
+                </h3>
+                <div className="fin-subs-table-wrap">
+                  <table className="fin-subs-table">
+                    <thead>
+                      <tr>
+                        <th>Plano</th>
+                        <th>Assinantes</th>
+                        <th>Receita mensal</th>
+                        <th>% do MRR</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {['starter', 'pro', 'enterprise'].map(plan => {
+                        const data = revenueMetrics.by_plan?.[plan];
+                        const count = data?.count || data?.Count || 0;
+                        const revenue = data?.revenue || data?.Revenue || 0;
+                        const pct = revenueMetrics.mrr > 0 ? ((revenue / revenueMetrics.mrr) * 100).toFixed(1) : '0.0';
+                        return (
+                          <tr key={plan}>
+                            <td>
+                              <span style={{ color: PLAN_COLORS[plan], fontWeight: 600 }}>
+                                {plan.charAt(0).toUpperCase() + plan.slice(1)}
+                              </span>
+                            </td>
+                            <td className="fin-center">{count}</td>
+                            <td>{formatCurrency(revenue)}</td>
+                            <td>
+                              <div className="fin-pct-bar">
+                                <div className="fin-pct-fill" style={{ width: `${pct}%`, backgroundColor: PLAN_COLORS[plan] }} />
+                                <span>{pct}%</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem', flexWrap: 'wrap' }}>
+                  <div className="fin-wh-stat">
+                    <span style={{ color: '#ef4444' }}>{revenueMetrics.overdue_count}</span> Inadimplentes
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* ── Webhook Logs Tab ─────────────────────────────────── */}
         {tab === 'webhooks' && (
           <div className="fin-subs-section">
-            {/* Webhook stats mini-cards */}
             {webhookStats && (
               <div className="fin-wh-stats-row">
                 <div className="fin-wh-stat"><span style={{ color: '#22c55e' }}>{webhookStats.ok}</span> OK</div>
@@ -382,7 +787,9 @@ export default function Financeiro() {
                           <tr key={log.id} className={expandedLog === log.id ? 'fin-row-expanded' : ''}>
                             <td style={{ whiteSpace: 'nowrap', fontSize: '0.78rem' }}>{formatDate(log.created_at)}</td>
                             <td>
-                              <span className="fin-event-label">{EVENT_LABELS[log.event] || log.event}</span>
+                              <span className={`fin-event-label ${log.event === 'AUTO_DOWNGRADE' ? 'fin-event-downgrade' : ''}`}>
+                                {EVENT_LABELS[log.event] || log.event}
+                              </span>
                             </td>
                             <td>
                               <div className="fin-org-name">{log.org_name || '-'}</div>
@@ -434,7 +841,6 @@ export default function Financeiro() {
                   </table>
                 </div>
 
-                {/* Pagination */}
                 {whTotal > 30 && (
                   <div className="fin-pagination">
                     <button disabled={whPage <= 1} onClick={() => setWhPage(p => p - 1)}>Anterior</button>
@@ -443,6 +849,85 @@ export default function Financeiro() {
                   </div>
                 )}
               </>
+            )}
+          </div>
+        )}
+
+        {/* ── Jobs Tab ─────────────────────────────────────────── */}
+        {tab === 'jobs' && (
+          <div className="fin-subs-section">
+            {jobsLoading ? (
+              <div style={{ textAlign: 'center', padding: '3rem 0' }}><div className="fin-spinner" style={{ margin: '0 auto' }} /></div>
+            ) : jobs.length === 0 ? (
+              <div className="fin-subs-empty">Nenhum job registrado.</div>
+            ) : (
+              <div className="fin-subs-table-wrap">
+                <table className="fin-subs-table">
+                  <thead>
+                    <tr>
+                      <th>Serviço</th>
+                      <th>Descrição</th>
+                      <th>Intervalo</th>
+                      <th>Última execução</th>
+                      <th>Execuções</th>
+                      <th>Status</th>
+                      <th>Ação</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jobs.sort((a, b) => a.name.localeCompare(b.name)).map(job => (
+                      <tr key={job.id}>
+                        <td>
+                          <div className="fin-org-name">{job.name}</div>
+                          <div className="fin-org-slug">{job.id}</div>
+                        </td>
+                        <td style={{ fontSize: '0.82rem', color: 'var(--admin-text-secondary)', maxWidth: '280px' }}>
+                          {job.description}
+                        </td>
+                        <td style={{ whiteSpace: 'nowrap', fontSize: '0.82rem', color: 'var(--admin-text-muted)' }}>
+                          {job.interval}
+                        </td>
+                        <td style={{ whiteSpace: 'nowrap', fontSize: '0.78rem' }}>
+                          {job.last_run_at && new Date(job.last_run_at).getFullYear() > 2000
+                            ? timeAgo(job.last_run_at)
+                            : <span style={{ color: 'var(--admin-text-muted)' }}>nunca</span>
+                          }
+                        </td>
+                        <td className="fin-center" style={{ fontSize: '0.85rem', color: 'var(--admin-text-secondary)' }}>
+                          {job.run_count}
+                        </td>
+                        <td>
+                          <span className={`fin-job-status ${job.last_status}`}>
+                            {job.running ? 'Executando...' : job.last_status === 'ok' ? 'OK' : job.last_status === 'error' ? 'Erro' : job.last_status === 'idle' ? 'Aguardando' : job.last_status}
+                          </span>
+                          {job.last_error && (
+                            <div style={{ fontSize: '0.7rem', color: '#f87171', marginTop: '2px' }}>{job.last_error}</div>
+                          )}
+                        </td>
+                        <td>
+                          <button
+                            className="fin-action-btn sync"
+                            onClick={() => handleTriggerJob(job.id)}
+                            disabled={triggeringJob === job.id || job.running}
+                            title="Executar agora"
+                          >
+                            {triggeringJob === job.id ? (
+                              <span className="fin-spinner-inline" />
+                            ) : (
+                              <>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width="14" height="14" style={{ marginRight: '4px' }}>
+                                  <polygon points="5 3 19 12 5 21 5 3" />
+                                </svg>
+                                Executar
+                              </>
+                            )}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
         )}

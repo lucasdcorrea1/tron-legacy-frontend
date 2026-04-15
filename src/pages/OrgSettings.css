@@ -272,7 +272,7 @@
   gap: 1rem;
 }
 
-.member-row.pending {
+.member-row.pending .member-info {
   opacity: 0.6;
 }
 

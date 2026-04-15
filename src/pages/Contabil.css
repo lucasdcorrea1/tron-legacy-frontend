@@ -1,76 +1,120 @@
-/* ── Contabil Module Styles ─────────────────────────────────────────── */
+/* ============================================================
+   CONTABILIDADE — Editorial Premium Design
+   Cohesive layered system with strong typographic hierarchy.
+   All colors derive from admin-theme vars for org customization.
+   ============================================================ */
 
+/* ── Page shell ─────────────────────────────────────────────── */
 .contabil-page {
-  max-width: 1400px;
+  max-width: 1440px;
   margin: 0 auto;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
+/* ── Header ─────────────────────────────────────────────────── */
 .contabil-header {
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.contabil-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--admin-accent), transparent);
+  border-radius: 2px;
 }
 
 .contabil-header h1 {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+  color: var(--admin-text-heading);
+  margin: 0;
+  line-height: 1.1;
 }
 
 .contabil-header p {
-  font-size: 0.875rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-size: 0.9rem;
+  color: var(--admin-text-secondary);
   margin: 0;
+  font-weight: 400;
 }
 
-/* ── Tabs ──────────────────────────────────────────────────────────── */
-
+/* ── Tabs ───────────────────────────────────────────────────── */
 .contabil-tabs {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
-  margin-bottom: 24px;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--admin-border);
+  margin-bottom: 1.75rem;
   overflow-x: auto;
+  scrollbar-width: none;
 }
 
+.contabil-tabs::-webkit-scrollbar { display: none; }
+
 .tab-btn {
-  padding: 10px 20px;
+  position: relative;
+  padding: 0.875rem 1.25rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: color 0.2s ease;
   white-space: nowrap;
+  letter-spacing: -0.005em;
 }
 
 .tab-btn:hover {
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  background: rgba(255,255,255,0.03);
+  color: var(--admin-text);
 }
 
 .tab-btn.active {
-  color: var(--admin-accent, var(--accent-color, #D4AF37));
-  border-bottom-color: var(--admin-accent, var(--accent-color, #D4AF37));
+  color: var(--admin-accent);
+  font-weight: 600;
 }
 
-/* ── Loading & Empty ──────────────────────────────────────────────── */
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--admin-accent);
+  border-radius: 2px 2px 0 0;
+  animation: tabIndicator 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
 
+@keyframes tabIndicator {
+  from { transform: scaleX(0); opacity: 0; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+/* ── Loading & Empty States ─────────────────────────────────── */
 .contabil-loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 200px;
+  min-height: 240px;
 }
 
 .contabil-loading .spinner {
-  width: 32px;
-  height: 32px;
-  border: 2px solid rgba(212, 175, 55, 0.2);
-  border-top-color: var(--admin-accent, var(--accent-color, #D4AF37));
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid var(--admin-bg-active);
+  border-top-color: var(--admin-accent);
   border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 @keyframes spin {
@@ -78,88 +122,161 @@
 }
 
 .contabil-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-  padding: 60px 20px;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  padding: 4rem 1.25rem;
+  color: var(--admin-text-muted);
   font-size: 0.875rem;
+  background: var(--admin-bg-elevated);
+  border: 1px dashed var(--admin-border);
+  border-radius: 14px;
 }
 
-/* ── Stats Grid ───────────────────────────────────────────────────── */
-
+/* ── Dashboard ─────────────────────────────────────────────── */
 .contabil-dashboard {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.25rem;
 }
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 1rem;
 }
 
-.stats-grid.cols-2 {
-  grid-template-columns: repeat(2, 1fr);
-}
+.stats-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.stats-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
 
-.stats-grid.cols-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
+/* ── Stat cards ── */
 .stat-card {
-  background: var(--admin-bg-surface, var(--card-bg, rgba(255,255,255,0.04)));
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
-  border-radius: 12px;
-  padding: 20px;
+  position: relative;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 1.375rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.625rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease,
+              box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--admin-border-strong);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
 }
 
 .stat-card.accent {
-  border-color: rgba(212, 175, 55, 0.3);
-  background: rgba(212, 175, 55, 0.05);
+  background: linear-gradient(135deg, var(--admin-accent-subtle) 0%, var(--admin-bg-elevated) 60%);
+  border-color: var(--admin-accent-subtle);
+}
+
+.stat-card.accent::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--admin-accent-glow) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.stat-card.wide {
+  padding: 1.75rem 2rem;
 }
 
 .stat-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  position: relative;
 }
 
 .stat-value {
-  font-size: 1.5rem;
+  font-size: 1.875rem;
   font-weight: 700;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  color: var(--admin-text-heading);
+  letter-spacing: -0.025em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  position: relative;
 }
 
-.stat-value.text-green { color: #10b981; }
-.stat-value.text-red { color: #ef4444; }
+.stat-card.wide .stat-value {
+  font-size: 2.25rem;
+}
 
-/* ── Revenue Chart ────────────────────────────────────────────────── */
+.stat-value.text-green {
+  color: #10b981;
+  background: linear-gradient(135deg, #10b981, #059669);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
+.stat-value.text-red {
+  color: #ef4444;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Revenue Chart ─────────────────────────────────────────── */
 .revenue-chart-card {
-  background: var(--admin-bg-surface, var(--card-bg, rgba(255,255,255,0.04)));
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
-  border-radius: 12px;
-  padding: 24px;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.revenue-chart-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top right, var(--admin-accent-glow) 0%, transparent 50%);
+  pointer-events: none;
+  opacity: 0.4;
 }
 
 .chart-title {
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  margin: 0 0 20px;
+  color: var(--admin-text-heading);
+  margin: 0 0 1.5rem;
+  letter-spacing: -0.01em;
+  position: relative;
 }
 
 .revenue-chart {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
-  height: 200px;
-  padding-bottom: 8px;
+  gap: 1rem;
+  height: 220px;
+  padding-bottom: 0.5rem;
+  position: relative;
 }
 
 .chart-bar-group {
@@ -167,8 +284,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
   height: 100%;
+  cursor: pointer;
 }
 
 .chart-bar-container {
@@ -177,224 +295,295 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
+  position: relative;
 }
 
 .chart-bar {
   width: 100%;
-  max-width: 48px;
-  border-radius: 6px 6px 0 0;
+  max-width: 56px;
+  border-radius: 8px 8px 0 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background: rgba(255,255,255,0.03);
-  transition: height 0.4s ease;
+  background: rgba(255,255,255,0.025);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.chart-bar-group:hover .chart-bar {
+  transform: scaleY(1.02) translateY(-2px);
 }
 
 .chart-bar-paid {
-  background: #10b981;
+  background: linear-gradient(180deg, #34d399 0%, #10b981 100%);
   width: 100%;
-  transition: height 0.4s ease;
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -2px 8px rgba(16, 185, 129, 0.2);
 }
 
 .chart-bar-pending {
-  background: #f59e0b;
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
   width: 100%;
-  transition: height 0.4s ease;
+  transition: height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .chart-label {
   font-size: 0.7rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-weight: 600;
+  color: var(--admin-text-secondary);
   white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .chart-value {
-  font-size: 0.65rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--admin-text-muted, var(--text-secondary, #666));
-  font-family: 'SF Mono', 'Menlo', monospace;
+  color: var(--admin-text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .chart-legend {
   display: flex;
   justify-content: center;
-  gap: 20px;
-  margin-top: 16px;
+  gap: 1.75rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--admin-border);
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
   font-size: 0.75rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-weight: 500;
+  color: var(--admin-text-secondary);
 }
 
 .legend-dot {
   width: 10px;
   height: 10px;
   border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-.legend-dot.paid { background: #10b981; }
-.legend-dot.pending { background: #f59e0b; }
+.legend-dot.paid {
+  background: linear-gradient(135deg, #34d399, #10b981);
+}
 
-/* ── Section & Toolbar ────────────────────────────────────────────── */
+.legend-dot.pending {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+}
 
+/* ── Section + Toolbar ─────────────────────────────────────── */
 .contabil-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.25rem;
 }
 
 .section-toolbar {
   display: flex;
-  gap: 8px;
+  gap: 0.625rem;
   flex-wrap: wrap;
   align-items: center;
+  padding: 0.875rem 1rem;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
 }
 
 .section-description {
-  font-size: 0.85rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-size: 0.875rem;
+  color: var(--admin-text-secondary);
   margin: 0;
+  flex: 1;
+  min-width: 200px;
+  line-height: 1.5;
 }
 
+/* ── Inputs ────────────────────────────────────────────────── */
 .contabil-input {
-  padding: 8px 12px;
-  background: var(--admin-input-bg, var(--card-bg, rgba(255,255,255,0.04)));
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.12)));
-  border-radius: 8px;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  padding: 0.625rem 0.875rem;
+  background: var(--admin-bg-surface);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: 9px;
+  color: var(--admin-text);
   font-size: 0.875rem;
+  font-family: inherit;
   min-width: 200px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   width: 100%;
 }
 
+.contabil-input::placeholder {
+  color: var(--admin-text-muted);
+}
+
+.contabil-input:hover {
+  border-color: var(--admin-text-muted);
+}
+
 .contabil-input:focus {
-  border-color: var(--admin-accent, var(--accent-color, #D4AF37));
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 3px var(--admin-accent-subtle);
 }
 
 .contabil-input.small {
-  min-width: 120px;
-  max-width: 160px;
+  min-width: 130px;
+  max-width: 170px;
+}
+
+.contabil-input.mono {
+  font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', monospace;
+  font-variant-numeric: tabular-nums;
 }
 
 .contabil-textarea {
   resize: vertical;
-  min-height: 60px;
+  min-height: 80px;
+  line-height: 1.5;
   font-family: inherit;
 }
 
 .contabil-select {
-  padding: 8px 2.25rem 8px 12px;
+  padding: 0.625rem 2.25rem 0.625rem 0.875rem;
   font-size: 0.875rem;
   width: 100%;
+  cursor: pointer;
 }
 
 .contabil-select.inline {
-  padding: 4px 8px;
+  padding: 0.3rem 0.5rem;
   font-size: 0.8rem;
-  border: none;
+  border: 1px solid transparent;
   background: transparent;
   font-weight: 600;
   width: auto;
+  min-width: auto;
   background-image: none;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────────── */
+.contabil-select.inline:hover {
+  background: var(--admin-bg-active);
+  border-color: var(--admin-border);
+}
 
+/* ── Buttons ───────────────────────────────────────────────── */
 .contabil-btn {
-  padding: 8px 16px;
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.12)));
-  border-radius: 8px;
-  background: var(--admin-bg-surface, var(--card-bg, rgba(255,255,255,0.04)));
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  padding: 0.625rem 1.125rem;
+  border: 1px solid var(--admin-input-border);
+  border-radius: 9px;
+  background: var(--admin-input-bg);
+  color: var(--admin-text);
   font-size: 0.875rem;
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
+  letter-spacing: -0.005em;
+  line-height: 1.2;
 }
 
-.contabil-btn:hover {
-  background: rgba(255,255,255,0.08);
+.contabil-btn:hover:not(:disabled):not(.primary) {
+  background: var(--admin-bg-active);
+  border-color: var(--admin-accent);
+  color: var(--admin-text-heading);
+  transform: translateY(-1px);
+}
+
+.contabil-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .contabil-btn.primary {
-  background: var(--admin-accent, var(--accent-color, #D4AF37));
-  color: #000;
-  border-color: var(--admin-accent, var(--accent-color, #D4AF37));
+  background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-hover));
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 14px var(--admin-accent-glow), inset 0 1px 0 rgba(255,255,255,0.18);
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.15);
 }
 
-.contabil-btn.primary:hover {
-  background: #c5a030;
+.contabil-btn.primary:hover:not(:disabled) {
+  box-shadow: 0 6px 22px var(--admin-accent-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+  filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .contabil-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 .contabil-btn svg {
   width: 14px;
   height: 14px;
+  flex-shrink: 0;
 }
 
+/* Icon button */
 .btn-icon {
   width: 32px;
   height: 32px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  background: none;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  border: 1px solid var(--admin-border);
+  background: var(--admin-input-bg);
+  color: var(--admin-text-secondary);
   cursor: pointer;
-  border-radius: 6px;
-  transition: all 0.2s;
+  border-radius: 7px;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   padding: 0;
   flex-shrink: 0;
 }
 
 .btn-icon:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  background: var(--admin-bg-active);
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
 }
 
 .btn-icon.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.45);
   color: #ef4444;
 }
 
 .btn-icon.btn-success:hover {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.45);
   color: #10b981;
 }
 
 .btn-icon svg {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
 }
 
 .actions-cell {
   display: flex;
-  gap: 2px;
+  gap: 0.25rem;
   align-items: center;
+  justify-content: flex-end;
 }
 
-/* ── Table ─────────────────────────────────────────────────────────── */
-
+/* ── Tables ────────────────────────────────────────────────── */
 .contabil-table-wrap {
   overflow-x: auto;
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
-  border-radius: 12px;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
 }
 
 .contabil-table {
@@ -404,164 +593,242 @@
 }
 
 .contabil-table thead {
-  background: rgba(255,255,255,0.03);
+  background: var(--admin-bg-surface);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .contabil-table th {
-  padding: 12px 16px;
+  padding: 0.875rem 1.125rem;
   text-align: left;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
-  border-bottom: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
+  letter-spacing: 0.06em;
+  color: var(--admin-text-muted);
+  border-bottom: 1px solid var(--admin-border);
   white-space: nowrap;
 }
 
 .contabil-table td {
-  padding: 12px 16px;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  border-bottom: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.04)));
+  padding: 0.95rem 1.125rem;
+  color: var(--admin-text);
+  border-bottom: 1px solid var(--admin-border);
   vertical-align: middle;
+  transition: background 0.15s ease;
+}
+
+.contabil-table tbody tr {
+  position: relative;
+  transition: background 0.15s ease;
+}
+
+.contabil-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .contabil-table tbody tr:hover {
-  background: rgba(255,255,255,0.02);
+  background: var(--admin-bg-hover);
+}
+
+.contabil-table tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--admin-accent);
 }
 
 .contabil-table .mono {
-  font-family: 'SF Mono', 'Menlo', monospace;
+  font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', monospace;
   font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-text);
 }
 
 .contabil-table .small {
   font-size: 0.75rem;
+  color: var(--admin-text-secondary);
 }
 
-/* ── Badges ────────────────────────────────────────────────────────── */
-
+/* ── Badges ────────────────────────────────────────────────── */
 .badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 100px;
+  font-size: 0.7rem;
   font-weight: 600;
-  background: rgba(212, 175, 55, 0.1);
-  color: var(--admin-accent, var(--accent-color, #D4AF37));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--admin-accent-subtle);
+  color: var(--admin-accent-text);
+  border: 1px solid var(--admin-accent-subtle);
+}
+
+.badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
 }
 
 .badge-green {
-  background: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.25);
 }
 
 .badge-red {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.25);
 }
 
-/* ── Pagination ────────────────────────────────────────────────────── */
-
+/* ── Pagination ────────────────────────────────────────────── */
 .contabil-pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
-  padding: 16px 0;
+  gap: 0.875rem;
+  padding: 1rem 0 0.25rem;
 }
 
 .contabil-pagination button {
-  padding: 6px 14px;
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.12)));
-  border-radius: 6px;
-  background: var(--admin-bg-surface, var(--card-bg, rgba(255,255,255,0.04)));
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--admin-input-border);
+  border-radius: 8px;
+  background: var(--admin-input-bg);
+  color: var(--admin-text);
   font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  font-family: inherit;
 }
 
 .contabil-pagination button:hover:not(:disabled) {
-  background: rgba(255,255,255,0.08);
+  background: var(--admin-bg-active);
+  border-color: var(--admin-accent);
+  color: var(--admin-text-heading);
 }
 
 .contabil-pagination button:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .contabil-pagination span {
   font-size: 0.8rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  color: var(--admin-text-secondary);
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
 }
 
-/* ── Modal ─────────────────────────────────────────────────────────── */
-
+/* ── Modal ─────────────────────────────────────────────────── */
 .contabil-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(4px);
-  padding: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  animation: overlayFadeIn 0.2s ease;
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .contabil-modal {
-  background: var(--admin-bg-elevated, var(--card-bg-solid, #1a1a2e));
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.12)));
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 480px;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border-strong);
+  border-radius: 18px;
+  padding: 1.75rem;
+  max-width: 500px;
   width: 100%;
-  max-height: 85vh;
+  max-height: 88vh;
   overflow-y: auto;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--admin-scrollbar-thumb) transparent;
+}
+
+.contabil-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.contabil-modal::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.contabil-modal::-webkit-scrollbar-thumb {
+  background: var(--admin-scrollbar-thumb);
+  border-radius: 3px;
+}
+
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .contabil-modal.modal-lg {
-  max-width: 720px;
+  max-width: 760px;
 }
 
 .contabil-modal h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  margin: 0 0 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--admin-text-heading);
+  margin: 0;
+  letter-spacing: -0.015em;
 }
 
 .contabil-modal p {
   font-size: 0.875rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
-  margin: 0 0 16px;
+  color: var(--admin-text-secondary);
+  margin: 0 0 1.25rem;
+  line-height: 1.55;
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
-}
-
-.modal-header h3 {
-  margin: 0;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--admin-border);
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
-  margin-top: 20px;
+  gap: 0.625rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--admin-border);
 }
 
-/* ── Form Elements ────────────────────────────────────────────────── */
-
+/* ── Forms ─────────────────────────────────────────────────── */
 .form-grid {
   display: grid;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 0.875rem;
+  margin-bottom: 1rem;
 }
 
 .form-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
@@ -571,18 +838,19 @@
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.375rem;
+  min-width: 0;
 }
 
 .form-field.span-2 { grid-column: span 2; }
 .form-field.span-3 { grid-column: span 3; }
 
 .form-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.06em;
 }
 
 .form-field .contabil-input,
@@ -591,86 +859,134 @@
 }
 
 .form-section-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--admin-accent, var(--accent-color, #D4AF37));
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--admin-accent-text);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 12px 0 4px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid rgba(212, 175, 55, 0.15);
+  letter-spacing: 0.08em;
+  margin: 1rem 0 0.625rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.form-section-title::before {
+  content: '';
+  width: 4px;
+  height: 12px;
+  background: var(--admin-accent);
+  border-radius: 2px;
+  display: inline-block;
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.625rem;
   font-size: 0.875rem;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  color: var(--admin-text);
   cursor: pointer;
-  margin: 8px 0;
+  margin: 0.5rem 0;
+  user-select: none;
 }
 
 .checkbox-label input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: var(--admin-accent, var(--accent-color, #D4AF37));
+  accent-color: var(--admin-accent);
   cursor: pointer;
 }
 
-/* ── Bill Details ──────────────────────────────────────────────────── */
-
+/* ── Bill Details ──────────────────────────────────────────── */
 .bill-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.625rem;
+  background: var(--admin-bg-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 1.25rem 1.375rem;
 }
 
 .detail-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
   font-size: 0.875rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  color: var(--admin-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .detail-row strong {
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  color: var(--admin-text);
+  font-weight: 600;
 }
 
 .detail-row.total {
-  padding-top: 8px;
-  font-size: 1rem;
+  padding: 0.875rem 0 0.25rem;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--admin-border);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
 .detail-row.total span,
 .detail-row.total strong {
-  color: var(--admin-accent, var(--accent-color, #D4AF37));
+  color: var(--admin-accent-text);
+  letter-spacing: -0.01em;
 }
 
 .detail-notes {
   font-size: 0.8rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  color: var(--admin-text-secondary);
   font-style: italic;
+  padding: 0.625rem 0.875rem;
+  background: var(--admin-bg-hover);
+  border-radius: 8px;
+  border-left: 2px solid var(--admin-accent);
 }
 
 .bill-details hr {
   border: none;
-  border-top: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.08)));
-  margin: 4px 0;
+  border-top: 1px solid var(--admin-border);
+  margin: 0.25rem 0;
 }
 
-/* ── Import ────────────────────────────────────────────────────────── */
-
+/* ── Import Tab ────────────────────────────────────────────── */
 .import-controls {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1.25rem;
 }
 
 .import-type-selector {
   display: flex;
-  gap: 8px;
+  gap: 0.5rem;
+  padding: 0.375rem;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.import-type-selector .contabil-btn {
+  border: none;
+  background: transparent;
+  padding: 0.5rem 1.125rem;
+  font-weight: 500;
+}
+
+.import-type-selector .contabil-btn:hover {
+  background: var(--admin-bg-active);
+  transform: none;
+}
+
+.import-type-selector .contabil-btn.primary {
+  background: linear-gradient(135deg, var(--admin-accent), var(--admin-accent-hover));
+  font-weight: 600;
 }
 
 .file-upload-area {
@@ -685,88 +1001,109 @@
 }
 
 .file-label {
-  display: block;
-  padding: 24px;
-  border: 2px dashed var(--admin-border, var(--border-color, rgba(255,255,255,0.12)));
-  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  border: 2px dashed var(--admin-border-strong);
+  border-radius: 14px;
   text-align: center;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
+  color: var(--admin-text-secondary);
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 0.875rem;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
+  background: var(--admin-bg-elevated);
 }
 
 .file-label:hover {
-  border-color: var(--admin-accent, var(--accent-color, #D4AF37));
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  border-color: var(--admin-accent);
+  color: var(--admin-text);
+  background: var(--admin-accent-subtle);
 }
 
 .import-actions {
   display: flex;
-  gap: 8px;
+  gap: 0.625rem;
+  flex-wrap: wrap;
 }
 
 .import-preview,
 .import-result {
-  margin-top: 8px;
+  margin-top: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--admin-bg-elevated);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
 }
 
 .import-preview h4,
 .import-result h4 {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
-  margin: 0 0 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--admin-text-heading);
+  margin: 0 0 1rem;
+  letter-spacing: -0.005em;
 }
 
 .import-errors {
-  margin-top: 12px;
-  padding: 12px;
-  background: rgba(239, 68, 68, 0.05);
-  border: 1px solid rgba(239, 68, 68, 0.15);
-  border-radius: 8px;
+  margin-top: 1rem;
+  padding: 1rem 1.125rem;
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 10px;
 }
 
 .import-errors h4 {
-  color: #ef4444;
-  margin-bottom: 8px;
+  color: #f87171;
+  margin-bottom: 0.625rem;
+  font-size: 0.8rem;
 }
 
 .import-errors ul {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .import-errors li {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: #fca5a5;
-  padding: 2px 0;
+  padding: 0.25rem 0;
+  font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', monospace;
 }
 
-/* ── Mappings / Role Descriptions ─────────────────────────────────── */
-
+/* ── Mappings / Role Descriptions ──────────────────────────── */
 .role-descriptions {
-  margin: 12px 0;
-  padding: 12px;
-  background: rgba(255,255,255,0.02);
-  border-radius: 8px;
-  border: 1px solid var(--admin-border, var(--border-color, rgba(255,255,255,0.06)));
+  margin: 1rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--admin-bg-surface);
+  border-radius: 10px;
+  border: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .role-desc {
   font-size: 0.8rem;
-  color: var(--admin-text-secondary, var(--text-secondary, #888));
-  padding: 3px 0;
+  color: var(--admin-text-secondary);
+  line-height: 1.5;
 }
 
 .role-desc strong {
-  color: var(--admin-text, var(--text-primary, #f0f0f0));
+  color: var(--admin-text);
+  font-weight: 600;
+  display: inline-block;
+  min-width: 100px;
 }
 
-/* ── Responsive ────────────────────────────────────────────────────── */
-
-@media (max-width: 768px) {
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -774,10 +1111,27 @@
   .stats-grid.cols-3 {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 768px) {
+  .contabil-header h1 {
+    font-size: 1.625rem;
+  }
+
+  .contabil-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .stats-grid,
+  .stats-grid.cols-2,
+  .stats-grid.cols-3 {
+    grid-template-columns: 1fr;
+  }
 
   .section-toolbar {
     flex-direction: column;
     align-items: stretch;
+    padding: 0.875rem;
   }
 
   .section-toolbar .contabil-input,
@@ -786,11 +1140,11 @@
   }
 
   .contabil-tabs {
-    gap: 0;
+    margin-bottom: 1.25rem;
   }
 
   .tab-btn {
-    padding: 8px 12px;
+    padding: 0.75rem 1rem;
     font-size: 0.8rem;
   }
 
@@ -804,8 +1158,8 @@
   }
 
   .contabil-modal {
-    padding: 16px;
-    border-radius: 12px;
+    padding: 1.25rem;
+    border-radius: 14px;
   }
 
   .contabil-modal.modal-lg {
@@ -813,11 +1167,28 @@
   }
 
   .revenue-chart {
-    height: 150px;
+    height: 160px;
+  }
+
+  .revenue-chart-card {
+    padding: 1.25rem;
   }
 
   .actions-cell {
     flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .stat-card {
+    padding: 1.125rem 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 1.625rem;
+  }
+
+  .stat-card.wide .stat-value {
+    font-size: 1.875rem;
   }
 }
 
@@ -833,12 +1204,119 @@
     grid-column: span 1;
   }
 
-  .stats-grid {
-    grid-template-columns: 1fr;
+  .chart-value {
+    display: none;
   }
 
-  .stats-grid.cols-2,
-  .stats-grid.cols-3 {
-    grid-template-columns: 1fr;
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions .contabil-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ── Bulk Actions ─────────────────────────────────────────────── */
+.bulk-actions-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  margin: 0.75rem 0 1rem;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(37, 99, 235, 0.06) 100%);
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 12px;
+  animation: bulkBarSlide 0.2s ease-out;
+}
+
+@keyframes bulkBarSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bulk-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bulk-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #60a5fa;
+}
+
+.bulk-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--admin-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: color 0.15s ease;
+}
+
+.bulk-link:hover:not(:disabled) {
+  color: var(--admin-accent-hover);
+}
+
+.bulk-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bulk-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.bulk-actions .contabil-btn {
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.875rem;
+}
+
+/* Checkbox column */
+.contabil-table .checkbox-col {
+  width: 36px;
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.contabil-table .checkbox-col input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+
+.contabil-table tr.row-selected {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.contabil-table tr.row-selected:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+@media (max-width: 768px) {
+  .bulk-actions-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .bulk-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  .bulk-actions .contabil-btn {
+    flex: 1;
   }
 }

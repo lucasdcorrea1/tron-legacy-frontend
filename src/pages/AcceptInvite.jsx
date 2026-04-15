@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { API_URL } from '../services/api';
 import './Login.css';
@@ -8,6 +8,8 @@ export default function AcceptInvite() {
   const [status, setStatus] = useState('loading'); // loading | success | error
   const [data, setData] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [errorTitle, setErrorTitle] = useState('Convite indisponível');
+  const calledRef = useRef(false);
 
   useEffect(() => {
     if (!token) {
@@ -15,6 +17,10 @@ export default function AcceptInvite() {
       setErrorMsg('Link de convite inválido.');
       return;
     }
+
+    // Guard against double-call (React StrictMode / fast re-renders)
+    if (calledRef.current) return;
+    calledRef.current = true;
 
     (async () => {
       try {
@@ -35,11 +41,22 @@ export default function AcceptInvite() {
           } catch {
             msg = text;
           }
-          setErrorMsg(msg || 'Convite inválido ou expirado.');
+
+          // Use a more specific title based on the error
+          if (res.status === 410) {
+            setErrorTitle(msg && msg.toLowerCase().includes('expir') ? 'Convite expirado' : 'Convite indisponível');
+          } else if (res.status === 404) {
+            setErrorTitle('Convite não encontrado');
+          } else {
+            setErrorTitle('Não foi possível aceitar');
+          }
+
+          setErrorMsg(msg || 'Convite inválido ou expirado. Peça um novo convite ao administrador.');
           setStatus('error');
         }
       } catch {
-        setErrorMsg('Erro de conexão. Tente novamente.');
+        setErrorTitle('Erro de conexão');
+        setErrorMsg('Verifique sua internet e tente novamente.');
         setStatus('error');
       }
     })();

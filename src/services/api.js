@@ -333,6 +333,13 @@ export const platform = {
     return api.get(`/api/v1/platform/webhook-logs${qs ? `?${qs}` : ''}`);
   },
   webhookStats: () => api.get('/api/v1/platform/webhook-stats'),
+  getOrgPayments: (orgId) => api.get(`/api/v1/platform/orgs/${orgId}/payments`),
+  revenueMetrics: () => api.get('/api/v1/platform/revenue-metrics'),
+  overdueSubscriptions: () => api.get('/api/v1/platform/overdue-subscriptions'),
+  extendGracePeriod: (orgId, days) => api.put(`/api/v1/platform/orgs/${orgId}/grace-period`, { grace_period_days: days }),
+  syncOrgBilling: (orgId) => api.post(`/api/v1/platform/orgs/${orgId}/sync-billing`),
+  listJobs: () => api.get('/api/v1/platform/jobs'),
+  triggerJob: (jobId) => api.post(`/api/v1/platform/jobs/${jobId}/trigger`),
 };
 
 export const auth = {
