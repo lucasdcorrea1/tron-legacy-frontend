@@ -167,6 +167,15 @@ const Icons_contabil = (
   </svg>
 );
 
+const Icons_contaazul = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0z" />
+    <path d="M8 13s1.5 2 4 2 4-2 4-2" />
+    <line x1="9" y1="9" x2="9.01" y2="9" />
+    <line x1="15" y1="9" x2="15.01" y2="9" />
+  </svg>
+);
+
 const toolItems = [
   { path: '/admin/instagram', icon: Icons.instagram, label: 'Instagram', minPlan: 'starter' },
   { path: '/admin/facebook', icon: Icons.facebook, label: 'Facebook', minPlan: 'starter' },
@@ -176,6 +185,7 @@ const toolItems = [
   { path: '/admin/financeiro', icon: Icons_financeiro, label: 'Financeiro', superOnly: true },
   { path: '/admin/users', icon: Icons.users, label: 'Usuários', superOnly: true },
   { path: '/admin/contabil', icon: Icons_contabil, label: 'Contabilidade', minPlan: 'starter' },
+  { path: '/admin/contaazul/clientes', icon: Icons_contaazul, label: 'Conta Azul' },
 ];
 
 const contentItems = [

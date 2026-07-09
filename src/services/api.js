@@ -126,7 +126,11 @@ async function request(endpoint, options = {}, _retries = 0) {
     throw new Error(message || `Erro na requisição (${response.status})`);
   }
 
-  return response.json();
+  // 204 No Content (or any empty 2xx body) — return null instead of parsing
+  if (response.status === 204) return null;
+  const text = await response.text();
+  if (!text) return null;
+  try { return JSON.parse(text); } catch { return null; }
 }
 
 // ── fetchWithAuth: for non-JSON requests (file uploads, etc.) ────────
@@ -957,5 +961,110 @@ export const profile = {
       }
       throw error;
     }
+  },
+};
+
+export const contaAzul = {
+  listClients: () => api.get('/api/v1/admin/conta-azul/clients'),
+  createClient: (data) => api.post('/api/v1/admin/conta-azul/clients', data),
+  setActive: (id, isActive) => api.patch(`/api/v1/admin/conta-azul/clients/${id}/active`, { is_active: isActive }),
+  importTokens: (id, data) => api.post(`/api/v1/admin/conta-azul/clients/${id}/import-tokens`, data),
+  deleteClient: (id) => api.delete(`/api/v1/admin/conta-azul/clients/${id}`),
+
+  // Portal theme — org-level default
+  getOrgTheme: () => api.get('/api/v1/admin/conta-azul/portal-theme'),
+  saveOrgTheme: (theme) => api.put('/api/v1/admin/conta-azul/portal-theme', theme),
+
+  // Portal theme — per-client override (null body clears it)
+  setClientTheme: (id, theme) => api.patch(`/api/v1/admin/conta-azul/clients/${id}/theme`, theme),
+};
+
+// ── Portal (EndClient) API — uses a SEPARATE token, NOT the admin one ──
+
+const PORTAL_TOKEN_KEY = 'portal_token';
+const PORTAL_REFRESH_KEY = 'portal_refresh_token';
+
+const portalRequest = async (endpoint, options = {}) => {
+  const token = localStorage.getItem(PORTAL_TOKEN_KEY);
+  const headers = { ...(options.headers || {}) };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (options.body && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
+  const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  const text = await res.text();
+  const data = safeJsonParse(text);
+  if (!res.ok) {
+    const msg = (data && (data.message || data.error)) || text || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+  return data;
+};
+
+export const portal = {
+  login: (email, password) =>
+    portalRequest('/api/v1/portal/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password }),
+    }),
+  logout: () => {
+    const rt = localStorage.getItem(PORTAL_REFRESH_KEY);
+    localStorage.removeItem(PORTAL_TOKEN_KEY);
+    localStorage.removeItem(PORTAL_REFRESH_KEY);
+    if (rt) {
+      return fetch(`${API_URL}/api/v1/portal/auth/logout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: rt }),
+      }).catch(() => {});
+    }
+    return Promise.resolve();
+  },
+  me: () => portalRequest('/api/v1/portal/me'),
+  saveSession: (auth) => {
+    localStorage.setItem(PORTAL_TOKEN_KEY, auth.token);
+    localStorage.setItem(PORTAL_REFRESH_KEY, auth.refresh_token);
+  },
+  getToken: () => localStorage.getItem(PORTAL_TOKEN_KEY),
+
+  contaAzulConnectURL: () => portalRequest('/api/v1/portal/conta-azul/connect-url'),
+  contaAzulCallback: (code, state) =>
+    portalRequest('/api/v1/portal/conta-azul/callback', {
+      method: 'POST',
+      body: JSON.stringify({ code, state }),
+    }),
+  contaAzulDisconnect: () =>
+    portalRequest('/api/v1/portal/conta-azul/connection', { method: 'DELETE' }),
+
+  theme: () => portalRequest('/api/v1/portal/theme'),
+
+  dashboardSummary: ({ from, to, compare } = {}) => {
+    const qs = new URLSearchParams();
+    if (from) qs.set('from', from);
+    if (to) qs.set('to', to);
+    if (compare) qs.set('compare', 'true');
+    const s = qs.toString();
+    return portalRequest(`/api/v1/portal/conta-azul/dashboard/summary${s ? `?${s}` : ''}`);
+  },
+  dashboardCashflow: ({ from, to } = {}) => {
+    const qs = new URLSearchParams();
+    if (from) qs.set('from', from);
+    if (to) qs.set('to', to);
+    const s = qs.toString();
+    return portalRequest(`/api/v1/portal/conta-azul/dashboard/cashflow${s ? `?${s}` : ''}`);
+  },
+  dashboardCategories: ({ from, to } = {}) => {
+    const qs = new URLSearchParams();
+    if (from) qs.set('from', from);
+    if (to) qs.set('to', to);
+    const s = qs.toString();
+    return portalRequest(`/api/v1/portal/conta-azul/dashboard/categories${s ? `?${s}` : ''}`);
+  },
+  dashboardUpcoming: ({ days } = {}) => {
+    const qs = new URLSearchParams();
+    if (days) qs.set('days', String(days));
+    const s = qs.toString();
+    return portalRequest(`/api/v1/portal/conta-azul/dashboard/upcoming${s ? `?${s}` : ''}`);
   },
 };

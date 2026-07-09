@@ -7,15 +7,8 @@ import Header from '../components/Header';
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Home.css';
 
-const TOTAL_SECTIONS = 4;
+const TOTAL_SECTIONS = 3;
 
-// Dados dos clientes
-const CLIENTS = [
-  { name: 'Masson Contabilidade', logo: '/clients/masson.webp', url: 'https://www.massoncontabilidade.com.br/' },
-  { name: 'AutoFas Store', logo: '/clients/autofas.avif', url: 'https://autofasstore.com/' },
-  { name: 'Dreamer Studios', logo: '/clients/dreamer.png', url: 'https://dreamerstudios.io/' },
-  { name: 'House of Caju', logo: '/clients/houseofcaju.png', url: 'https://www.houseofcaju.com.br/' },
-];
 const COOLDOWN_MS = 1000;
 
 export default function Home() {
@@ -284,7 +277,7 @@ export default function Home() {
 
       {/* Scroll Indicator Dots */}
       <div className="scroll-dots">
-        {[0, 1, 2, 3].map((i) => (
+        {Array.from({ length: TOTAL_SECTIONS }, (_, i) => i).map((i) => (
           <button
             key={i}
             className={`scroll-dot ${activeSection === i ? 'active' : ''}`}
@@ -514,52 +507,6 @@ export default function Home() {
 
             <div className="section-cta animate-item" style={{ transitionDelay: '0.25s' }}>
               <Link to="/blog" className="btn-outline">Ver todos os posts</Link>
-            </div>
-          </div>
-        </section>
-
-        {/* Tela 4 - Clientes + Footer */}
-        <section className="section-snap section-clients" ref={setSectionRef(3)}>
-          <div className="section-inner">
-            <div className="section-header">
-              <span className="clients-badge animate-item">Parceiros</span>
-              <h2 className="section-title animate-item" style={{ transitionDelay: '0.05s' }}>
-                Quem confia no <span className="text-gradient">Whodo</span>
-              </h2>
-              <p className="section-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Empresas que escolheram acelerar seus resultados com nossa plataforma
-              </p>
-            </div>
-
-            <div className="clients-carousel animate-item" style={{ transitionDelay: '0.15s' }}>
-              <div className="clients-track">
-                {/* Duplicamos os logos para criar o efeito infinito */}
-                {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, index) => (
-                  <a
-                    key={`${client.name}-${index}`}
-                    href={client.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="client-logo-wrapper"
-                    title={client.name}
-                  >
-                    <img
-                      src={client.logo}
-                      alt={client.name}
-                      className="client-logo"
-                      loading="lazy"
-                    />
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <div className="clients-cta animate-item" style={{ transitionDelay: '0.25s' }}>
-              <p className="clients-cta-text">Quer fazer parte dessa lista?</p>
-              <Link to="/login" className="btn-primary">
-                Comece agora
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-              </Link>
             </div>
           </div>
           <footer className="footer-compact">

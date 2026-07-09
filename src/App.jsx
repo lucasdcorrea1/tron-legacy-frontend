@@ -71,6 +71,11 @@ const OrderDetail3D = lazy(() => import('./pages/OrderDetail3D'));
 const CartDrawer = lazy(() => import('./components/CartDrawer'));
 const Financeiro = lazy(() => import('./pages/Financeiro'));
 const Contabil = lazy(() => import('./pages/Contabil'));
+const ContaAzulClients = lazy(() => import('./pages/ContaAzulClients'));
+const PortalLogin = lazy(() => import('./pages/PortalLogin'));
+const PortalConnect = lazy(() => import('./pages/PortalConnect'));
+const PortalConnectCallback = lazy(() => import('./pages/PortalConnectCallback'));
+const PortalDashboard = lazy(() => import('./pages/PortalDashboard'));
 const Signup = lazy(() => import('./pages/Signup'));
 const CheckoutSuccess = lazy(() => import('./pages/CheckoutSuccess'));
 const Checkout = lazy(() => import('./pages/Checkout'));
@@ -253,6 +258,21 @@ export default function App() {
               </PrivateRoute>
             }
           />
+          <Route
+            path="/admin/contaazul/clientes"
+            element={
+              <PrivateRoute>
+                <ContaAzulClients />
+              </PrivateRoute>
+            }
+          />
+
+          {/* Portal do EndClient (auth próprio, sem PrivateRoute) */}
+          <Route path="/portal" element={<Navigate to="/portal/login" replace />} />
+          <Route path="/portal/login" element={<PortalLogin />} />
+          <Route path="/portal/conectar" element={<PortalConnect />} />
+          <Route path="/portal/conectar/callback" element={<PortalConnectCallback />} />
+          <Route path="/portal/dashboard" element={<PortalDashboard />} />
           <Route
             path="/admin/settings"
             element={<Navigate to="/admin/profile" replace />}
