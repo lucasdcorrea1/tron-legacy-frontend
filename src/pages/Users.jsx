@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { users, platform } from '../services/api';
 import { useConfirm } from '../components/ConfirmModal';
+import { useToast } from '../components/Toast';
 import AdminLayout from '../components/AdminLayout';
 import LoadingSkeleton from '../components/LoadingSkeleton';
 import './Users.css';
@@ -10,6 +11,8 @@ const ORG_ROLES = ['owner', 'admin', 'member', 'viewer'];
 const ORG_LABELS = { owner: 'Proprietário', admin: 'Admin', member: 'Membro', viewer: 'Visualizador' };
 const PLATFORM_ROLES = ['superuser', 'admin', 'author', 'user'];
 const PLATFORM_LABELS = { superuser: 'Super Admin', admin: 'Admin', author: 'Autor', user: 'Usuário' };
+const PLAN_IDS = ['free', 'starter', 'pro', 'enterprise', 'contaazul'];
+const PLAN_LABELS = { free: 'Free', starter: 'Starter', pro: 'Pro', enterprise: 'Enterprise', contaazul: 'Conta Azul' };
 
 const getInitials = (name, email) => {
   if (name) return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
@@ -197,12 +200,15 @@ function PlatformUsersTab() {
 
 /* ─── Tab: Por Empresa ─── */
 function OrgMembersTab() {
+  const toast = useToast();
+  const confirm = useConfirm();
   const [orgsList, setOrgsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [selectedOrg, setSelectedOrg] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
+  const [updatingPlanId, setUpdatingPlanId] = useState(null);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -218,6 +224,26 @@ function OrgMembersTab() {
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
+  const handlePlanChange = async (org, newPlan) => {
+    if (newPlan === org.plan_id) return;
+    const ok = await confirm({
+      title: 'Alterar plano da empresa',
+      message: `Mudar o plano de "${org.name}" de ${PLAN_LABELS[org.plan_id] || org.plan_id || '—'} para ${PLAN_LABELS[newPlan]}?`,
+      confirmText: 'Confirmar',
+    });
+    if (!ok) return;
+    setUpdatingPlanId(org.id);
+    try {
+      await platform.updatePlan(org.id, newPlan);
+      toast.success(`Plano de ${org.name} alterado para ${PLAN_LABELS[newPlan]}`);
+      fetchData();
+    } catch (err) {
+      toast.error(err.message || 'Erro ao alterar plano');
+    } finally {
+      setUpdatingPlanId(null);
+    }
+  };
 
   const q = search.trim().toLowerCase();
   const visibleOrgs = [];
@@ -269,7 +295,20 @@ function OrgMembersTab() {
             <div key={org.id} className="up-group">
               <div className="up-group-header">
                 <span className="up-group-name">{org.name}</span>
-                <span className="up-group-count">{org.filteredMembers.length}</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <select
+                    value={org.plan_id || 'free'}
+                    onChange={(e) => handlePlanChange(org, e.target.value)}
+                    disabled={updatingPlanId === org.id}
+                    className="up-action-select"
+                    title="Plano da empresa"
+                  >
+                    {PLAN_IDS.map(p => (
+                      <option key={p} value={p}>{PLAN_LABELS[p]}</option>
+                    ))}
+                  </select>
+                  <span className="up-group-count">{org.filteredMembers.length}</span>
+                </div>
               </div>
 
               {/* Desktop table */}

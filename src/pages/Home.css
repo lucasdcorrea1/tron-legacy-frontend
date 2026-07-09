@@ -134,6 +134,13 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.section-snap::-webkit-scrollbar {
+  display: none;
 }
 
 /* Hero grid background */
@@ -448,6 +455,10 @@
 .section-blog {
   padding: 4rem 2rem 0;
   justify-content: space-between;
+}
+
+.section-blog .footer-compact {
+  margin-top: 2.5rem;
 }
 
 /* section-blog glows removed — using global .home-orbs layer */

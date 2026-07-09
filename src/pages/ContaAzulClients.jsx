@@ -52,7 +52,11 @@ const Icon = {
   warning: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
   userPlus: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>,
   keyLarge: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>,
+  externalLink: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>,
+  lock: <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
 };
+
+const portalLoginUrl = (email) => `${window.location.origin}/portal/login?email=${encodeURIComponent(email)}`;
 
 // ══════════════════════════════════════════════════════════════════════
 // COMPONENT
@@ -72,6 +76,10 @@ export default function ContaAzulClients() {
   const [importing, setImporting] = useState(null);
   const [importForm, setImportForm] = useState({ access_token: '', refresh_token: '', expires_in: 3600 });
   const [importSaving, setImportSaving] = useState(false);
+
+  const [resettingPw, setResettingPw] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [pwSaving, setPwSaving] = useState(false);
 
   // Theme editor — `themeEditor` carries scope + target client + initial draft
   const [themeEditor, setThemeEditor] = useState(null);
@@ -122,6 +130,17 @@ export default function ContaAzulClients() {
       toast.error(e.message || 'Falha ao salvar tema');
     }
   };
+  const uploadThemeLogo = async (file) => {
+    if (themeEditor.scope === 'org') {
+      const res = await contaAzul.uploadOrgThemeLogo(file);
+      setOrgTheme((t) => ({ ...t, logo_url: res.logo_url }));
+      return res.logo_url;
+    }
+    const res = await contaAzul.uploadClientThemeLogo(themeEditor.client.id, file);
+    load();
+    return res.logo_url;
+  };
+
   const clearTheme = async () => {
     try {
       if (themeEditor.scope === 'org') {
@@ -195,6 +214,26 @@ export default function ContaAzulClients() {
       toast.error(err.message || 'Falha ao importar tokens');
     } finally {
       setImportSaving(false);
+    }
+  };
+
+  // ── Reset password ──
+  const openResetPassword = (client) => {
+    setResettingPw(client);
+    setNewPassword('');
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    setPwSaving(true);
+    try {
+      await contaAzul.setClientPassword(resettingPw.id, newPassword);
+      toast.success(`Senha de ${resettingPw.name} atualizada`);
+      setResettingPw(null);
+    } catch (err) {
+      toast.error(err.message || 'Falha ao trocar senha');
+    } finally {
+      setPwSaving(false);
     }
   };
 
@@ -318,6 +357,16 @@ export default function ContaAzulClients() {
                     </td>
                     <td>
                       <div className="cac-actions">
+                        <a
+                          className="cac-iaction primary"
+                          href={portalLoginUrl(c.email)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-tip="Testar acesso (abre o portal do cliente)"
+                          aria-label="Testar acesso do cliente"
+                        >
+                          {Icon.externalLink}
+                        </a>
                         <button
                           className="cac-iaction primary"
                           onClick={() => openClientTheme(c)}
@@ -325,6 +374,14 @@ export default function ContaAzulClients() {
                           aria-label="Tema do cliente"
                         >
                           {Icon.palette}
+                        </button>
+                        <button
+                          className="cac-iaction primary"
+                          onClick={() => openResetPassword(c)}
+                          data-tip="Trocar senha do portal"
+                          aria-label="Trocar senha"
+                        >
+                          {Icon.lock}
                         </button>
                         <button
                           className="cac-iaction primary"
@@ -490,6 +547,44 @@ export default function ContaAzulClients() {
             </form>
           </div>
         )}
+
+        {/* ── Modal: Trocar senha ── */}
+        {resettingPw && (
+          <div className="cac-modal-overlay" onClick={() => setResettingPw(null)}>
+            <form className="cac-modal" onClick={(e) => e.stopPropagation()} onSubmit={handleResetPassword}>
+              <div className="cac-modal-header">
+                <div>
+                  <h2>Trocar senha — {resettingPw.name}</h2>
+                  <p className="cac-modal-subtitle">
+                    Define uma nova senha de acesso ao portal para este cliente. As sessões ativas dele serão encerradas.
+                  </p>
+                </div>
+              </div>
+
+              <div className="cac-field">
+                <label>Nova senha*</label>
+                <input
+                  type="text"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  autoFocus
+                  minLength={8}
+                  placeholder="Mín. 8 caracteres, com maiúscula, minúscula e número"
+                />
+              </div>
+
+              <div className="cac-modal-actions">
+                <button type="button" className="cac-btn cac-btn-ghost" onClick={() => setResettingPw(null)}>
+                  Cancelar
+                </button>
+                <button type="submit" className="cac-btn cac-btn-primary" disabled={pwSaving} style={{ opacity: pwSaving ? 0.6 : 1 }}>
+                  {pwSaving ? 'Salvando…' : 'Trocar senha'}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
         <PortalThemeEditor
           open={!!themeEditor}
           scope={themeEditor?.scope}
@@ -499,6 +594,7 @@ export default function ContaAzulClients() {
           onClose={() => setThemeEditor(null)}
           onSave={saveTheme}
           onClear={clearTheme}
+          onUploadLogo={uploadThemeLogo}
         />
       </div>
     </AdminLayout>

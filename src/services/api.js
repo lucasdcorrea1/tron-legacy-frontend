@@ -968,6 +968,7 @@ export const contaAzul = {
   listClients: () => api.get('/api/v1/admin/conta-azul/clients'),
   createClient: (data) => api.post('/api/v1/admin/conta-azul/clients', data),
   setActive: (id, isActive) => api.patch(`/api/v1/admin/conta-azul/clients/${id}/active`, { is_active: isActive }),
+  setClientPassword: (id, password) => api.patch(`/api/v1/admin/conta-azul/clients/${id}/password`, { password }),
   importTokens: (id, data) => api.post(`/api/v1/admin/conta-azul/clients/${id}/import-tokens`, data),
   deleteClient: (id) => api.delete(`/api/v1/admin/conta-azul/clients/${id}`),
 
@@ -977,6 +978,28 @@ export const contaAzul = {
 
   // Portal theme — per-client override (null body clears it)
   setClientTheme: (id, theme) => api.patch(`/api/v1/admin/conta-azul/clients/${id}/theme`, theme),
+
+  // Portal theme — logo upload (org default or per-client override)
+  uploadOrgThemeLogo: async (file) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/conta-azul/portal-theme/logo`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error(await response.text().catch(() => 'Erro no upload'));
+    return response.json();
+  },
+  uploadClientThemeLogo: async (id, file) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    const response = await fetchWithAuth(`${API_URL}/api/v1/admin/conta-azul/clients/${id}/theme/logo`, {
+      method: 'POST',
+      body: formData,
+    });
+    if (!response.ok) throw new Error(await response.text().catch(() => 'Erro no upload'));
+    return response.json();
+  },
 };
 
 // ── Portal (EndClient) API — uses a SEPARATE token, NOT the admin one ──
@@ -984,15 +1007,69 @@ export const contaAzul = {
 const PORTAL_TOKEN_KEY = 'portal_token';
 const PORTAL_REFRESH_KEY = 'portal_refresh_token';
 
+// Refresh-token deduplication — mirrors the admin app's refreshAccessToken()
+let portalRefreshPromise = null;
+
+async function refreshPortalAccessToken() {
+  if (portalRefreshPromise) return portalRefreshPromise;
+
+  portalRefreshPromise = (async () => {
+    const refreshToken = localStorage.getItem(PORTAL_REFRESH_KEY);
+    if (!refreshToken) throw new Error('No refresh token');
+
+    const res = await fetch(`${API_URL}/api/v1/portal/auth/refresh`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!res.ok) throw new Error('Refresh failed');
+
+    const data = await res.json();
+    if (data.token) localStorage.setItem(PORTAL_TOKEN_KEY, data.token);
+    return data;
+  })().finally(() => {
+    portalRefreshPromise = null;
+  });
+
+  return portalRefreshPromise;
+}
+
+function forcePortalLogout() {
+  localStorage.removeItem(PORTAL_TOKEN_KEY);
+  localStorage.removeItem(PORTAL_REFRESH_KEY);
+  window.location.href = '/portal/login';
+}
+
 const portalRequest = async (endpoint, options = {}) => {
-  const token = localStorage.getItem(PORTAL_TOKEN_KEY);
-  const headers = { ...(options.headers || {}) };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
-  if (options.body && !headers['Content-Type']) {
-    headers['Content-Type'] = 'application/json';
+  const doFetch = () => {
+    const token = localStorage.getItem(PORTAL_TOKEN_KEY);
+    const headers = { ...(options.headers || {}) };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (options.body && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
+    return fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  };
+
+  let res = await doFetch();
+
+  // On 401, attempt a silent refresh then retry once — same pattern as the admin app
+  if (res.status === 401 && localStorage.getItem(PORTAL_REFRESH_KEY)) {
+    try {
+      await refreshPortalAccessToken();
+      res = await doFetch();
+    } catch {
+      forcePortalLogout();
+      throw new Error('Sessão expirada');
+    }
   }
 
-  const res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  if (res.status === 401) {
+    forcePortalLogout();
+    throw new Error('Sessão expirada');
+  }
+
   const text = await res.text();
   const data = safeJsonParse(text);
   if (!res.ok) {

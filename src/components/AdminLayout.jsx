@@ -185,7 +185,7 @@ const toolItems = [
   { path: '/admin/financeiro', icon: Icons_financeiro, label: 'Financeiro', superOnly: true },
   { path: '/admin/users', icon: Icons.users, label: 'Usuários', superOnly: true },
   { path: '/admin/contabil', icon: Icons_contabil, label: 'Contabilidade', minPlan: 'starter' },
-  { path: '/admin/contaazul/clientes', icon: Icons_contaazul, label: 'Conta Azul' },
+  { path: '/admin/contaazul/clientes', icon: Icons_contaazul, label: 'Conta Azul', exactPlan: ['contaazul', 'enterprise'], badge: 'CONTA AZUL' },
 ];
 
 const contentItems = [
@@ -310,7 +310,8 @@ export default function AdminLayout({ children }) {
             <div className="nav-section">
               <span className="nav-section-title">Ferramentas</span>
               {toolItems.filter(item => !item.superOnly || isSuperuser).map(item => {
-                const locked = item.minPlan && (PLAN_RANK[currentPlan] ?? 0) < (PLAN_RANK[item.minPlan] ?? 0);
+                const locked = (item.minPlan && (PLAN_RANK[currentPlan] ?? 0) < (PLAN_RANK[item.minPlan] ?? 0))
+                  || (item.exactPlan && !item.exactPlan.includes(currentPlan));
                 return (
                   <Link
                     key={item.path}
@@ -320,7 +321,7 @@ export default function AdminLayout({ children }) {
                   >
                     <span className="nav-icon">{locked ? Icons_lock : item.icon}</span>
                     <span className="nav-label">{item.label}</span>
-                    {locked && <span className="nav-badge">{item.minPlan === 'pro' ? 'PRO' : 'STARTER'}</span>}
+                    {locked && <span className="nav-badge">{item.badge || (item.minPlan === 'pro' ? 'PRO' : 'STARTER')}</span>}
                   </Link>
                 );
               })}

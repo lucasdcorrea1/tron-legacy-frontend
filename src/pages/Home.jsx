@@ -118,6 +118,15 @@ export default function Home() {
     if (!container) return;
 
     const handleWheel = (e) => {
+      const activeEl = sectionsRef.current[activeSectionRef.current];
+      if (activeEl) {
+        const atTop = activeEl.scrollTop <= 0;
+        const atBottom = Math.ceil(activeEl.scrollTop + activeEl.clientHeight) >= activeEl.scrollHeight;
+        // Content overflows the section — let it scroll natively until it hits an edge
+        if (e.deltaY > 0 && !atBottom) return;
+        if (e.deltaY < 0 && !atTop) return;
+      }
+
       e.preventDefault();
       if (isLocked.current) return;
 
@@ -145,6 +154,14 @@ export default function Home() {
     const handleTouchEnd = (e) => {
       const deltaY = touchStartY.current - e.changedTouches[0].clientY;
       if (Math.abs(deltaY) < 50) return;
+
+      const activeEl = sectionsRef.current[activeSectionRef.current];
+      if (activeEl) {
+        const atTop = activeEl.scrollTop <= 0;
+        const atBottom = Math.ceil(activeEl.scrollTop + activeEl.clientHeight) >= activeEl.scrollHeight;
+        if (deltaY > 0 && !atBottom) return;
+        if (deltaY < 0 && !atTop) return;
+      }
 
       if (deltaY > 0) {
         goToSection(activeSectionRef.current + 1);

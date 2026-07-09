@@ -26,8 +26,11 @@
   box-shadow: 0 0 0 3px var(--cac-primary-soft);
 }
 
-.pte-modal {
+/* Specificity must beat .cac-modal's conflicting width/padding/overflow rules
+   regardless of CSS import order, so we qualify with both classes. */
+.cac-modal.pte-modal {
   width: min(960px, 96vw);
+  max-width: 96vw;
   max-height: 92vh;
   padding: 0;
   overflow: hidden;
@@ -81,35 +84,26 @@
 
 .pte-color-row {
   display: grid;
-  grid-template-columns: 44px 1fr 32px;
+  grid-template-columns: 44px 1fr;
   gap: 8px;
   align-items: center;
 }
 
+/* Single swatch = native color input, styled to fill the box edge-to-edge */
 .pte-swatch {
   width: 44px;
   height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--cac-border);
-  cursor: pointer;
-  box-shadow: inset 0 0 0 2px var(--cac-bg-input);
-  background-image:
-    linear-gradient(45deg, var(--cac-border) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--cac-border) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--cac-border) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--cac-border) 75%);
-  background-size: 8px 8px;
-  background-position: 0 0, 0 4px, 4px -4px, -4px 0;
-}
-
-.pte-color-row input[type="color"] {
-  width: 32px; height: 32px;
   padding: 0;
   border-radius: 8px;
   border: 1px solid var(--cac-border);
-  background: transparent;
   cursor: pointer;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
+.pte-swatch::-webkit-color-swatch-wrapper { padding: 0; border-radius: 7px; }
+.pte-swatch::-webkit-color-swatch { border: none; border-radius: 7px; }
+.pte-swatch::-moz-color-swatch { border: none; border-radius: 7px; }
 
 .pte-reset {
   margin-top: 6px;

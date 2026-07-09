@@ -30,7 +30,7 @@ const COLOR_FIELDS = [
  *  - "client" — saving as the override for one specific EndClient
  */
 export default function PortalThemeEditor({
-  open, scope, scopeLabel, initial, fallback, onClose, onSave, onClear,
+  open, scope, scopeLabel, initial, fallback, onClose, onSave, onClear, onUploadLogo,
 }) {
   // `initial` = only the fields explicitly set at this scope (may be sparse)
   // `fallback` = what to show in the preview when a field is empty.
@@ -38,8 +38,15 @@ export default function PortalThemeEditor({
   //   For scope="client": fallback = resolved org theme (org + system)
   const [draft, setDraft] = useState(() => ({ ...(initial || {}) }));
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoErr, setLogoErr] = useState('');
 
-  useEffect(() => { if (open) setDraft({ ...(initial || {}) }); }, [open, initial]);
+  useEffect(() => {
+    if (open) {
+      setDraft({ ...(initial || {}) });
+      setLogoErr('');
+    }
+  }, [open, initial]);
 
   // Effective values for the preview = draft || fallback || system
   const effective = useMemo(() => ({
@@ -51,6 +58,22 @@ export default function PortalThemeEditor({
   if (!open) return null;
 
   const setField = (k, v) => setDraft((d) => ({ ...d, [k]: v }));
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingLogo(true);
+    setLogoErr('');
+    try {
+      const logoUrl = await onUploadLogo(file);
+      setField('logo_url', logoUrl);
+    } catch (err) {
+      setLogoErr(err.message || 'Erro ao enviar logo');
+    } finally {
+      setUploadingLogo(false);
+      e.target.value = '';
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -113,22 +136,39 @@ export default function PortalThemeEditor({
               />
             </Field>
 
-            <Field label="Logo (URL)" hint="https://...png — recomendado quadrado">
-              <input
-                className="cac-bare"
-                value={draft.logo_url || ''}
-                onChange={(e) => setField('logo_url', e.target.value)}
-                placeholder={fallback?.logo_url || 'https://...'}
-              />
-              <div className="pte-logo-drop" style={{ marginTop: 8 }}>
+            <Field label="Logo">
+              <div className="pte-logo-drop">
                 <div
                   className="pte-logo-thumb"
                   style={{ backgroundImage: (draft.logo_url || fallback?.logo_url) ? `url("${draft.logo_url || fallback?.logo_url}")` : undefined }}
                 >
                   {!(draft.logo_url || fallback?.logo_url) && 'Logo'}
                 </div>
-                <div style={{ flex: 1, fontSize: 12, color: 'var(--cac-text-muted)', lineHeight: 1.5 }}>
-                  Hospede a imagem em qualquer CDN e cole o link aqui. Suporta png/svg/jpg.
+                <div style={{ flex: 1 }}>
+                  <label className="cac-btn cac-btn-ghost" style={{ cursor: uploadingLogo ? 'not-allowed' : 'pointer', padding: '7px 14px', fontSize: 12.5 }}>
+                    {uploadingLogo ? 'Enviando…' : draft.logo_url ? 'Trocar logo' : 'Enviar logo'}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                      onChange={handleLogoUpload}
+                      disabled={uploadingLogo}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                  {draft.logo_url && (
+                    <button
+                      type="button"
+                      className="pte-reset"
+                      style={{ marginLeft: 10 }}
+                      onClick={() => setField('logo_url', '')}
+                    >
+                      Remover
+                    </button>
+                  )}
+                  <div style={{ fontSize: 11.5, color: 'var(--cac-text-muted)', marginTop: 6, lineHeight: 1.5 }}>
+                    PNG, JPG, WebP ou SVG — máx. 2MB, recomendado quadrado.
+                  </div>
+                  {logoErr && <div style={{ fontSize: 11.5, color: 'var(--cac-danger)', marginTop: 4 }}>{logoErr}</div>}
                 </div>
               </div>
             </Field>
@@ -138,9 +178,11 @@ export default function PortalThemeEditor({
             {COLOR_FIELDS.map((f) => (
               <Field key={f.key} label={f.label} hint={f.hint}>
                 <div className="pte-color-row">
-                  <div
+                  <input
+                    type="color"
                     className="pte-swatch"
-                    style={{ backgroundColor: effective[f.key] }}
+                    value={/^#[0-9a-f]{6}$/i.test(effective[f.key] || '') ? effective[f.key] : '#000000'}
+                    onChange={(e) => setField(f.key, e.target.value)}
                     title={effective[f.key]}
                   />
                   <input
@@ -148,11 +190,6 @@ export default function PortalThemeEditor({
                     value={draft[f.key] || ''}
                     onChange={(e) => setField(f.key, e.target.value)}
                     placeholder={fallback?.[f.key] || SYSTEM_DEFAULTS[f.key]}
-                  />
-                  <input
-                    type="color"
-                    value={effective[f.key] || '#000000'}
-                    onChange={(e) => setField(f.key, e.target.value)}
                   />
                 </div>
               </Field>
