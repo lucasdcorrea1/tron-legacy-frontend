@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '../components/Toast';
 import { useOrg } from '../context/OrgContext';
 import { instagram, metaAds, metaOAuth } from '../services/api';
+import ApiKeysSection from '../components/ApiKeysSection';
 import './InstagramScheduling.css';
 import './MetaAdsConfig.css';
 import './InstagramConfig.css';
@@ -803,6 +804,8 @@ export default function InstagramConfig({ configuredProp, onConfigChange }) {
             )}
           </div>
         )}
+
+        <ApiKeysSection />
       </div>
     );
   }

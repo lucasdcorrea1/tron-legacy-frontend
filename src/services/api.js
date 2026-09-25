@@ -394,6 +394,12 @@ export const metaOAuth = {
   exchangeCode: (code, orgId) => api.post('/api/v1/auth/meta/callback', { code, org_id: orgId }),
 };
 
+export const apiKeys = {
+  list: () => api.get('/api/v1/admin/api-keys'),
+  create: (name) => api.post('/api/v1/admin/api-keys', { name }),
+  revoke: (id) => api.delete(`/api/v1/admin/api-keys/${id}`),
+};
+
 export const instagram = {
   getConfig: () => api.get('/api/v1/admin/instagram/config'),
   listAllOrgProfiles: () => api.get('/api/v1/admin/instagram/all-profiles'),
