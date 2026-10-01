@@ -70,6 +70,7 @@ const OrderHistory3D = lazy(() => import('./pages/OrderHistory3D'));
 const OrderDetail3D = lazy(() => import('./pages/OrderDetail3D'));
 const CartDrawer = lazy(() => import('./components/CartDrawer'));
 const Financeiro = lazy(() => import('./pages/Financeiro'));
+const Security = lazy(() => import('./pages/Security'));
 const Contabil = lazy(() => import('./pages/Contabil'));
 const ContaAzulClients = lazy(() => import('./pages/ContaAzulClients'));
 const PortalLogin = lazy(() => import('./pages/PortalLogin'));
@@ -239,6 +240,14 @@ export default function App() {
             element={
               <PrivateRoute>
                 <Admin3DStore />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/admin/security"
+            element={
+              <PrivateRoute>
+                <Security />
               </PrivateRoute>
             }
           />

@@ -184,6 +184,7 @@ const toolItems = [
   { path: '/admin/3d-store', icon: Icons_3d, label: '3D Store', superOnly: true },
   { path: '/admin/financeiro', icon: Icons_financeiro, label: 'Financeiro', superOnly: true },
   { path: '/admin/users', icon: Icons.users, label: 'Usuários', superOnly: true },
+  { path: '/admin/security', icon: Icons_lock, label: 'Segurança', superOnly: true },
   { path: '/admin/contabil', icon: Icons_contabil, label: 'Contabilidade', minPlan: 'starter' },
   { path: '/admin/contaazul/clientes', icon: Icons_contaazul, label: 'Conta Azul', exactPlan: ['contaazul', 'enterprise'], badge: 'CONTA AZUL' },
 ];

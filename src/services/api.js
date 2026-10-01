@@ -346,6 +346,34 @@ export const platform = {
   triggerJob: (jobId) => api.post(`/api/v1/platform/jobs/${jobId}/trigger`),
 };
 
+export const security = {
+  overview: (hours = 24) => api.get(`/api/v1/admin/security/overview?hours=${hours}`),
+  accessLogs: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.ip) query.append('ip', params.ip);
+    if (params.status) query.append('status', params.status);
+    if (params.errors) query.append('errors', 'true');
+    if (params.method) query.append('method', params.method);
+    if (params.path) query.append('path', params.path);
+    if (params.org_id) query.append('org_id', params.org_id);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/security/access-logs${qs ? `?${qs}` : ''}`);
+  },
+  events: (params = {}) => {
+    const query = new URLSearchParams();
+    if (params.type) query.append('type', params.type);
+    if (params.limit) query.append('limit', params.limit);
+    const qs = query.toString();
+    return api.get(`/api/v1/admin/security/events${qs ? `?${qs}` : ''}`);
+  },
+  getPolicy: () => api.get('/api/v1/admin/security/policy'),
+  updatePolicy: (policy) => api.put('/api/v1/admin/security/policy', policy),
+  listBlocks: () => api.get('/api/v1/admin/security/blocks'),
+  createBlock: (data) => api.post('/api/v1/admin/security/blocks', data),
+  deleteBlock: (ip) => api.delete(`/api/v1/admin/security/blocks/${encodeURIComponent(ip)}`),
+};
+
 export const auth = {
   login: (credentials) => api.post('/api/v1/auth/login', credentials),
   register: (data) => api.post('/api/v1/auth/register', data),
