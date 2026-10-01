@@ -1,21 +1,47 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { blog, getImageUrl } from '../services/api';
 import ImageCarousel from '../components/ImageCarousel';
 import Header from '../components/Header';
+
+// Decorative WebGL layer (three + three-fluid-fx, ~500 KB). Lazy-loaded so it
+// never blocks the hero's first paint.
+const FluidParticles = lazy(() => import('../components/FluidParticles'));
 import useHorizontalPageSwipe from '../hooks/useHorizontalPageSwipe';
 import './Home.css';
 
-const TOTAL_SECTIONS = 3;
+const TOTAL_SECTIONS = 4;
 
 const COOLDOWN_MS = 1000;
+
+// Live store preview URL. In local dev we point at the running store
+// (localhost:5174); in production builds we embed the deployed store.
+const STORE_URL = import.meta.env.DEV
+  ? 'http://localhost:5174/'
+  : 'https://ecommerce.lucas-dcorrea1.workers.dev/';
+
+const STORE_HOST = (() => {
+  try {
+    return new URL(STORE_URL).host;
+  } catch {
+    return STORE_URL;
+  }
+})();
+
+// Index of the store-demo section within the sections track.
+const DEMO_SECTION = 2;
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 768);
+  // Store preview: only mount the iframe once the demo section is reached
+  // (so the heavy store never loads on first paint), and only let the pointer
+  // reach it after an explicit click (so wheel scroll isn't trapped).
+  const [loadStore, setLoadStore] = useState(false);
+  const [storeActive, setStoreActive] = useState(false);
 
   const homeRef = useRef(null);
   const heroGlowRef = useRef(null);
@@ -50,6 +76,11 @@ export default function Home() {
       section.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
+
+  // Mount the store iframe the first time the demo section becomes active.
+  useEffect(() => {
+    if (activeSection === DEMO_SECTION) setLoadStore(true);
+  }, [activeSection]);
 
   // Resize listener
   useEffect(() => {
@@ -230,26 +261,26 @@ export default function Home() {
   return (
     <div className="home" ref={homeRef}>
       <Helmet>
-        <title>Whodo - A plataforma que acelera seu marketing digital</title>
-        <meta name="description" content="Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar." />
+        <title>Whodo - Sua loja online pronta + marketing automático</title>
+        <meta name="description" content="A Whodo cria seu e-commerce e cuida de todo o marketing — posts, Meta Ads, e-mail e automações, integrados. Você vende, a gente coloca pra rodar." />
         <link rel="canonical" href="https://whodo.com.br/" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://whodo.com.br/" />
-        <meta property="og:title" content="Whodo - A plataforma que acelera seu marketing digital" />
-        <meta property="og:description" content="Agende posts, automatize respostas e gerencie campanhas no Instagram, Meta Ads e Email Marketing. Tudo em um só lugar." />
+        <meta property="og:title" content="Whodo - Sua loja online pronta + marketing automático" />
+        <meta property="og:description" content="A Whodo cria seu e-commerce e cuida de todo o marketing — posts, Meta Ads, e-mail e automações, integrados. Você vende, a gente coloca pra rodar." />
         <meta property="og:image" content="https://whodo.com.br/teste-image-home.png" />
         <meta property="og:locale" content="pt_BR" />
         <meta property="og:site_name" content="Whodo" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Whodo - A plataforma que acelera seu marketing digital" />
-        <meta name="twitter:description" content="Agende posts, automatize respostas e gerencie campanhas. Tudo em um só lugar." />
+        <meta name="twitter:title" content="Whodo - Sua loja online pronta + marketing automático" />
+        <meta name="twitter:description" content="Sua loja online pronta + marketing automático integrado. Você vende, a Whodo coloca pra rodar." />
         <meta name="twitter:image" content="https://whodo.com.br/teste-image-home.png" />
         <script type="application/ld+json">{JSON.stringify({
           '@context': 'https://schema.org',
           '@type': 'Organization',
           name: 'Whodo',
           url: 'https://whodo.com.br',
-          description: 'Plataforma de marketing digital: agende posts, automatize respostas e gerencie campanhas.',
+          description: 'Criação de e-commerce com marketing automático integrado: posts, Meta Ads, e-mail e automações.',
           logo: { '@type': 'ImageObject', url: 'https://whodo.com.br/favicon.svg' },
           contactPoint: {
             '@type': 'ContactPoint',
@@ -292,6 +323,13 @@ export default function Home() {
       {/* Frosted glass over orbs */}
       <div className="home-glass" aria-hidden="true" />
 
+      {/* GPGPU fluid particle field (three-fluid-fx) — crisp layer above the glass */}
+      {/* Effect runs across all sections; page content (z-index 2) stays in
+          front of the canvas (z-index 1), so cards remain readable over it. */}
+      <Suspense fallback={null}>
+        <FluidParticles interactionRef={homeRef} />
+      </Suspense>
+
       {/* Scroll Indicator Dots */}
       <div className="scroll-dots">
         {Array.from({ length: TOTAL_SECTIONS }, (_, i) => i).map((i) => (
@@ -315,36 +353,29 @@ export default function Home() {
           <div className="hero-glow" ref={heroGlowRef} aria-hidden="true" />
           <div className="hero-inner">
             <div className="hero-content">
-              <p className="hero-tagline animate-item">Seu marketing no piloto automático</p>
+              <p className="hero-tagline animate-item">Loja + marketing, feito pra você</p>
               <h1 className="hero-title animate-item" style={{ transitionDelay: '0.1s' }}>
-                Alavanque seus resultados com o <span className="text-gradient">Whodo</span>
+                Sua loja online pronta e o marketing no <span className="text-gradient">automático</span>
               </h1>
               <p className="hero-description animate-item" style={{ transitionDelay: '0.2s' }}>
-                Agende posts, automatize respostas e gerencie campanhas no Instagram,
-                Meta Ads e Email Marketing. Tudo em um só lugar.
+                A Whodo cria seu e-commerce e toca toda a estratégia — Instagram, Meta Ads,
+                e-mail e automações. Você acompanha os resultados; a gente faz o trabalho.
               </p>
               <div className="hero-actions animate-item" style={{ transitionDelay: '0.3s' }}>
-                <Link to="/login" className="btn-primary">
-                  Comece Grátis
-                </Link>
-                <Link to="/assinar/pro" className="btn-ghost">
-                  Ver Planos
-                </Link>
+                <a
+                  href={`https://wa.me/5516999493490?text=${encodeURIComponent('Olá! Quero criar minha loja com a Whodo')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-primary"
+                >
+                  Quero minha loja
+                </a>
+                <button type="button" onClick={() => goToSection(1)} className="btn-ghost">
+                  Ver planos
+                </button>
               </div>
             </div>
-            <div className="hero-visual animate-item" style={{ transitionDelay: '0.2s' }}>
-              <picture>
-                <source srcSet="/teste-image-home.webp" type="image/webp" />
-                <img
-                  src="/teste-image-home.png"
-                  alt="Digital Innovation"
-                  className="hero-image"
-                  width="960"
-                  height="536"
-                  fetchPriority="high"
-                />
-              </picture>
-            </div>
+            {/* Hero image hidden — the galaxy effect stands alone on the right. */}
           </div>
           <button className="scroll-hint" onClick={() => goToSection(1)} aria-label="Rolar para próxima seção">
             <span className="scroll-hint-text">Scroll</span>
@@ -358,49 +389,30 @@ export default function Home() {
             <div className="cta-inner">
               <span className="audit-badge animate-item">Planos</span>
               <h2 className="cta-title animate-item" style={{ transitionDelay: '0.05s' }}>
-                Invista no crescimento<br />
-                do seu <span className="text-gradient">negócio</span>
+                Sua loja + marketing,<br />
+                num plano <span className="text-gradient">só</span>
               </h2>
               <p className="cta-description animate-item" style={{ transitionDelay: '0.1s' }}>
-                Comece grátis. Escale sem limites. Cancele quando quiser.
+                Loja pronta pra vender e marketing no automático. Sem taxa de setup. Cancele quando quiser.
               </p>
 
               <div className="home-plans animate-item" style={{ transitionDelay: '0.2s' }}>
                 <div className="home-plan-card">
                   <div className="home-plan-header">
-                    <h3>Free</h3>
-                    <p className="home-plan-desc">Para experimentar</p>
+                    <h3>Essencial</h3>
+                    <p className="home-plan-desc">Pra tirar a loja do papel</p>
                   </div>
                   <div className="home-plan-pricing">
-                    <span className="home-plan-amount">R$0</span>
+                    <span className="home-plan-amount">R$199</span>
                     <span className="home-plan-period">/mês</span>
                   </div>
-                  <Link to="/login" className="home-plan-btn">Começar grátis</Link>
+                  <a href={`https://wa.me/5516999493490?text=${encodeURIComponent('Olá! Quero o plano Essencial (Loja + Marketing)')}`} target="_blank" rel="noopener noreferrer" className="home-plan-btn">Quero o Essencial</a>
                   <div className="home-plan-divider" />
                   <ul className="home-plan-features">
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>1 membro</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>10 posts agendados</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>3 regras auto-resposta</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Blog ilimitado</li>
-                  </ul>
-                </div>
-
-                <div className="home-plan-card">
-                  <div className="home-plan-header">
-                    <h3>Starter</h3>
-                    <p className="home-plan-desc">Para começar a crescer</p>
-                  </div>
-                  <div className="home-plan-pricing">
-                    <span className="home-plan-amount">R$49</span>
-                    <span className="home-plan-period">/mês</span>
-                  </div>
-                  <Link to="/assinar/starter" className="home-plan-btn">Assinar Starter</Link>
-                  <div className="home-plan-divider" />
-                  <ul className="home-plan-features">
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>3 membros da equipe</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>50 posts agendados</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Instagram + Meta Ads</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Auto-Boost + CTA Analytics</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Loja online pronta e hospedada</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Pagamentos Pix, boleto e cartão</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Catálogo de produtos</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Posts agendados + 1 rede social</li>
                   </ul>
                 </div>
 
@@ -408,42 +420,42 @@ export default function Home() {
                   <span className="home-plan-badge">Mais escolhido</span>
                   <div className="home-plan-header">
                     <h3>Pro</h3>
-                    <p className="home-plan-desc">Para escalar de verdade</p>
+                    <p className="home-plan-desc">Pra vender e escalar de verdade</p>
                   </div>
                   <div className="home-plan-pricing">
-                    <span className="home-plan-amount">R$149</span>
+                    <span className="home-plan-amount">R$499</span>
                     <span className="home-plan-period">/mês</span>
                   </div>
-                  <Link to="/assinar/pro" className="home-plan-btn primary">
-                    Assinar Pro
+                  <a href={`https://wa.me/5516999493490?text=${encodeURIComponent('Olá! Quero o plano Pro (Loja + Marketing)')}`} target="_blank" rel="noopener noreferrer" className="home-plan-btn primary">
+                    Quero o Pro
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                  </Link>
+                  </a>
                   <div className="home-plan-divider" />
                   <ul className="home-plan-features">
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>10 membros da equipe</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Posts e campanhas ilimitados</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Instagram + Meta Ads</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Email Marketing completo</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todas as ferramentas</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Essencial</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Produtos ilimitados</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Instagram + Meta Ads + E-mail</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Automações e recuperação de carrinho</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Campanhas gerenciadas pela Whodo</li>
                   </ul>
                 </div>
 
                 <div className="home-plan-card">
                   <div className="home-plan-header">
                     <h3>Enterprise</h3>
-                    <p className="home-plan-desc">Para grandes operações</p>
+                    <p className="home-plan-desc">Pra operações que querem mais</p>
                   </div>
                   <div className="home-plan-pricing">
-                    <span className="home-plan-amount">R$399</span>
+                    <span className="home-plan-amount">R$999</span>
                     <span className="home-plan-period">/mês</span>
                   </div>
-                  <Link to="/assinar/enterprise" className="home-plan-btn">Assinar Enterprise</Link>
+                  <a href={`https://wa.me/5516999493490?text=${encodeURIComponent('Olá! Quero o plano Enterprise (Loja + Marketing)')}`} target="_blank" rel="noopener noreferrer" className="home-plan-btn">Falar com a gente</a>
                   <div className="home-plan-divider" />
                   <ul className="home-plan-features">
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Membros ilimitados</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Pro incluso</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte prioritário</li>
-                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>SLA dedicado</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Tudo do Pro</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Gestão de tráfego dedicada</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Integrações (ERP/Bling, Conta Azul)</li>
+                    <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Suporte prioritário + gerente de conta</li>
                   </ul>
                 </div>
               </div>
@@ -459,8 +471,90 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Tela 3 - Blog */}
-        <section className="section-snap section-blog" ref={setSectionRef(2)}>
+        {/* Tela 3 - Demo da loja (preview ao vivo) */}
+        <section className="section-snap section-demo" ref={setSectionRef(DEMO_SECTION)}>
+          <div className="section-inner demo-inner">
+            <div className="section-header section-header--compact">
+              <span className="demo-badge animate-item">Demonstração</span>
+              <h2 className="section-title animate-item" style={{ transitionDelay: '0.05s' }}>
+                Veja uma loja <span className="text-gradient">de verdade</span>
+              </h2>
+              <p className="section-description animate-item" style={{ transitionDelay: '0.1s' }}>
+                Essa é uma loja real feita pela Whodo — navegue, abra um produto, use o
+                carrinho. É exatamente o que a gente entrega pra você.
+              </p>
+            </div>
+
+            <div className="store-mock animate-item" style={{ transitionDelay: '0.2s' }}>
+              <div className="store-mock-bar">
+                <span className="store-dot store-dot--red" />
+                <span className="store-dot store-dot--yellow" />
+                <span className="store-dot store-dot--green" />
+                <span className="store-mock-url">{STORE_HOST}</span>
+                <a
+                  href={STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="store-mock-open"
+                  aria-label="Abrir loja em nova aba"
+                >
+                  Abrir em nova aba
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                </a>
+              </div>
+              <div className="store-mock-viewport">
+                {loadStore ? (
+                  <>
+                    <iframe
+                      src={STORE_URL}
+                      title="Loja de demonstração Whodo"
+                      className="store-iframe"
+                      loading="lazy"
+                      style={{ pointerEvents: storeActive ? 'auto' : 'none' }}
+                    />
+                    {!storeActive && (
+                      <button
+                        type="button"
+                        className="store-activate"
+                        onClick={() => setStoreActive(true)}
+                      >
+                        <span className="store-activate-pill">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                          Clique para navegar na loja
+                        </span>
+                      </button>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="store-activate store-activate--load"
+                    onClick={() => { setLoadStore(true); setStoreActive(true); }}
+                  >
+                    <span className="store-activate-pill">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                      Carregar loja de demonstração
+                    </span>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="section-cta animate-item" style={{ transitionDelay: '0.3s' }}>
+              <a
+                href={`https://wa.me/5516999493490?text=${encodeURIComponent('Olá! Vi a loja de demonstração e quero a minha')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+              >
+                Quero uma loja assim
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Tela 4 - Blog */}
+        <section className="section-snap section-blog" ref={setSectionRef(3)}>
           <div className="section-inner">
             <div className="section-header section-header--compact">
               <h2 className="section-title animate-item">Blog</h2>

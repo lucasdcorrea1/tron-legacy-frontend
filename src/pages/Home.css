@@ -41,6 +41,23 @@
   -webkit-backdrop-filter: blur(60px);
 }
 
+/* GPGPU fluid particle field (three-fluid-fx). Painted AFTER .home-glass so it
+   stays crisp above the frosted blur, yet below the content (.sections-track,
+   z-index: 2). Transparent canvas lets the orb wash show through. */
+.fluid-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+}
+
+.fluid-particles canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .home-orb {
   position: absolute;
   bottom: -20%;
@@ -321,7 +338,7 @@
    TELA 1 - HERO
    ============================================ */
 .section-snap:first-of-type {
-  padding: 0 2rem;
+  padding: 5rem 2rem 0;
 }
 
 /* hero-glow removed — using global .home-orbs layer */
@@ -355,9 +372,9 @@
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: 3.5rem;
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.07;
   letter-spacing: -0.03em;
   margin-bottom: 1.5rem;
   color: #fafafa;
@@ -447,6 +464,12 @@
   object-position: center;
   mask-image: radial-gradient(ellipse 70% 90% at center, black 45%, transparent 68%);
   -webkit-mask-image: radial-gradient(ellipse 70% 90% at center, black 45%, transparent 68%);
+  /* "Ghost" treatment: a classical figure emerging from the galaxy — low
+     opacity + desaturated and tinted to the blue/purple palette so it blends
+     into the particle cloud instead of competing with it. */
+  opacity: 0.42;
+  filter: grayscale(1) brightness(0.9) sepia(0.6) hue-rotate(205deg) saturate(2.4)
+    contrast(1.05);
 }
 
 /* ============================================
@@ -519,8 +542,12 @@
 }
 
 .blog-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  /* Same glass treatment as the plan cards (subtle dark veil + backdrop blur),
+     so the galaxy behind reads as a soft wash and text stays readable. */
+  background: rgba(10, 11, 15, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   overflow: hidden;
   text-decoration: none;
@@ -540,7 +567,8 @@
 .blog-card-image {
   aspect-ratio: 16/9;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.02);
+  /* Opaque so placeholder cards (no cover image) don't reveal the galaxy. */
+  background: #1a1d24;
 }
 
 .blog-card-image .carousel,
@@ -678,11 +706,168 @@
 }
 
 /* ============================================
+   STORE DEMO (live preview inside a browser mock)
+   ============================================ */
+.section-demo {
+  padding: 6.25rem 2rem 2rem;
+  /* Align to the top (not centered) so the tall content — heading + browser
+     mock + CTA — never pushes its top edge behind the fixed header. */
+  justify-content: flex-start;
+}
+
+.demo-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.demo-badge {
+  display: inline-block;
+  padding: 0.3rem 0.875rem;
+  margin-bottom: 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 100px;
+}
+
+.demo-inner .section-header {
+  margin-bottom: 1.75rem;
+}
+
+/* Browser-chrome mock */
+.store-mock {
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(10, 11, 15, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.6);
+}
+
+.store-mock-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.store-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.store-dot--red { background: #ff5f57; }
+.store-dot--yellow { background: #febc2e; }
+.store-dot--green { background: #28c840; }
+
+.store-mock-url {
+  flex: 1;
+  margin: 0 0.5rem;
+  padding: 0.3rem 0.875rem;
+  font-size: 0.8125rem;
+  color: #a1a1aa;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 100px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.store-mock-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #60a5fa;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.store-mock-open:hover {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+  text-decoration: none;
+}
+
+.store-mock-viewport {
+  position: relative;
+  width: 100%;
+  height: min(50vh, 520px);
+  background: #0a0b0f;
+}
+
+.store-iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Click-to-interact / load overlay */
+.store-activate {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.25s ease;
+}
+
+.store-activate:hover {
+  background: rgba(10, 11, 15, 0.15);
+}
+
+.store-activate--load {
+  background: radial-gradient(ellipse at center, rgba(37, 99, 235, 0.12), rgba(10, 11, 15, 0.6));
+}
+
+.store-activate-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  border-radius: 100px;
+  box-shadow: 0 10px 30px -6px rgba(37, 99, 235, 0.5);
+  transition: transform 0.2s ease;
+}
+
+.store-activate:hover .store-activate-pill {
+  transform: translateY(-2px);
+}
+
+/* ============================================
    TELA 3 - CTA + FOOTER
    ============================================ */
 .section-cta-footer {
   justify-content: space-between;
-  padding-top: 3rem;
+  padding-top: 5.5rem;
 }
 
 /* audit-glow removed — using global .home-orbs layer */
@@ -844,10 +1029,10 @@
    ============================================ */
 .home-plans {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   width: 100%;
-  max-width: 1060px;
+  max-width: 900px;
   margin: 0 auto 1.5rem;
   align-items: stretch;
 }
@@ -855,7 +1040,9 @@
 /* ── Card base ── */
 .home-plan-card {
   position: relative;
-  background: rgba(255, 255, 255, 0.03);
+  /* Subtle dark veil (instead of a light tint) so text stays readable over
+     the galaxy behind, without losing the glass look. */
+  background: rgba(10, 11, 15, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 1.75rem 1.5rem;
@@ -1422,6 +1609,29 @@
 
   .section-cta {
     margin-top: 1.5rem;
+  }
+
+  /* Store demo */
+  .section-demo {
+    padding: 5rem 1rem 2rem;
+  }
+
+  .store-mock-url {
+    font-size: 0.6875rem;
+    margin: 0 0.25rem;
+    padding: 0.25rem 0.5rem;
+  }
+
+  /* Collapse to icon-only (font-size: 0 hides the label text; the inline
+     SVG keeps its explicit width/height). */
+  .store-mock-open {
+    padding: 0.3rem 0.5rem;
+    font-size: 0;
+    gap: 0;
+  }
+
+  .store-mock-viewport {
+    height: min(62vh, 520px);
   }
 
   /* Clients */
